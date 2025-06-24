@@ -39,14 +39,21 @@
   color:transparent;
   transition:background-position .4s ease;
 }
-
-/* conic – usa mesma paleta mais intensa */
+/* gira sem emenda e acompanha o cursor (cx / cy) */
 .dynamic-gradient.radial{
-  background-image:conic-gradient(from var(--angle,0deg) at 50% 50%,
-                    #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%);
-  background-size:150% 150%;       /* mantemos grande p/ giro visível */
+  /* --cx e --cy virão de JS como % */
+  background-image:conic-gradient(
+      from var(--angle,0deg)
+      at var(--cx,50%) var(--cy,50%),
+      #5A4BFF 0deg,
+      #7B46FF 120deg,
+      #8E5CFF 240deg,
+      #5A4BFF 360deg           /* repetimos a 1ª cor → sem linha */
+  );
+  background-size:150% 150%;
   transition:none;
 }
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -191,45 +198,52 @@
  <script>
 const nameEl = document.getElementById('nome');
 
-/* ---------- HOVER: ativa gradiente radial que gira ---------- */
-/* flag de animação */
+/* ---------- variáveis ---------- */
 let spinning = false;
 let rafId;
+let angle = 0;
 
+/* ---------- helpers ---------- */
+function frame(){
+  if(!spinning) return;
+  angle = (angle + 1.5) % 360;                      // velocidade do giro
+  nameEl.style.setProperty('--angle', angle + 'deg');
+  rafId = requestAnimationFrame(frame);
+}
+
+/* ---------- eventos ---------- */
 nameEl.addEventListener('mouseenter', () => {
   nameEl.classList.add('radial');
-  nameEl.style.setProperty('--angle','0deg');
   spinning = true;
-  spin();                           // inicia loop
+  frame();                                         // inicia o loop
+});
+
+nameEl.addEventListener('mousemove', (e) => {
+  const rect = nameEl.getBoundingClientRect();
+  /* centro em % dentro do elemento */
+  const cx = ((e.clientX - rect.left) / rect.width ) * 100;
+  const cy = ((e.clientY - rect.top )  / rect.height) * 100;
+  nameEl.style.setProperty('--cx', cx + '%');
+  nameEl.style.setProperty('--cy', cy + '%');
 });
 
 nameEl.addEventListener('mouseleave', () => {
-  nameEl.classList.remove('radial');
-  nameEl.style.backgroundPosition = '0% 50%';
   spinning = false;
-  cancelAnimationFrame(rafId);      // para o loop
+  cancelAnimationFrame(rafId);
+  nameEl.classList.remove('radial');
+  nameEl.style.backgroundPosition = '0% 50%';      // volta ao linear
 });
 
-function spin(){
-  if(!spinning) return;
-  /* aumenta o ângulo suavemente */
-  const current = parseFloat(getComputedStyle(nameEl)
-                     .getPropertyValue('--angle')) || 0;
-  nameEl.style.setProperty('--angle', `${(current + 2) % 360}deg`);
-  rafId = requestAnimationFrame(spin);
-}
-
-
-/* ---------- SCROLL: onda linear da esquerda p/ direita ---------- */
+/* ---------- scroll linear ---------- */
 window.addEventListener('scroll', () => {
-  /* só atua se NÃO estiver no modo radial (para não brigar com o mouse) */
-  if (!nameEl.classList.contains('radial')) {
+  if(!nameEl.classList.contains('radial')){
     const max = document.documentElement.scrollHeight - innerHeight;
-    const pct = (scrollY / max) * 100;      // 0 → 100
+    const pct = (scrollY / max) * 100;
     nameEl.style.backgroundPosition = `${pct}% 50%`;
   }
 });
 </script>
+
 
 
 
