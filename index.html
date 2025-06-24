@@ -214,6 +214,8 @@ function frame(){
 /* ---------- eventos ---------- */
 nameEl.addEventListener('mouseenter', () => {
   nameEl.classList.add('radial');
+  angle = 0;                                        // ← NOVO
+  nameEl.style.setProperty('--angle', '0deg');      // ← NOVO
   spinning = true;
   frame();                                         // inicia o loop
 });
