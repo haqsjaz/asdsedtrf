@@ -65,7 +65,8 @@ canvas{
   display:block;
   position:fixed;          /* fixo para não rolar junto */
   inset:0;                 /* top right bottom left = 0 */
-  z-index:0;               /* atrás de todo o conteúdo */
+  z-index:-1;               /* atrás de todo o conteúdo */
+  pointer-events:none;
 }
 
 /* -------- Evita scroll extra gerado pelo canvas -------- */
