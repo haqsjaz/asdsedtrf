@@ -29,6 +29,7 @@
 /* base: gradiente linear (scroll) */
 .dynamic-gradient{
   /* linear: blurple → roxo → fúcsia  */
+  position: relative;
   background-image: linear-gradient(90deg,#5865F2 0%,#8B5CF6 50%,#C084FC 100%);
   background-size:200% 100%;
   background-position:0% 50%;
@@ -193,6 +194,8 @@ const nameEl = document.getElementById('nome');
 /* ---------- HOVER: ativa gradiente radial que gira ---------- */
 nameEl.addEventListener('mouseenter', () => {
   nameEl.classList.add('radial');
+  /* reinicia o ângulo p/ o usuário ver o giro desde 0 */
+  nameEl.style.setProperty('--angle','0deg');
 });
 
 nameEl.addEventListener('mousemove', (e) => {
