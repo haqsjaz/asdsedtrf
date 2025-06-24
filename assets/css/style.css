@@ -5,6 +5,7 @@
   --darker-gray: #1E2226;
   --white: #FFFFFF;
   --green: #57f287;
+  --light-blue: #a7b7f9; /* Nova cor para destacar botões e links */
 }
 
 * {
@@ -17,11 +18,13 @@ body {
   background-color: var(--not-quite-black);
   color: var(--white);
   font-family: Arial, sans-serif;
+  overflow-x: hidden; /* Evitar rolagem horizontal */
 }
 
 header {
   background-color: var(--blurple);
-  padding: 10px;
+  padding: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
@@ -31,17 +34,22 @@ nav ul {
 }
 
 nav ul li {
-  margin: 0 15px;
+  margin: 0 20px;
 }
 
 nav ul li a {
   color: var(--white);
   text-decoration: none;
   font-weight: bold;
+  transition: color 0.3s;
+}
+
+nav ul li a:hover {
+  color: var(--light-blue);
 }
 
 .banner {
-  height: 250px;
+  height: 300px;
   overflow: hidden;
 }
 
@@ -49,10 +57,19 @@ nav ul li a {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.banner:hover img {
+  transform: scale(1.1);
 }
 
 .perfil {
   margin-top: -125px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .perfil-container {
@@ -61,6 +78,7 @@ nav ul li a {
   align-items: center;
   max-width: 1000px;
   margin: 0 auto;
+  transition: transform 0.3s;
 }
 
 .perfil-left {
@@ -71,15 +89,20 @@ nav ul li a {
 }
 
 .foto-perfil {
-  width: 170px;
-  height: 170px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   border: 5px solid var(--blurple);
+  transition: transform 0.3s;
+}
+
+.foto-perfil:hover {
+  transform: scale(1.1);
 }
 
 .perfil-left h1 {
   color: var(--blurple);
-  font-size: 2em;
+  font-size: 2.5em;
   margin-top: 10px;
   text-shadow: 0 0 10px var(--blurple);
 }
@@ -105,11 +128,16 @@ nav ul li a {
   margin: 0 5px;
   position: relative;
   cursor: pointer;
+  transition: transform 0.3s;
 }
 
 .badge img {
   width: 50px;
   height: 50px;
+}
+
+.badge:hover {
+  transform: scale(1.1);
 }
 
 .badge::after {
@@ -130,26 +158,53 @@ nav ul li a {
   opacity: 1;
 }
 
-/* Biografia com retângulo e animação */
-.biografia-container {
+/* Projetos */
+.projects {
+  background-color: var(--darker-gray);
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.projects h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: var(--blurple);
+}
+
+.project {
+  margin-top: 20px;
   background-color: var(--dark-gray);
-  padding: 20px;
-  margin: 20px auto;
   border-radius: 10px;
-  max-width: 1000px;
+  padding: 20px;
   transition: transform 0.3s;
 }
 
-.biografia-container:hover {
-  transform: scale(1.02);
+.project:hover {
+  transform: scale(1.05);
 }
 
-.sobre-mim {
-  line-height: 1.6;
-  text-align: justify;
+.project-logo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-/* Servidores */
+.project a {
+  background-color: var(--blurple);
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.project a:hover {
+  background-color: var(--green);
+}
+
 .servidores {
   display: flex;
   flex-wrap: wrap;
@@ -272,6 +327,6 @@ nav ul li a {
     width: 100%;
   }
   .servidores {
-    margin-top: 0; /* Ajustamos o margin-top para telas menores */
+    margin-top: 0;
   }
 }
