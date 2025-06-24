@@ -22,11 +22,9 @@
       opacity:0;
       pointer-events:none;
       transition:opacity .2s ease;
+      z-index:10; 
     }
     .tooltip:hover span{opacity:1;}
-
-    /* sempre sobrepõe os tooltips */
-.tooltip span{ z-index:10; }
 
 /* base: gradiente linear (scroll) */
 .dynamic-gradient{
@@ -42,7 +40,7 @@
 
 /* quando o mouse entra, trocamos p/ conic-gradient */
 .dynamic-gradient.radial{
-  background-image:conic-gradient(from var(--angle,0deg),
+  background-image:conic-gradient(from var(--angle,0deg) at 50% 50%,
                                   #5865F2 0%,#8B5CF6 50%,#C084FC 100%);
   background-size:100% 100%;
   transition:none;        /* sem tween – JS controla o ângulo */
@@ -76,7 +74,10 @@
         <div class="flex flex-col items-center md:items-start md:flex-row">
           <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
           <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
-            <h2 class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight">Caio Duque</h2>
+             <h2 id="nome" 
+              class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight">
+                Caio Duque
+             </h2>
             <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
           </div>
         </div>
