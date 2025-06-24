@@ -24,6 +24,17 @@
       transition:opacity .2s ease;
     }
     .tooltip:hover span{opacity:1;}
+
+    .dynamic-gradient {
+    /* degradé de blurple (#5865F2) a roxo (#8B5CF6) e fúcsia (#C084FC) */
+    background-image: linear-gradient(90deg, #5865F2 0%, #8B5CF6 50%, #C084FC 100%);
+    background-size: 200% 200%;   /* maior que o elemento */
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;           /* texto fica “furadinho” */
+    transition: background-position .3s ease; /* suavidade extra */
+  }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -31,7 +42,7 @@
   <!-- NAVBAR -->
   <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-xl font-bold tracking-wide">Caio Duque</h1>
+      <h1 id="nome" class="dynamic-gradient text-4xl font-extrabold">Caio Duque</h1>
       <nav>
         <ul class="flex space-x-6 font-semibold">
           <li><a href="#home" class="hover:text-indigo-200 transition">Início</a></li>
@@ -161,6 +172,33 @@
   <footer class="bg-gray-800 py-6">
     <p class="text-center text-sm text-gray-500">© 2025 Caio Duque. Todos os direitos reservados.</p>
   </footer>
+
+  <script>
+  const nameEl = document.getElementById('nome');
+
+  /* ------- Hover dinâmico (posição do mouse) ------- */
+  document.addEventListener('mousemove', (e) => {
+    const rect = nameEl.getBoundingClientRect();
+    if (
+      e.clientX >= rect.left && e.clientX <= rect.right &&
+      e.clientY >= rect.top  && e.clientY <= rect.bottom
+    ) {
+      // porcentagem horizontal dentro do elemento
+      const percentX = ((e.clientX - rect.left) / rect.width) * 100;
+      // move o gradiente só no eixo X
+      nameEl.style.backgroundPosition = `${percentX}% 50%`;
+    }
+  });
+
+  /* ------- Scroll dinâmico (posição da página) ------- */
+  window.addEventListener('scroll', () => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percentScroll = (window.scrollY / maxScroll) * 100;
+    // desliza lentamente o gradiente conforme a rolagem
+    nameEl.style.backgroundPosition = `${percentScroll}% 50%`;
+  });
+</script>
+
 
 </body>
 </html>
