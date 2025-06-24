@@ -53,11 +53,28 @@
   background-size:150% 150%;
   transition:none;
 }
+/* -------- Glass card (pode ser aplicado com class="card") -------- */
+.card{
+  backdrop-filter:blur(10px);
+  background-color:rgba(44,47,51,.7);          /* cinza Discord translúcido */
+  border:1px solid rgba(114,137,218,.3);       /* borda roxo-discord sutil */
+}
+
+/* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
+canvas{
+  display:block;
+  position:fixed;          /* fixo para não rolar junto */
+  inset:0;                 /* top right bottom left = 0 */
+  z-index:0;               /* atrás de todo o conteúdo */
+}
+
+/* -------- Evita scroll extra gerado pelo canvas -------- */
+body{ overflow:hidden; }
 
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
-
+<canvas id="particleCanvas"></canvas>
   <!-- NAVBAR -->
   <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -78,7 +95,7 @@
     <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
     <!-- Cartão de perfil -->
     <div class="container mx-auto px-4">
-      <div class="bg-gray-800/90 backdrop-blur rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
+      <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
         <div class="flex flex-col items-center md:items-start md:flex-row">
           <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
           <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
@@ -244,6 +261,97 @@ window.addEventListener('scroll', () => {
     nameEl.style.backgroundPosition = `${pct}% 50%`;
   }
 });
+
+   /* -------- partículas estilo Discord -------- */
+const canvas = document.getElementById('particleCanvas');
+const ctx    = canvas.getContext('2d');
+
+let particles = [];
+const NUM     = 100;
+const MAX_DIST= 120;
+const MOUSE_R = 150;
+
+/* redimensiona o canvas */
+function resize(){
+  canvas.width  = innerWidth;
+  canvas.height = innerHeight;
+}
+window.addEventListener('resize', resize); resize();
+
+/* -------- classe Partícula -------- */
+class Particle{
+  constructor(){
+    this.size = 1 + Math.random()*5;
+    this.x = Math.random()*innerWidth;
+    this.y = Math.random()*innerHeight;
+    this.vx = (Math.random()-.5)*.5;
+    this.vy = (Math.random()-.5)*.5;
+    const palette=['#7289DA','#99AAB5','#FFFFFF'];
+    this.color = palette[Math.floor(Math.random()*palette.length)];
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle=this.color; ctx.fill();
+  }
+  update(){
+    if(this.x<this.size||this.x>innerWidth-this.size)  this.vx*=-1;
+    if(this.y<this.size||this.y>innerHeight-this.size) this.vy*=-1;
+    this.x+=this.vx; this.y+=this.vy;
+    this.draw();
+  }
+}
+
+/* cria as partículas */
+function initParticles(){
+  particles=[]; for(let i=0;i<NUM;i++) particles.push(new Particle());
+}
+initParticles();
+
+/* mouse */
+const mouse={x:null,y:null,radius:MOUSE_R};
+window.addEventListener('mousemove',e=>{mouse.x=e.x;mouse.y=e.y;});
+window.addEventListener('mouseout',()=>{mouse.x=mouse.y=null;});
+
+/* conecta partículas */
+function connect(){
+  for(let a=0;a<NUM;a++){
+    for(let b=a+1;b<NUM;b++){
+      const dx=particles[a].x-particles[b].x;
+      const dy=particles[a].y-particles[b].y;
+      const dist=dx*dx+dy*dy;
+      if(dist<MAX_DIST*MAX_DIST){
+        const opacity=1-dist/(MAX_DIST*MAX_DIST);
+        ctx.strokeStyle=`rgba(114,137,218,${opacity})`;
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.moveTo(particles[a].x,particles[a].y);
+        ctx.lineTo(particles[b].x,particles[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+/* animação */
+function animate(){
+  requestAnimationFrame(animate);
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  particles.forEach(p=>p.update());
+  /* repulsão simples */
+  if(mouse.x!==null){
+    particles.forEach(p=>{
+      const dx=mouse.x-p.x, dy=mouse.y-p.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<p.size+mouse.radius){
+        const angle=Math.atan2(dy,dx);
+        p.x-=Math.cos(angle); p.y-=Math.sin(angle);
+      }
+    });
+  }
+  connect();
+}
+animate();
 </script>
 
 
