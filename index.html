@@ -86,8 +86,26 @@
   position:relative;
   z-index:2;
   backdrop-filter:blur(10px);
-  background-color:rgba(44,47,51,.7);          /* cinza Discord translúcido */
-  border:1px solid rgba(114,137,218,.3);       /* borda roxo-discord sutil */
+  background-color:rgba(44,47,51,.70);          /* cinza Discord translúcido */
+  border:1px solid rgba(114,137,218,.30);       /* borda roxo-discord sutil */
+
+  transition:
+    transform          .25s ease,        /* “zoom” */
+    background-color   .25s ease,        /* vidro + claro  */
+    box-shadow         .25s ease;        /* sombra opcional */
+}
+
+    .card:hover{
+  transform:scale(1.04);                 /* leve “zoom”   */
+  background-color:rgba(44,47,51,.45);   /* vidro + translúcido */
+  box-shadow:0 0 20px rgba(114,137,218,.35); /* realce extra opcional */
+  z-index:3;                             /* fica acima dos vizinhos */
+}
+
+/* (opcional) para quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce){
+  .card,
+  .card:hover{ transition:none }
 }
 
 /* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
