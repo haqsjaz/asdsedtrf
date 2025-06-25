@@ -39,6 +39,26 @@
   color:transparent;
   transition:background-position .4s ease;
 }
+
+    .dynamic-gradient::after{
+  content:attr(data-glow);    /* duplica o texto           */
+  position:absolute;
+  inset:0;                    /* cobre exatamente o h2      */
+  z-index:-1;                 /* atrás do texto real        */
+
+  /* usa o MESMO gradiente do elemento */
+  background:inherit;         /* herda conic ou linear */
+  background-size:inherit;
+  background-position:inherit;
+
+  -webkit-background-clip:text;
+          background-clip:text;
+  color:transparent;
+
+  /* brilho: espalha e ilumina */
+  filter:blur(6px) brightness(2);
+  pointer-events:none;        /* não interfere no hover */
+}
 /* gira sem emenda e acompanha o cursor (cx / cy) */
 .dynamic-gradient.radial{
   /* --cx e --cy virão de JS como % */
@@ -103,7 +123,8 @@ body{ overflow-x:hidden; overflow-y:auto; }
           <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
           <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
              <h2 id="nome" 
-              class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight">
+              class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
+               data-glow="Caio Duque">
                 Caio Duque
              </h2>
             <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
