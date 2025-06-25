@@ -57,8 +57,12 @@
 
   /* brilho: espalha e ilumina */
   filter:blur(6px) brightness(2);
+  opacity:0;
+  transition:opacity .2s linear;    
   pointer-events:none;        /* não interfere no hover */
 }
+
+
 /* gira sem emenda e acompanha o cursor (cx / cy) */
 .dynamic-gradient.radial{
   /* --cx e --cy virão de JS como % */
@@ -72,6 +76,10 @@
   );
   background-size:150% 150%;
   transition:none;
+}
+
+        .dynamic-gradient.radial::after{
+  opacity:1;                     /* glow ativo   */
 }
 /* -------- Glass card (pode ser aplicado com class="card") -------- */
 .card{
@@ -268,7 +276,7 @@ let angle = 0;
 /* ---------- helpers ---------- */
 function frame(){
   if(!spinning) return;
-  angle = (angle + 1.5) % 360;                      // velocidade do giro
+  angle = (angle + 6) % 360;                      // velocidade do giro
   nameEl.style.setProperty('--angle', angle + 'deg');
   rafId = requestAnimationFrame(frame);
 }
