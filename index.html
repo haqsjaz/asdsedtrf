@@ -294,40 +294,42 @@
   <section id="home" class="relative">
     <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
     <!-- Cartão de perfil -->
-    <div id="profileCard" class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
-      <div class="flex flex-col items-center md:items-start md:flex-row">
-        <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
-        <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
-          <h2 id="nome"
-              class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
-              data-glow="Caio Duque">
-            Caio Duque
-          </h2>
-          <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Ex-Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
+    <div id="profileCard" class="container mx-auto px-4"> <!-- Added container back around the card -->
+      <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
+        <div class="flex flex-col items-center md:items-start md:flex-row">
+          <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
+          <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
+            <h2 id="nome"
+                class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
+                data-glow="Caio Duque">
+              Caio Duque
+            </h2>
+            <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Ex-Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Badges -->
-      <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
-        <div class="tooltip relative group mb-2 md:mb-0">
-          <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-          <span>Designer</span>
-        </div>
-        <div class="tooltip relative group mb-2 md:mb-0">
-          <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-          <span>Dono do Old Duque's</span>
-        </div>
-        <div class="tooltip relative group mb-2 md:mb-0">
-          <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-          <span>Fluente em Idiomas</span>
-        </div>
-        <div class="tooltip relative group mb-2 md:mb-0">
-          <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-          <span>Full‑stack Dev</span>
-        </div>
-        <div class="tooltip relative group mb-2 md:mb-0">
-          <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-          <span>Pesquisador</span>
+        <!-- Badges -->
+        <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Designer</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Dono do Old Duque's</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Fluente em Idiomas</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Full‑stack Dev</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Pesquisador</span>
+          </div>
         </div>
       </div>
     </div>
@@ -986,32 +988,32 @@
     }
 
     // --- Efeito h2#nome acionado pelo profileCard ou pelo próprio h2 ---
-    const profileCard = document.getElementById('profileCard');
+    const profileCard = document.getElementById('profileCard'); // This now refers to the outer container
 
     profileCard.addEventListener('mouseenter', () => {
         startDynamicGradientAnimation(nameEl);
     });
     profileCard.addEventListener('mousemove', (e) => {
+        // Need to calculate mouse position relative to the h2 element itself for the gradient effect
         handleDynamicGradientMouseMove(nameEl, e);
     });
     profileCard.addEventListener('mouseleave', () => {
-        // Stop animation only if mouse leaves the profile card completely
-        // If it enters nameEl directly from outside profileCard, nameEl's specific listener will handle.
-        // This ensures the effect persists as long as the mouse is within the profileCard area.
         stopDynamicGradientAnimation(nameEl);
     });
 
     // O listener direto no nameEl ainda é útil para um hover mais preciso sobre ele
     nameEl.addEventListener('mouseenter', () => {
+        // If the mouse enters nameEl *directly* (not via profileCard), activate.
+        // This case might be redundant if profileCard already covers nameEl, but good for robustness.
         startDynamicGradientAnimation(nameEl);
     });
     nameEl.addEventListener('mousemove', (e) => {
         handleDynamicGradientMouseMove(nameEl, e);
     });
-    nameEl.addEventListener('mouseleave', () => {
-        // Se o mouse sair do nameEl, mas ainda estiver dentro do profileCard, não para a animação.
-        // A animação só parará quando sair do profileCard.
-        if (!profileCard.contains(event.relatedTarget)) { // Check if the relatedTarget is outside profileCard
+    nameEl.addEventListener('mouseleave', (e) => {
+        // If mouse leaves nameEl and is still within profileCard, do not stop animation.
+        // Animation only stops when mouse leaves profileCard entirely.
+        if (!profileCard.contains(e.relatedTarget)) { // Check if the relatedTarget is outside profileCard
             stopDynamicGradientAnimation(nameEl);
         }
     });
