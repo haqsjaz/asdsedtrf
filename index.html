@@ -338,36 +338,94 @@
         <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
         <div class="grid md:grid-cols-2 gap-8">
           <!-- Viggle -->
-          <div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
-            <div class="flex items-center">
-              <img src="assets/images/viggle_logo.png" alt="Viggle Logo" class="w-20 h-20 rounded-full object-cover" />
-              <div class="ml-4">
-                <h4 class="text-xl font-semibold flex items-center">Viggle <img src="assets/images/verified_server.png" alt="Verificado" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" alt="Membros" class="w-4 h-4 mr-1" />4.300.000+</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-300 flex-1">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
-            <div class="mt-6 flex items-center">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/moderator_role.png" alt="Ex-Moderador" class="w-4 h-4 mr-1" /> Ex-Moderador</span>
-              <button onclick="window.open('https://discord.gg/viggle','_blank')" class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
-            </div>
-          </div>
+          <div class="card guild-card rounded-xl p-6 flex flex-col transition"
+     data-guild-id="1181076253172842537">
+
+  <!-- topo: ícone + nome + contador -->
+  <div class="flex items-center">
+    <img class="guild-icon w-20 h-20 rounded-full object-cover"
+         src="assets/images/viggle_logo.png" alt="Viggle logo"/>
+
+    <div class="ml-4">
+      <h4 class="guild-name text-xl font-semibold flex items-center">
+        Viggle
+        <img src="assets/images/verified_server.png"
+             class="w-5 h-5 ml-1" alt="Verificado"/>
+      </h4>
+
+      <p class="text-sm text-gray-400 flex items-center">
+        <svg class="w-4 h-4 mr-1 icon-svg" viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+        </svg>
+        <span class="member-count">---</span> membros
+      </p>
+    </div>
+  </div>
+
+  <!-- descrição -->
+  <p class="mt-4 text-gray-300 flex-1">
+    Servidor oficial da IA Viggle, líder mundial em mixagem de animações
+    e vídeos gerados por IA. Experimente gratuitamente!
+  </p>
+
+  <!-- rodapé -->
+  <div class="mt-6 flex items-center">
+    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+      <img src="assets/images/moderator_role.png" class="w-4 h-4 mr-1" alt="Ex-Moderador"/>
+      Ex-Moderador
+    </span>
+
+    <!-- será substituído pelo invite do widget; link de fallback incluído -->
+    <button class="ml-auto join-btn bg-emerald-500 hover:bg-emerald-400 transition
+                   text-white px-5 py-2 rounded-full shadow"
+            onclick="window.open('https://discord.gg/viggle','_blank')">
+      Entrar
+    </button>
+  </div>
+</div>
 
           <!-- Old Duque's -->
-          <div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
-            <div class="flex items-center">
-              <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo" class="w-20 h-20 rounded-full object-cover" />
-              <div class="ml-4">
-                <h4 class="text-xl font-semibold flex items-center">Old Duque's <img src="assets/images/server_booster_badge.png" alt="Booster" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" alt="Membros" class="w-4 h-4 mr-1" />220</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-300 flex-1">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, edição de vídeo, moderação e muito mais.</p>
-            <div class="mt-6 flex items-center">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/emperor.png" alt="Proprietário" class="w-4 h-4 mr-1" /> Proprietário</span>
-              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
-            </div>
-          </div>
+          <div class="card guild-card rounded-xl p-6 flex flex-col transition"
+     data-guild-id="1369703061282357359">
+
+  <div class="flex items-center">
+    <img class="guild-icon w-20 h-20 rounded-full object-cover"
+         src="assets/images/old_duques_logo.png" alt="Old Duque’s logo"/>
+
+    <div class="ml-4">
+      <h4 class="guild-name text-xl font-semibold flex items-center">
+        Old Duque’s
+        <img src="assets/images/server_booster_badge.png"
+             class="w-5 h-5 ml-1" alt="Booster"/>
+      </h4>
+
+      <p class="text-sm text-gray-400 flex items-center">
+        <svg class="w-4 h-4 mr-1 icon-svg" viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+        </svg>
+        <span class="member-count">---</span> membros
+      </p>
+    </div>
+  </div>
+
+  <p class="mt-4 text-gray-300 flex-1">
+    Clã Old Duque’s: central de materiais e conteúdos de qualidade
+    sobre programação, design, moderação e muito mais.
+  </p>
+
+  <div class="mt-6 flex items-center">
+    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+      <img src="assets/images/emperor.png" class="w-4 h-4 mr-1" alt="Proprietário"/>
+      Proprietário
+    </span>
+
+    <button class="ml-auto join-btn bg-emerald-500 hover:bg-emerald-400 transition
+                   text-white px-5 py-2 rounded-full shadow"
+            onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')">
+      Entrar
+    </button>
+  </div>
+</div>
         </div>
       </div>
     </div>
@@ -552,6 +610,49 @@
       connect();
     }
     animate();
+
+    (async () => {
+  const cards = document.querySelectorAll('.guild-card');
+
+  for (const card of cards) {
+    const id = card.dataset.guildId;
+    if (!id) continue;
+
+    try {
+      /* exige que o Widget esteja ativado nas
+         Configurações ▸ Widget ▸ “Ativar widget” */
+      const r    = await fetch(
+        `https://discord.com/api/guilds/${id}/widget.json`
+      );
+      if (!r.ok) throw new Error('Widget OFF');
+
+      const g    = await r.json();
+
+      // nome
+      card.querySelector('.guild-name').childNodes[0].nodeValue = g.name+' ';
+
+      // contagem on-line agora
+      card.querySelector('.member-count').textContent =
+          g.presence_count.toLocaleString('pt-BR');
+
+      // ícone (usa o hash que vem no widget)
+      const ico  = card.querySelector('.guild-icon');
+      ico.src    =
+        `https://cdn.discordapp.com/icons/${id}/${g.id}.png?size=128`;
+      ico.onerror = () =>
+        (ico.src = 'assets/images/server_placeholder.png');
+
+      // link “Entrar” → invite do widget
+      const btn  = card.querySelector('button');
+      if (btn && g.instant_invite)
+        btn.onclick = () => window.open(g.instant_invite,'_blank');
+
+    } catch (err) {
+      console.warn(`Guild ${id}: ${err.message}`);
+      /* Mantém o texto/imagem hard-coded */
+    }
+  }
+})();
   </script>
 </body>
 </html>
