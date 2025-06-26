@@ -77,6 +77,35 @@
       opacity: 1;
     }
 
+    /* Custom gradients for skill titles */
+    .gradient-languages {
+        background-image: linear-gradient(90deg, #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%); /* Tons de azul */
+    }
+    .dynamic-gradient.radial.gradient-languages {
+        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #5A4BFF 0deg, #7B46FF 120deg, #8E5CFF 240deg, #5A4BFF 360deg);
+    }
+
+    .gradient-frameworks {
+        background-image: linear-gradient(90deg, #22C55E 0%, #06B6D4 50%, #3B82F6 100%); /* Tons de verde para azul */
+    }
+    .dynamic-gradient.radial.gradient-frameworks {
+        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #22C55E 0deg, #06B6D4 120deg, #3B82F6 240deg, #22C55E 360deg);
+    }
+
+    .gradient-tools {
+        background-image: linear-gradient(90deg, #8B5CF6 0%, #EC4899 50%, #EF4444 100%); /* Tons de roxo para vermelho */
+    }
+    .dynamic-gradient.radial.gradient-tools {
+        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #8B5CF6 0deg, #EC4899 120deg, #EF4444 240deg, #8B5CF6 360deg);
+    }
+
+    .gradient-design-security {
+        background-image: linear-gradient(90deg, #60A5FA 0%, #8B5CF6 50%, #A855F7 100%); /* Tons de azul claro para roxo */
+    }
+    .dynamic-gradient.radial.gradient-design-security {
+        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #60A5FA 0deg, #8B5CF6 120deg, #A855F7 240deg, #60A5FA 360deg);
+    }
+
     /* -------- Glass card (pode ser aplicado com class="card") -------- */
     .card {
       position: relative;
@@ -265,42 +294,40 @@
   <section id="home" class="relative">
     <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
     <!-- Cartão de perfil -->
-    <div class="container mx-auto px-4">
-      <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
-        <div class="flex flex-col items-center md:items-start md:flex-row">
-          <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
-          <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
-            <h2 id="nome"
-                class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
-                data-glow="Caio Duque">
-              Caio Duque
-            </h2>
-            <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Ex-Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
-          </div>
+    <div id="profileCard" class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
+      <div class="flex flex-col items-center md:items-start md:flex-row">
+        <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
+        <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
+          <h2 id="nome"
+              class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
+              data-glow="Caio Duque">
+            Caio Duque
+          </h2>
+          <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Ex-Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
         </div>
+      </div>
 
-        <!-- Badges -->
-        <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Designer</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Dono do Old Duque's</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Fluente em Idiomas</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Full‑stack Dev</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Pesquisador</span>
-          </div>
+      <!-- Badges -->
+      <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
+        <div class="tooltip relative group mb-2 md:mb-0">
+          <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+          <span>Designer</span>
+        </div>
+        <div class="tooltip relative group mb-2 md:mb-0">
+          <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+          <span>Dono do Old Duque's</span>
+        </div>
+        <div class="tooltip relative group mb-2 md:mb-0">
+          <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+          <span>Fluente em Idiomas</span>
+        </div>
+        <div class="tooltip relative group mb-2 md:mb-0">
+          <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+          <span>Full‑stack Dev</span>
+        </div>
+        <div class="tooltip relative group mb-2 md:mb-0">
+          <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+          <span>Pesquisador</span>
         </div>
       </div>
     </div>
@@ -327,7 +354,7 @@
     <div id="skills-container" class="flex flex-col items-center">
       <!-- Categoria: Linguagens de Programação -->
       <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
-        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Linguagens</h4>
+        <h4 id="languagesTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Linguagens">Linguagens</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
             <img src="assets/images/python.png" onerror="this.src='https://placehold.co/32x32/FFD43B/000000?text=PY';" alt="Python" class="w-8 h-8"/>
@@ -348,7 +375,7 @@
 
       <!-- Categoria: Frameworks e Bibliotecas -->
       <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
-        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Frameworks/Bibliotecas</h4>
+        <h4 id="frameworksTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Frameworks/Bibliotecas">Frameworks/Bibliotecas</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
             <img src="assets/images/react.png" onerror="this.src='https://placehold.co/32x32/61DAFB/000000?text=REACT';" alt="React" class="w-8 h-8"/>
@@ -368,7 +395,7 @@
 
       <!-- Categoria: Ferramentas e Outros -->
       <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
-        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Ferramentas e Outros</h4>
+        <h4 id="toolsTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Ferramentas e Outros">Ferramentas e Outros</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
             <img src="assets/images/git.png" onerror="this.src='https://placehold.co/32x32/F05032/FFFFFF?text=GIT';" alt="Git" class="w-8 h-8"/>
@@ -388,7 +415,7 @@
 
       <!-- Categoria: Design e Cibersegurança -->
       <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center initial-hidden-skill">
-        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Design e Segurança</h4>
+        <h4 id="designSecurityTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Design e Segurança">Design e Segurança</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
             <img src="assets/images/uiux_design.png" onerror="this.src='https://placehold.co/32x32/8C52FF/FFFFFF?text=UI/UX';" alt="UI/UX Design" class="w-8 h-8"/>
@@ -519,7 +546,7 @@
                    class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
               <div class="ml-4 text-left">
                 <h4 class="text-xl font-semibold flex items-center">
-                  Formula 1
+                  Formula One
                   <img src="assets/images/partner.png"
                        alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" />
                 </h4>
@@ -531,7 +558,7 @@
               </div>
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">
-              Servidor não oficial da comunidade Formula 1 no Discord. Discuta as corridas, pilotos e o universo da F1 com outros fãs!
+              Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!
             </p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
@@ -622,15 +649,6 @@
       cancelAnimationFrame(rafId);
       nameEl.classList.remove('radial');
       nameEl.style.backgroundPosition = '0% 50%'; // volta ao linear
-    });
-
-    /* ---------- scroll linear ---------- */
-    window.addEventListener('scroll', () => {
-      if (!nameEl.classList.contains('radial')) {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        const pct = (scrollY / max) * 100;
-        nameEl.style.backgroundPosition = `${pct}% 50%`;
-      }
     });
 
     /* -------- partículas estilo Discord -------- */
@@ -756,24 +774,27 @@
       carouselTrack.innerHTML = ''; // Clear existing cards
 
       // Create a more robust set of clones for seamless looping (previous + current + next visible)
-      // Clones needed at the beginning and end to allow seamless transitions
       const numClones = originalServerCards.length; // Max clones needed for a full loop
 
-      // Prepend clones of the *last* few original cards
+      // Add clones of the *last* few original cards to the beginning of the conceptual track
       for (let i = originalServerCards.length - 1; i >= 0; i--) {
-        const clone = originalServerCards[i].cloneNode(true);
-        clone.classList.add('clone', 'pre-clone');
-        carouselTrack.prepend(clone);
+          const clone = originalServerCards[i].cloneNode(true);
+          clone.classList.add('clone', `pre-clone-${i}`);
+          carouselTrack.appendChild(clone); // Temporarily append
+      }
+      // Move them to the beginning of the track
+      for (let i = 0; i < numClones; i++) {
+          carouselTrack.prepend(carouselTrack.lastChild);
       }
 
-      // Append original cards
+      // Add actual original cards
       originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
 
-      // Append clones of the *first* few original cards
+      // Add clones of the *first* few original cards to the end of the conceptual track
       for (let i = 0; i < originalServerCards.length; i++) {
-        const clone = originalServerCards[i].cloneNode(true);
-        clone.classList.add('clone', 'post-clone');
-        carouselTrack.appendChild(clone);
+          const clone = originalServerCards[i].cloneNode(true);
+          clone.classList.add('clone', `post-clone-${i}`);
+          carouselTrack.appendChild(clone);
       }
 
       serverCards = Array.from(carouselTrack.children);
@@ -801,32 +822,31 @@
       serverCards.forEach((card, index) => {
           card.classList.remove('is-center');
           card.style.opacity = '0'; // Hide all cards initially
+          card.style.transform = 'scale(0.7)'; // Default scale for hidden/side cards
           card.style.pointerEvents = 'none';
 
           // Determine visibility based on relative position to currentIndex
           const relativeIndex = index - currentIndex;
 
           // Display the center card, and one to its left and one to its right.
-          // Adjust for circular presentation (e.g., last card of original set can be "left" of first)
-          let targetIndex = relativeIndex;
-
-          // Logic to handle wrapping around the original set for visual positioning
-          if (targetIndex < -originalServerCards.length / 2) {
-              targetIndex += originalServerCards.length;
-          } else if (targetIndex > originalServerCards.length / 2) {
-              targetIndex -= originalServerCards.length;
+          // Handle circular array for determining which cards are 'left' and 'right'
+          let visibleLeftIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
+          let visibleRightIndex = (currentIndex + 1) % serverCards.length;
+          
+          // Re-adjust for clones for visual effect (only if more than 3 original cards)
+          if (originalServerCards.length > 1) { // Only need to adjust if more than 1 card for "left" and "right" logic to make sense
+              // For visual purposes, ensure the 'left' and 'right' cards wrap correctly from the original set.
+              // Example: If original is [A,B,C] and current is A (index N), then left is C (index N-1), right is B (index N+1)
+              // This is covered by `visibleLeftIndex` and `visibleRightIndex`
           }
 
-          if (targetIndex === 0) { // Center card
+
+          if (index === currentIndex) { // Center card
               card.classList.add('is-center');
               card.style.transform = 'scale(1)';
               card.style.opacity = '1';
               card.style.pointerEvents = 'auto';
-          } else if (targetIndex === -1) { // Left card
-              card.style.transform = 'scale(0.7)';
-              card.style.opacity = '0.3';
-              card.style.pointerEvents = 'auto';
-          } else if (targetIndex === 1) { // Right card
+          } else if (index === visibleLeftIndex || index === visibleRightIndex) { // Immediate left/right cards
               card.style.transform = 'scale(0.7)';
               card.style.opacity = '0.3';
               card.style.pointerEvents = 'auto';
@@ -863,7 +883,7 @@
 
         // Infinite looping logic
         // If we slid to a 'post-clone' card (at the end of the real ones)
-        if (currentIndex >= originalServerCards.length * 2) {
+        if (currentIndex >= originalServerCards.length + originalServerCards.length) {
             currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
             updateCarousel(true); // Instant update to the corresponding real card
         }
@@ -917,15 +937,138 @@
     });
 
 
-    /* REVEAL DE HABILIDADES AO SCROLLAR */
+    /* GERAL: LÓGICA DE ANIMAÇÃO PARA EFEITO DYNAMIC-GRADIENT */
+    // Map to store animation states for each dynamic-gradient element
+    const dynamicGradientAnimations = new Map(); // Map<HTMLElement, {rafId: number, angle: number, spinning: boolean}>
+
+    function startDynamicGradientAnimation(element) {
+        let animState = dynamicGradientAnimations.get(element);
+        if (!animState) {
+            animState = { rafId: null, angle: 0, spinning: false };
+            dynamicGradientAnimations.set(element, animState);
+        }
+
+        if (animState.spinning) return; // Already spinning
+
+        animState.angle = 0; // Reset angle for a fresh spin
+        element.style.setProperty('--angle', '0deg'); // Apply initial angle
+
+        animState.spinning = true;
+        function frame() {
+            if (!animState.spinning) return;
+            animState.angle = (animState.angle + 6) % 360; // Spin speed
+            element.style.setProperty('--angle', animState.angle + 'deg');
+            animState.rafId = requestAnimationFrame(frame);
+        }
+        frame(); // Start the animation loop
+        element.classList.add('radial'); // Add radial class to trigger conic gradient
+    }
+
+    function stopDynamicGradientAnimation(element) {
+        let animState = dynamicGradientAnimations.get(element);
+        if (animState) {
+            animState.spinning = false;
+            if (animState.rafId) {
+                cancelAnimationFrame(animState.rafId);
+                animState.rafId = null;
+            }
+            element.classList.remove('radial'); // Remove radial class
+            element.style.backgroundPosition = '0% 50%'; // Reset to linear gradient position
+        }
+    }
+
+    function handleDynamicGradientMouseMove(element, e) {
+        const rect = element.getBoundingClientRect();
+        const cx = ((e.clientX - rect.left) / rect.width) * 100;
+        const cy = ((e.clientY - rect.top) / rect.height) * 100;
+        element.style.setProperty('--cx', cx + '%');
+        element.style.setProperty('--cy', cy + '%');
+    }
+
+    // --- Efeito h2#nome acionado pelo profileCard ou pelo próprio h2 ---
+    const profileCard = document.getElementById('profileCard');
+
+    profileCard.addEventListener('mouseenter', () => {
+        startDynamicGradientAnimation(nameEl);
+    });
+    profileCard.addEventListener('mousemove', (e) => {
+        handleDynamicGradientMouseMove(nameEl, e);
+    });
+    profileCard.addEventListener('mouseleave', () => {
+        // Stop animation only if mouse leaves the profile card completely
+        // If it enters nameEl directly from outside profileCard, nameEl's specific listener will handle.
+        // This ensures the effect persists as long as the mouse is within the profileCard area.
+        stopDynamicGradientAnimation(nameEl);
+    });
+
+    // O listener direto no nameEl ainda é útil para um hover mais preciso sobre ele
+    nameEl.addEventListener('mouseenter', () => {
+        startDynamicGradientAnimation(nameEl);
+    });
+    nameEl.addEventListener('mousemove', (e) => {
+        handleDynamicGradientMouseMove(nameEl, e);
+    });
+    nameEl.addEventListener('mouseleave', () => {
+        // Se o mouse sair do nameEl, mas ainda estiver dentro do profileCard, não para a animação.
+        // A animação só parará quando sair do profileCard.
+        if (!profileCard.contains(event.relatedTarget)) { // Check if the relatedTarget is outside profileCard
+            stopDynamicGradientAnimation(nameEl);
+        }
+    });
+
+    // Modificar o listener de scroll do nameEl para usar as novas funções genéricas
+    window.addEventListener('scroll', () => {
+        // Apenas aplique o efeito de scroll linear ao nameEl se ele NÃO estiver no modo radial (ativo por hover)
+        // Isso evita conflito com a animação de rotação
+        if (!nameEl.classList.contains('radial')){
+            const max = document.documentElement.scrollHeight - innerHeight;
+            const pct = (scrollY / max) * 100;
+            nameEl.style.backgroundPosition = `${pct}% 50%`;
+        }
+    });
+
+
+    // --- Efeitos nos títulos das categorias de habilidades ---
+    const skillCategoryCards = document.querySelectorAll('#skills-container > .skill-category-card');
+    
+    // Iterar sobre cada card de categoria de habilidade
+    skillCategoryCards.forEach(card => {
+        const titleElement = card.querySelector('h4.dynamic-gradient'); // Encontrar o h4.dynamic-gradient dentro deste card
+        
+        if (titleElement) { // Garantir que o título existe
+            // Adicionar as classes de gradiente específicas (se ainda não estiverem no HTML)
+            if (titleElement.id === 'languagesTitle') {
+                titleElement.classList.add('gradient-languages');
+            } else if (titleElement.id === 'frameworksTitle') {
+                titleElement.classList.add('gradient-frameworks');
+            } else if (titleElement.id === 'toolsTitle') {
+                titleElement.classList.add('gradient-tools');
+            } else if (titleElement.id === 'designSecurityTitle') {
+                titleElement.classList.add('gradient-design-security');
+            }
+
+            // Adicionar listeners ao card pai para ativar/desativar a animação no título
+            card.addEventListener('mouseenter', () => {
+                startDynamicGradientAnimation(titleElement);
+            });
+            card.addEventListener('mousemove', (e) => {
+                handleDynamicGradientMouseMove(titleElement, e);
+            });
+            card.addEventListener('mouseleave', () => {
+                stopDynamicGradientAnimation(titleElement);
+            });
+        }
+    });
+
+    /* REVEAL DE HABILIDADES AO SCROLLAR (Efeito Gaveta) */
     const skillCards = document.querySelectorAll('#skills-container > .skill-category-card');
-    // The first card is already visible, so we start observing from the second.
+    // Começa a observar a partir do segundo card, pois o primeiro já está visível
     const skillCardsToObserve = Array.from(skillCards).slice(1);
 
     const revealObserverOptions = {
-        root: null, // viewport as the root
+        root: null, // O viewport é o elemento raiz
         rootMargin: '0px',
-        threshold: 0.2 // Trigger when 20% of the target is visible
+        threshold: 0.2 // Acionar quando 20% do elemento alvo estiver visível
     };
 
     const skillRevealObserver = new IntersectionObserver((entries, observer) => {
@@ -933,15 +1076,15 @@
             if (entry.isIntersecting) {
                 entry.target.classList.remove('initial-hidden-skill');
                 entry.target.classList.add('is-revealed-skill');
-                observer.unobserve(entry.target); // Stop observing once revealed
+                observer.unobserve(entry.target); // Parar de observar depois de revelado
             }
         });
     }, revealObserverOptions);
 
-    // Initially hide all but the first skill card using JavaScript
+    // Esconder inicialmente todos os cards de habilidade, exceto o primeiro, usando JavaScript
     skillCardsToObserve.forEach(card => {
         card.classList.add('initial-hidden-skill');
-        skillRevealObserver.observe(card); // Start observing each hidden card
+        skillRevealObserver.observe(card); // Começar a observar cada card escondido
     });
 
   </script>
