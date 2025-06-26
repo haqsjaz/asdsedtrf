@@ -141,13 +141,12 @@
       display: flex;
       align-items: center; /* Alinha os cards verticalmente no centro */
       transition: transform 0.5s ease-in-out;
-      /* Removido justify-content e padding aqui, o translateX cuida do posicionamento */
     }
 
     .server-card {
       flex-shrink: 0; /* Impede que os cards encolham */
-      width: 380px; /* Largura base para os cards */
-      max-width: 90%; /* Fallback responsivo para telas pequenas */
+      width: 380px; /* Largura original dos cards */
+      max-width: 90%; /* Fallback responsivo */
       margin: 0 1rem; /* Espaçamento entre os cards */
       transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease;
       opacity: 0.3; /* Opacidade padrão para cards não-centrais */
@@ -493,7 +492,7 @@
                    class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
               <div class="ml-4 text-left">
                 <h4 class="text-xl font-semibold flex items-center">
-                  Formula One
+                  Formula 1
                   <img src="assets/images/partner.png"
                        alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" />
                 </h4>
@@ -505,7 +504,7 @@
               </div>
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">
-              Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs.
+              Servidor não oficial da comunidade Formula 1 no Discord. Discuta as corridas, pilotos e o universo da F1 com outros fãs!
             </p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
@@ -716,64 +715,197 @@
     /* CARROSSEL DE SERVIDORES JS */
     const carouselContainer = document.querySelector('.carousel-container');
     const carouselTrack = document.getElementById('serverCarouselTrack');
-    const serverCards = Array.from(carouselTrack.children);
     const prevButton = document.getElementById('carouselPrev');
     const nextButton = document.getElementById('carouselNext');
 
-    let currentIndex = 0; // O índice do card que está no centro
+    let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
+    let serverCards = []; // This will contain original cards + clones
+    let currentIndex = 0; // Index in the 'serverCards' array (including clones)
+    let isTransitioning = false;
+    let autoScrollInterval;
 
-    // Função para atualizar a posição do carrossel e o estilo dos cards
-    function updateCarousel() {
-      // Remover a classe 'is-center' de todos os cards e resetar seus estilos
-      serverCards.forEach(card => {
-        card.classList.remove('is-center');
-        card.style.transform = 'scale(0.7)'; // Escala padrão para cards não-centrais
-        card.style.opacity = '0.3'; // Opacidade padrão para cards não-centrais
-      });
+    // Function to set up the infinite loop by cloning cards
+    function setupInfiniteCarousel() {
+      carouselTrack.innerHTML = ''; // Clear existing cards
 
-      // Adicionar a classe 'is-center' ao card central
-      const currentCentralCard = serverCards[currentIndex];
-      currentCentralCard.classList.add('is-center');
-      currentCentralCard.style.transform = 'scale(1)'; // Tamanho total para o card central
-      currentCentralCard.style.opacity = '1'; // Opacidade total para o card central
+      // Create a more robust set of clones for seamless looping (previous + current + next visible)
+      // Clones of last two original cards for the start (so we can slide smoothly to first real card)
+      if (originalServerCards.length >= 2) {
+        const lastOriginalClone2 = originalServerCards[originalServerCards.length - 2].cloneNode(true);
+        lastOriginalClone2.classList.add('clone');
+        carouselTrack.appendChild(lastOriginalClone2); // Temporarily append to measure later
+      }
+      const lastOriginalClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
+      lastOriginalClone.classList.add('clone');
+      carouselTrack.appendChild(lastOriginalClone); // Temporarily append to measure later
 
-      // Calcular o translateX para centralizar o card atual
-      const containerWidth = carouselContainer.offsetWidth;
-      // offsetWidth já considera o scale(1) aplicado via is-center, se a transição for rápida
-      // ou se o CSS for aplicado antes do JS calcular.
-      const centralCardWidth = currentCentralCard.offsetWidth;
-      const centralCardOffsetLeft = currentCentralCard.offsetLeft;
+      // Append original cards
+      originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
 
-      // Calcule o quanto a "pista" precisa se mover para que o centro do card atual
-      // esteja no centro do contêiner visível do carrossel.
-      let translateXValue = (containerWidth / 2) - (centralCardOffsetLeft + centralCardWidth / 2);
+      // Clones of first two original cards for the end (so we can slide smoothly to last real card)
+      const firstOriginalClone = originalServerCards[0].cloneNode(true);
+      firstOriginalClone.classList.add('clone');
+      carouselTrack.appendChild(firstOriginalClone);
+      if (originalServerCards.length >= 2) {
+        const firstOriginalClone2 = originalServerCards[1].cloneNode(true);
+        firstOriginalClone2.classList.add('clone');
+        carouselTrack.appendChild(firstOriginalClone2);
+      }
 
-      carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+      // Re-populate serverCards after all clones are added
+      serverCards = Array.from(carouselTrack.children);
+
+      // Now, move the prepend-only elements to the beginning
+      // This is a bit tricky since we appended them initially.
+      // Let's re-think the cloning to ensure correct DOM structure from the start.
+
+      carouselTrack.innerHTML = ''; // Clear again for precise setup
+
+      // Prepend the necessary clones for infinite scrolling backwards
+      for (let i = originalServerCards.length - 1; i >= 0; i--) {
+          const clone = originalServerCards[i].cloneNode(true);
+          clone.classList.add('clone', `clone-${i}`);
+          carouselTrack.prepend(clone);
+      }
+
+      // Append the original cards
+      originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
+
+      // Append the necessary clones for infinite scrolling forwards
+      for (let i = 0; i < originalServerCards.length; i++) {
+          const clone = originalServerCards[i].cloneNode(true);
+          clone.classList.add('clone', `clone-${i}`);
+          carouselTrack.appendChild(clone);
+      }
+
+
+      serverCards = Array.from(carouselTrack.children);
+      // currentIndex starts at the beginning of the *second* set of original cards (after the prepended clones)
+      currentIndex = originalServerCards.length; // This is the index of the first real card
+
+      // Initial positioning without animation
+      updateCarousel(true);
     }
 
-    // Navegação para o próximo card
-    nextButton.addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % serverCards.length;
-      updateCarousel();
-    });
+    // Function to update carousel position and card styles
+    function updateCarousel(instant = false) {
+      if (isTransitioning && !instant) return; // Prevent multiple clicks during smooth transition
 
-    // Navegação para o card anterior
-    prevButton.addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
-      updateCarousel();
-    });
-
-    // Inicializa o carrossel na carga da página
-    window.addEventListener('load', () => {
-      // Garante que o carrossel comece com o primeiro item centralizado.
-      if (serverCards.length > 0) {
-        currentIndex = 0; // Começa com o primeiro card como central
-        updateCarousel();
+      // Disable arrow clicks during an instant jump
+      if (instant) {
+          prevButton.disabled = true;
+          nextButton.disabled = true;
       }
+
+      // Set transition property
+      carouselTrack.style.transition = instant ? 'none' : 'transform 0.5s ease-in-out';
+
+      // Apply styles based on relative position to current (central) index
+      serverCards.forEach((card, index) => {
+          card.classList.remove('is-center');
+          card.style.transform = 'scale(0.7)'; // Default for side cards
+          card.style.opacity = '0.3'; // Default for side cards
+
+          // Determine if this card should be the center, left, or right visible card
+          let visibleIndex = (index - currentIndex);
+          // Adjust for circular behavior in visible display (e.g., last card can be 'left' of first)
+          if (visibleIndex > originalServerCards.length / 2) { // if the gap is too large to the right
+              visibleIndex -= serverCards.length;
+          } else if (visibleIndex < -originalServerCards.length / 2) { // if the gap is too large to the left
+              visibleIndex += serverCards.length;
+          }
+
+          if (index === currentIndex) {
+              card.classList.add('is-center');
+              card.style.transform = 'scale(1)';
+              card.style.opacity = '1';
+          }
+      });
+
+      // Calculate translateX to center the current card
+      const containerWidth = carouselContainer.offsetWidth;
+      const currentCentralCard = serverCards[currentIndex];
+
+      // Use `getBoundingClientRect().left` relative to `carouselTrack.getBoundingClientRect().left`
+      // to get the true offset accounting for scaling and layout.
+      const currentCardLeftInTrack = currentCentralCard.getBoundingClientRect().left - carouselTrack.getBoundingClientRect().left;
+      const currentCardCenterInTrack = currentCardLeftInTrack + (currentCentralCard.offsetWidth / 2);
+      const containerCenter = containerWidth / 2;
+
+      let translateXValue = containerCenter - currentCardCenterInTrack;
+
+      carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+
+      if (!instant) {
+          isTransitioning = true; // Only set to true for smooth transitions
+      } else {
+          // For instant jumps, immediately allow interactions
+          isTransitioning = false;
+          prevButton.disabled = false;
+          nextButton.disabled = false;
+      }
+    }
+
+    // Event listener for transition end to handle snapping back
+    carouselTrack.addEventListener('transitionend', () => {
+        isTransitioning = false; // Transition has ended, allow interaction
+        prevButton.disabled = false; // Re-enable buttons
+        nextButton.disabled = false; // Re-enable buttons
+
+        // Infinite looping logic
+        // If we slid to the first clone of the original cards (which is at the end of the real ones)
+        if (currentIndex >= originalServerCards.length * 2) { // e.g., if original is 3 cards, index 3+3=6 is first real card. If currentIndex reaches 6 (first clone), jump to original first (index 3)
+            currentIndex = originalServerCards.length;
+            updateCarousel(true); // Instant update
+        }
+        // If we slid to the last clone of the original cards (which is at the start of the real ones)
+        else if (currentIndex < originalServerCards.length) { // e.g., if original is 3 cards, index 0,1,2 are clones. If currentIndex is 0,1,2, jump to real one.
+            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
+            updateCarousel(true); // Instant update
+        }
     });
 
-    // Atualiza o carrossel em caso de redimensionamento da janela
-    window.addEventListener('resize', updateCarousel);
+    // Navigation functions
+    nextButton.addEventListener('click', () => {
+      if (isTransitioning) return; // Prevent clicks during transition
+      currentIndex++;
+      updateCarousel();
+    });
+
+    prevButton.addEventListener('click', () => {
+      if (isTransitioning) return; // Prevent clicks during transition
+      currentIndex--;
+      updateCarousel();
+    });
+
+    // Auto-scrolling
+    function startAutoScroll() {
+      stopAutoScroll(); // Clear any existing interval to prevent duplicates
+      autoScrollInterval = setInterval(() => {
+        if (!isTransitioning) { // Only auto-scroll if not already transitioning
+            nextButton.click();
+        }
+      }, 6000); // Every 6 seconds
+    }
+
+    function stopAutoScroll() {
+      clearInterval(autoScrollInterval);
+    }
+
+    // Pause/Resume auto-scroll on hover
+    carouselContainer.addEventListener('mouseenter', stopAutoScroll);
+    carouselContainer.addEventListener('mouseleave', startAutoScroll);
+
+    // Initialize carousel on page load
+    window.addEventListener('load', () => {
+      setupInfiniteCarousel(); // Setup clones and initial position
+      startAutoScroll(); // Start auto-scroll
+    });
+
+    // Update carousel on window resize
+    window.addEventListener('resize', () => {
+        setupInfiniteCarousel(); // Re-setup carousel on resize to correctly re-calculate widths and positions
+    });
   </script>
 </body>
 </html>
