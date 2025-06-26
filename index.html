@@ -134,27 +134,29 @@
       overflow: hidden;
       margin: 0 auto;
       max-width: 960px; /* Limita a largura do carrossel */
+      padding: 0 2rem; /* Adiciona padding para as setas não ficarem coladas */
     }
 
     .carousel-track {
       display: flex;
-      justify-content: center; /* Centraliza os itens no início */
+      align-items: center; /* Alinha os cards verticalmente no centro */
       transition: transform 0.5s ease-in-out;
-      padding: 0 10%; /* Ajuste para que o card do meio fique no centro visual */
+      /* Removido justify-content e padding aqui, o translateX cuida do posicionamento */
     }
 
     .server-card {
       flex-shrink: 0; /* Impede que os cards encolham */
-      width: calc(100% / 3 - 2rem); /* 3 cards visíveis com algum gap */
+      width: 380px; /* Largura base para os cards */
+      max-width: 90%; /* Fallback responsivo para telas pequenas */
       margin: 0 1rem; /* Espaçamento entre os cards */
-      transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-      opacity: 0.5; /* Cards laterais translúcidos */
-      transform: scale(0.9); /* Cards laterais menores */
+      transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease;
+      opacity: 0.3; /* Opacidade padrão para cards não-centrais */
+      transform: scale(0.7); /* Escala padrão para cards não-centrais */
     }
 
     .server-card.is-center {
-      opacity: 1; /* Card central opaco */
-      transform: scale(1.05); /* Card central maior */
+      opacity: 1; /* Opacidade total para o card central */
+      transform: scale(1); /* Tamanho total para o card central */
       box-shadow: 0 0 30px rgba(114, 137, 218, .5); /* Sombra mais forte para o centro */
     }
 
@@ -183,25 +185,24 @@
     }
 
     .carousel-arrow.left {
-      left: 1rem;
+      left: 0; /* Posiciona a seta à esquerda, dentro do padding do container */
     }
 
     .carousel-arrow.right {
-      right: 1rem;
+      right: 0; /* Posiciona a seta à direita, dentro do padding do container */
     }
 
     /* Responsividade para o carrossel */
     @media (max-width: 768px) {
-      .carousel-track {
-        justify-content: flex-start; /* Alinha à esquerda em telas menores */
-        padding: 0;
+      .carousel-container {
+        padding: 0 1rem; /* Ajusta o padding do container em telas menores */
       }
       .server-card {
-        width: 80%; /* Apenas um card maior por vez, com os outros parcialmente visíveis */
+        width: 280px; /* Ajusta o tamanho base dos cards em telas menores */
         margin: 0 0.5rem;
       }
       .server-card.is-center {
-        transform: scale(1); /* Não aumenta tanto em telas pequenas */
+        transform: scale(1); /* Mantém o tamanho real em telas pequenas */
       }
       .carousel-arrow {
         width: 30px;
@@ -211,7 +212,7 @@
     }
     @media (max-width: 640px) {
       .server-card {
-        width: 90%; /* Ajuste para telas muito pequenas */
+        width: 90%; /* Ajuste para telas muito pequenas, pode se comportar como 1 card por vez */
       }
     }
   </style>
@@ -713,6 +714,7 @@
     animate();
 
     /* CARROSSEL DE SERVIDORES JS */
+    const carouselContainer = document.querySelector('.carousel-container');
     const carouselTrack = document.getElementById('serverCarouselTrack');
     const serverCards = Array.from(carouselTrack.children);
     const prevButton = document.getElementById('carouselPrev');
@@ -722,35 +724,29 @@
 
     // Função para atualizar a posição do carrossel e o estilo dos cards
     function updateCarousel() {
-      // Remover a classe 'is-center' de todos os cards
-      serverCards.forEach(card => card.classList.remove('is-center'));
+      // Remover a classe 'is-center' de todos os cards e resetar seus estilos
+      serverCards.forEach(card => {
+        card.classList.remove('is-center');
+        card.style.transform = 'scale(0.7)'; // Escala padrão para cards não-centrais
+        card.style.opacity = '0.3'; // Opacidade padrão para cards não-centrais
+      });
 
       // Adicionar a classe 'is-center' ao card central
-      serverCards[currentIndex].classList.add('is-center');
+      const currentCentralCard = serverCards[currentIndex];
+      currentCentralCard.classList.add('is-center');
+      currentCentralCard.style.transform = 'scale(1)'; // Tamanho total para o card central
+      currentCentralCard.style.opacity = '1'; // Opacidade total para o card central
 
       // Calcular o translateX para centralizar o card atual
-      // O valor base é a metade da largura do container, menos a metade da largura do card central,
-      // e então ajustado pelo índice para mover os cards
-      const cardWidth = serverCards[0].offsetWidth + (parseFloat(getComputedStyle(serverCards[0]).marginLeft) * 2); // Largura + margem
-      const offset = (serverCards.length / 2) * cardWidth; // Metade da largura total dos cards
-      const centerOffset = serverCards[currentIndex].offsetWidth / 2; // Metade da largura do card central
-      const trackWidth = carouselTrack.scrollWidth;
+      const containerWidth = carouselContainer.offsetWidth;
+      // offsetWidth já considera o scale(1) aplicado via is-center, se a transição for rápida
+      // ou se o CSS for aplicado antes do JS calcular.
+      const centralCardWidth = currentCentralCard.offsetWidth;
+      const centralCardOffsetLeft = currentCentralCard.offsetLeft;
 
-      // Calcular o quanto precisamos mover o track para centralizar o currentIndex
-      // O objetivo é posicionar o card do currentIndex no centro visual do carousel-container
-      let translateXValue = -((currentIndex * cardWidth) - (carouselTrack.offsetWidth / 2) + (cardWidth / 2));
-      
-      // Ajuste para garantir que haja cards nos lados para a visualização de 3 cards
-      // Se tiver menos de 3 cards, centraliza-os. Se tiver 3 ou mais, o cálculo acima já ajuda.
-      // Para o efeito de 3 visíveis e central, vamos ajustar o translate para alinhar o item do meio
-      // com o centro do .carousel-container
-      const containerWidth = carouselTrack.parentElement.offsetWidth;
-      const currentCardLeft = serverCards[currentIndex].offsetLeft;
-      const currentCardCenter = currentCardLeft + (serverCards[currentIndex].offsetWidth / 2);
-      
       // Calcule o quanto a "pista" precisa se mover para que o centro do card atual
       // esteja no centro do contêiner visível do carrossel.
-      translateXValue = (containerWidth / 2) - currentCardCenter;
+      let translateXValue = (containerWidth / 2) - (centralCardOffsetLeft + centralCardWidth / 2);
 
       carouselTrack.style.transform = `translateX(${translateXValue}px)`;
     }
@@ -770,7 +766,6 @@
     // Inicializa o carrossel na carga da página
     window.addEventListener('load', () => {
       // Garante que o carrossel comece com o primeiro item centralizado.
-      // Se houver mais de 3 cards, o carrossel vai ciclar e manter 3 visíveis.
       if (serverCards.length > 0) {
         currentIndex = 0; // Começa com o primeiro card como central
         updateCarousel();
