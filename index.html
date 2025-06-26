@@ -127,6 +127,93 @@
         height: 24px;
         fill: currentColor; /* Permite que a cor do texto CSS afete o preenchimento do SVG */
     }
+
+    /* CAROUSEL CUSTOM STYLES */
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+      max-width: 960px; /* Limita a largura do carrossel */
+    }
+
+    .carousel-track {
+      display: flex;
+      justify-content: center; /* Centraliza os itens no início */
+      transition: transform 0.5s ease-in-out;
+      padding: 0 10%; /* Ajuste para que o card do meio fique no centro visual */
+    }
+
+    .server-card {
+      flex-shrink: 0; /* Impede que os cards encolham */
+      width: calc(100% / 3 - 2rem); /* 3 cards visíveis com algum gap */
+      margin: 0 1rem; /* Espaçamento entre os cards */
+      transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+      opacity: 0.5; /* Cards laterais translúcidos */
+      transform: scale(0.9); /* Cards laterais menores */
+    }
+
+    .server-card.is-center {
+      opacity: 1; /* Card central opaco */
+      transform: scale(1.05); /* Card central maior */
+      box-shadow: 0 0 30px rgba(114, 137, 218, .5); /* Sombra mais forte para o centro */
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(114, 137, 218, 0.4); /* Roxo Discord translúcido */
+      color: white;
+      padding: 0.75rem 0.5rem;
+      border-radius: 9999px; /* Full rounded */
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0.7;
+      transition: background-color 0.3s ease, opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; /* Tamanho do botão */
+      height: 40px;
+    }
+
+    .carousel-arrow:hover {
+      background-color: rgba(114, 137, 218, 0.8);
+      opacity: 1;
+    }
+
+    .carousel-arrow.left {
+      left: 1rem;
+    }
+
+    .carousel-arrow.right {
+      right: 1rem;
+    }
+
+    /* Responsividade para o carrossel */
+    @media (max-width: 768px) {
+      .carousel-track {
+        justify-content: flex-start; /* Alinha à esquerda em telas menores */
+        padding: 0;
+      }
+      .server-card {
+        width: 80%; /* Apenas um card maior por vez, com os outros parcialmente visíveis */
+        margin: 0 0.5rem;
+      }
+      .server-card.is-center {
+        transform: scale(1); /* Não aumenta tanto em telas pequenas */
+      }
+      .carousel-arrow {
+        width: 30px;
+        height: 30px;
+        padding: 0.5rem 0.25rem;
+      }
+    }
+    @media (max-width: 640px) {
+      .server-card {
+        width: 90%; /* Ajuste para telas muito pequenas */
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -218,17 +305,14 @@
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Linguagens</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/python.png -->
             <img src="assets/images/python.png" onerror="this.src='https://placehold.co/32x32/FFD43B/000000?text=PY';" alt="Python" class="w-8 h-8"/>
             <span>Python</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/javascript.png -->
             <img src="assets/images/javascript.png" onerror="this.src='https://placehold.co/32x32/F7DF1E/000000?text=JS';" alt="JavaScript" class="w-8 h-8"/>
             <span>JavaScript</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/cpp.png -->
             <img src="assets/images/cpp.png" onerror="this.src='https://placehold.co/32x32/00599C/FFFFFF?text=C++;';" alt="C++" class="w-8 h-8"/>
             <span>C++</span>
           </div>
@@ -241,17 +325,14 @@
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Frameworks/Bibliotecas</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/react.png -->
             <img src="assets/images/react.png" onerror="this.src='https://placehold.co/32x32/61DAFB/000000?text=REACT';" alt="React" class="w-8 h-8"/>
             <span>React</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/nextjs.png -->
             <img src="assets/images/nextjs.png" onerror="this.src='https://placehold.co/32x32/000000/FFFFFF?text=NEXT';" alt="Next.js" class="w-8 h-8"/>
             <span>Next.js</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/tailwindcss.png -->
             <img src="assets/images/tailwindcss.png" onerror="this.src='https://placehold.co/32x32/38B2AC/FFFFFF?text=TAIL';" alt="Tailwind CSS" class="w-8 h-8"/>
             <span>Tailwind CSS</span>
           </div>
@@ -264,17 +345,14 @@
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Ferramentas e Outros</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/git.png -->
             <img src="assets/images/git.png" onerror="this.src='https://placehold.co/32x32/F05032/FFFFFF?text=GIT';" alt="Git" class="w-8 h-8"/>
             <span>Git</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/sql.png -->
             <img src="assets/images/sql.png" onerror="this.src='https://placehold.co/32x32/CC2927/FFFFFF?text=SQL';" alt="SQL" class="w-8 h-8"/>
             <span>SQL</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/figma.png -->
             <img src="assets/images/figma.png" onerror="this.src='https://placehold.co/32x32/F24E1E/FFFFFF?text=FGM';" alt="Figma" class="w-8 h-8"/>
             <span>Figma</span>
           </div>
@@ -286,12 +364,10 @@
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Design e Segurança</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/uiux_design.png -->
             <img src="assets/images/uiux_design.png" onerror="this.src='https://placehold.co/32x32/8C52FF/FFFFFF?text=UI/UX';" alt="UI/UX Design" class="w-8 h-8"/>
             <span>UI/UX Design</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <!-- Por favor, crie uma imagem em assets/images/cybersecurity.png -->
             <img src="assets/images/cybersecurity.png" onerror="this.src='https://placehold.co/32x32/DC2626/FFFFFF?text=CYB';" alt="Cibersegurança" class="w-8 h-8"/>
             <span>Cibersegurança</span>
           </div>
@@ -331,97 +407,127 @@
     </div>
   </section>
 
-  <!-- SERVIDORES DISCORD -->
+  <!-- SERVIDORES DISCORD (CAROUSEL) -->
   <section class="py-16">
-    <div class="card rounded-xl container mx-auto px-4 py-12">
-      <div class="container mx-auto px-4">
-        <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
-        <div class="grid md:grid-cols-2 gap-8">
+    <div class="container mx-auto px-4 py-12">
+      <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
+      <div class="carousel-container">
+        <div class="carousel-track" id="serverCarouselTrack">
           <!-- VIGGLE -->
-<div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
-  <div class="flex items-center">
-    <img src="assets/images/viggle_logo.png" alt="Viggle Logo"
-         class="w-20 h-20 rounded-full object-cover" />
+          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+            <div class="flex items-center mb-4">
+              <img src="assets/images/viggle_logo.png" alt="Viggle Logo"
+                   class="w-20 h-20 rounded-full object-cover" />
+              <div class="ml-4 text-left">
+                <h4 class="text-xl font-semibold flex items-center">
+                  Viggle
+                  <img src="assets/images/verified_server.png"
+                       alt="Verificado" class="w-5 h-5 ml-1" />
+                </h4>
+                <p class="text-sm text-gray-400 flex items-center">
+                  <img src="assets/images/number_members.png"
+                       alt="Membros" class="w-4 h-4 mr-1" />
+                  4.300.000+
+                </p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-300 flex-1 text-center">
+              Servidor oficial da IA Viggle, líder mundial em mixagem de animações
+              e vídeos gerados por IA. Participe e experimente gratuitamente!
+            </p>
+            <div class="mt-6 flex items-center w-full justify-between">
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+                <img src="assets/images/moderator_role.png"
+                     alt="Ex-Moderador" class="w-4 h-4 mr-1" />
+                Ex-Moderador
+              </span>
+              <button onclick="window.open('https://discord.gg/viggle','_blank')"
+                      class="bg-emerald-500 hover:bg-emerald-400 transition
+                             text-white px-5 py-2 rounded-full shadow">
+                Entrar
+              </button>
+            </div>
+          </div>
 
-    <div class="ml-4">
-      <h4 class="text-xl font-semibold flex items-center">
-        Viggle
-        <img src="assets/images/verified_server.png"
-             alt="Verificado" class="w-5 h-5 ml-1" />
-      </h4>
+          <!-- OLD DUQUE’S -->
+          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+            <div class="flex items-center mb-4">
+              <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo"
+                   class="w-20 h-20 rounded-full object-cover" />
+              <div class="ml-4 text-left">
+                <h4 class="text-xl font-semibold flex items-center">
+                  Old Duque's
+                  <img src="assets/images/server_booster_badge.png"
+                       alt="Booster" class="w-5 h-5 ml-1" />
+                </h4>
+                <p class="text-sm text-gray-400 flex items-center">
+                  <img src="assets/images/number_members.png"
+                       alt="Membros" class="w-4 h-4 mr-1" />
+                  220
+                </p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-300 flex-1 text-center">
+              Clã Old Duque's: central de materiais e conteúdos de qualidade
+              sobre programação, design, edição de vídeo, moderação e muito mais.
+            </p>
+            <div class="mt-6 flex items-center w-full justify-between">
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+                <img src="assets/images/emperor.png"
+                     alt="Proprietário" class="w-4 h-4 mr-1" />
+                Proprietário
+              </span>
+              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')"
+                      class="bg-emerald-500 hover:bg-emerald-400 transition
+                             text-white px-5 py-2 rounded-full shadow">
+                Entrar
+              </button>
+            </div>
+          </div>
 
-      <p class="text-sm text-gray-400 flex items-center">
-        <img src="assets/images/number_members.png"
-             alt="Membros" class="w-4 h-4 mr-1" />
-        4.300.000+
-      </p>
-    </div>
-  </div>
-
-  <p class="mt-4 text-gray-300 flex-1">
-    Servidor oficial da IA Viggle, líder mundial em mixagem de animações
-    e vídeos gerados por IA. Participe e experimente gratuitamente!
-  </p>
-
-  <div class="mt-6 flex items-center">
-    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
-      <img src="assets/images/moderator_role.png"
-           alt="Ex-Moderador" class="w-4 h-4 mr-1" />
-      Ex-Moderador
-    </span>
-
-    <button onclick="window.open('https://discord.gg/viggle','_blank')"
-            class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition
-                   text-white px-5 py-2 rounded-full shadow">
-      Entrar
-    </button>
-  </div>
-</div>
-
-
-
-         <!-- OLD DUQUE’S -->
-<div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
-  <div class="flex items-center">
-    <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo"
-         class="w-20 h-20 rounded-full object-cover" />
-
-    <div class="ml-4">
-      <h4 class="text-xl font-semibold flex items-center">
-        Old Duque's
-        <img src="assets/images/server_booster_badge.png"
-             alt="Booster" class="w-5 h-5 ml-1" />
-      </h4>
-
-      <p class="text-sm text-gray-400 flex items-center">
-        <img src="assets/images/number_members.png"
-             alt="Membros" class="w-4 h-4 mr-1" />
-        220
-      </p>
-    </div>
-  </div>
-
-  <p class="mt-4 text-gray-300 flex-1">
-    Clã Old Duque's: central de materiais e conteúdos de qualidade
-    sobre programação, design, edição de vídeo, moderação e muito mais.
-  </p>
-
-  <div class="mt-6 flex items-center">
-    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
-      <img src="assets/images/emperor.png"
-           alt="Proprietário" class="w-4 h-4 mr-1" />
-      Proprietário
-    </span>
-
-    <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')"
-            class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition
-                   text-white px-5 py-2 rounded-full shadow">
-      Entrar
-    </button>
-  </div>
-</div>
-
+          <!-- NOVO: FORMULA 1 -->
+          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+            <div class="flex items-center mb-4">
+              <img src="assets/images/f1.png" alt="Formula 1 Logo"
+                   class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
+              <div class="ml-4 text-left">
+                <h4 class="text-xl font-semibold flex items-center">
+                  Formula 1
+                  <img src="assets/images/partner.png"
+                       alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" />
+                </h4>
+                <p class="text-sm text-gray-400 flex items-center">
+                  <img src="assets/images/number_members.png"
+                       alt="Membros" class="w-4 h-4 mr-1" />
+                  100.000+
+                </p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-300 flex-1 text-center">
+              Servidor não oficial da comunidade Formula 1 no Discord. Discuta as corridas, pilotos e o universo da F1 com outros fãs!
+            </p>
+            <div class="mt-6 flex items-center w-full justify-between">
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+                <img src="assets/images/motorsport.png"
+                     alt="Motorsport Affiliated" class="w-4 h-4 mr-1" onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" />
+                Motorsport Affiliated
+              </span>
+              <button onclick="window.open('https://discord.gg/f1','_blank')"
+                      class="bg-emerald-500 hover:bg-emerald-400 transition
+                             text-white px-5 py-2 rounded-full shadow">
+                Entrar
+              </button>
+            </div>
+          </div>
         </div>
+
+        <!-- Arrows -->
+        <button class="carousel-arrow left" id="carouselPrev">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button class="carousel-arrow right" id="carouselNext">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -605,6 +711,74 @@
       connect();
     }
     animate();
+
+    /* CARROSSEL DE SERVIDORES JS */
+    const carouselTrack = document.getElementById('serverCarouselTrack');
+    const serverCards = Array.from(carouselTrack.children);
+    const prevButton = document.getElementById('carouselPrev');
+    const nextButton = document.getElementById('carouselNext');
+
+    let currentIndex = 0; // O índice do card que está no centro
+
+    // Função para atualizar a posição do carrossel e o estilo dos cards
+    function updateCarousel() {
+      // Remover a classe 'is-center' de todos os cards
+      serverCards.forEach(card => card.classList.remove('is-center'));
+
+      // Adicionar a classe 'is-center' ao card central
+      serverCards[currentIndex].classList.add('is-center');
+
+      // Calcular o translateX para centralizar o card atual
+      // O valor base é a metade da largura do container, menos a metade da largura do card central,
+      // e então ajustado pelo índice para mover os cards
+      const cardWidth = serverCards[0].offsetWidth + (parseFloat(getComputedStyle(serverCards[0]).marginLeft) * 2); // Largura + margem
+      const offset = (serverCards.length / 2) * cardWidth; // Metade da largura total dos cards
+      const centerOffset = serverCards[currentIndex].offsetWidth / 2; // Metade da largura do card central
+      const trackWidth = carouselTrack.scrollWidth;
+
+      // Calcular o quanto precisamos mover o track para centralizar o currentIndex
+      // O objetivo é posicionar o card do currentIndex no centro visual do carousel-container
+      let translateXValue = -((currentIndex * cardWidth) - (carouselTrack.offsetWidth / 2) + (cardWidth / 2));
+      
+      // Ajuste para garantir que haja cards nos lados para a visualização de 3 cards
+      // Se tiver menos de 3 cards, centraliza-os. Se tiver 3 ou mais, o cálculo acima já ajuda.
+      // Para o efeito de 3 visíveis e central, vamos ajustar o translate para alinhar o item do meio
+      // com o centro do .carousel-container
+      const containerWidth = carouselTrack.parentElement.offsetWidth;
+      const currentCardLeft = serverCards[currentIndex].offsetLeft;
+      const currentCardCenter = currentCardLeft + (serverCards[currentIndex].offsetWidth / 2);
+      
+      // Calcule o quanto a "pista" precisa se mover para que o centro do card atual
+      // esteja no centro do contêiner visível do carrossel.
+      translateXValue = (containerWidth / 2) - currentCardCenter;
+
+      carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+    }
+
+    // Navegação para o próximo card
+    nextButton.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % serverCards.length;
+      updateCarousel();
+    });
+
+    // Navegação para o card anterior
+    prevButton.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
+      updateCarousel();
+    });
+
+    // Inicializa o carrossel na carga da página
+    window.addEventListener('load', () => {
+      // Garante que o carrossel comece com o primeiro item centralizado.
+      // Se houver mais de 3 cards, o carrossel vai ciclar e manter 3 visíveis.
+      if (serverCards.length > 0) {
+        currentIndex = 0; // Começa com o primeiro card como central
+        updateCarousel();
+      }
+    });
+
+    // Atualiza o carrossel em caso de redimensionamento da janela
+    window.addEventListener('resize', updateCarousel);
   </script>
 </body>
 </html>
