@@ -214,6 +214,32 @@
         width: 90%; /* Ajuste para telas muito pequenas, pode se comportar como 1 card por vez */
       }
     }
+
+    /* Styles for skill cards reveal effect */
+    .skill-category-card {
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      width: 100%; /* Ensure they take full width in flex-col */
+      max-width: 500px; /* Limit their max width to keep them centered and not too wide */
+    }
+
+    .initial-hidden-skill {
+      opacity: 0;
+      transform: translateY(50px);
+      pointer-events: none; /* Prevent interaction when hidden */
+    }
+
+    .is-revealed-skill {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto; /* Allow interaction when revealed */
+    }
+
+    /* Centering for the skill cards */
+    #skills-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centers items horizontally */
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -298,10 +324,9 @@
   <!-- HABILIDADES -->
   <section id="skills" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Minhas Habilidades</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
+    <div id="skills-container" class="flex flex-col items-center">
       <!-- Categoria: Linguagens de Programação -->
-      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Linguagens</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -313,15 +338,16 @@
             <span>JavaScript</span>
           </div>
           <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/cpp.png" onerror="this.src='https://placehold.co/32x32/00599C/FFFFFF?text=C++;';" alt="C++" class="w-8 h-8"/>
-            <span>C++</span>
+            <!-- Alterado para Java -->
+            <img src="assets/images/java.png" onerror="this.src='https://placehold.co/32x32/E60000/FFFFFF?text=JAVA';" alt="Java" class="w-8 h-8"/>
+            <span>Java</span>
           </div>
           <!-- Adicione mais linguagens aqui e crie as imagens correspondentes -->
         </div>
       </div>
 
       <!-- Categoria: Frameworks e Bibliotecas -->
-      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Frameworks/Bibliotecas</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -341,7 +367,7 @@
       </div>
 
       <!-- Categoria: Ferramentas e Outros -->
-      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Ferramentas e Outros</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -359,8 +385,9 @@
           <!-- Adicione mais ferramentas aqui e crie as imagens correspondentes -->
         </div>
       </div>
-       <!-- Categoria: Design e Cibersegurança -->
-      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+
+      <!-- Categoria: Design e Cibersegurança -->
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center initial-hidden-skill">
         <h4 class="text-xl font-semibold mb-4 text-indigo-300">Design e Segurança</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -729,96 +756,80 @@
       carouselTrack.innerHTML = ''; // Clear existing cards
 
       // Create a more robust set of clones for seamless looping (previous + current + next visible)
-      // Clones of last two original cards for the start (so we can slide smoothly to first real card)
-      if (originalServerCards.length >= 2) {
-        const lastOriginalClone2 = originalServerCards[originalServerCards.length - 2].cloneNode(true);
-        lastOriginalClone2.classList.add('clone');
-        carouselTrack.appendChild(lastOriginalClone2); // Temporarily append to measure later
+      // Clones needed at the beginning and end to allow seamless transitions
+      const numClones = originalServerCards.length; // Max clones needed for a full loop
+
+      // Prepend clones of the *last* few original cards
+      for (let i = originalServerCards.length - 1; i >= 0; i--) {
+        const clone = originalServerCards[i].cloneNode(true);
+        clone.classList.add('clone', 'pre-clone');
+        carouselTrack.prepend(clone);
       }
-      const lastOriginalClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
-      lastOriginalClone.classList.add('clone');
-      carouselTrack.appendChild(lastOriginalClone); // Temporarily append to measure later
 
       // Append original cards
       originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
 
-      // Clones of first two original cards for the end (so we can slide smoothly to last real card)
-      const firstOriginalClone = originalServerCards[0].cloneNode(true);
-      firstOriginalClone.classList.add('clone');
-      carouselTrack.appendChild(firstOriginalClone);
-      if (originalServerCards.length >= 2) {
-        const firstOriginalClone2 = originalServerCards[1].cloneNode(true);
-        firstOriginalClone2.classList.add('clone');
-        carouselTrack.appendChild(firstOriginalClone2);
-      }
-
-      // Re-populate serverCards after all clones are added
-      serverCards = Array.from(carouselTrack.children);
-
-      // Now, move the prepend-only elements to the beginning
-      // This is a bit tricky since we appended them initially.
-      // Let's re-think the cloning to ensure correct DOM structure from the start.
-
-      carouselTrack.innerHTML = ''; // Clear again for precise setup
-
-      // Prepend the necessary clones for infinite scrolling backwards
-      for (let i = originalServerCards.length - 1; i >= 0; i--) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `clone-${i}`);
-          carouselTrack.prepend(clone);
-      }
-
-      // Append the original cards
-      originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
-
-      // Append the necessary clones for infinite scrolling forwards
+      // Append clones of the *first* few original cards
       for (let i = 0; i < originalServerCards.length; i++) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `clone-${i}`);
-          carouselTrack.appendChild(clone);
+        const clone = originalServerCards[i].cloneNode(true);
+        clone.classList.add('clone', 'post-clone');
+        carouselTrack.appendChild(clone);
       }
 
-
       serverCards = Array.from(carouselTrack.children);
-      // currentIndex starts at the beginning of the *second* set of original cards (after the prepended clones)
-      currentIndex = originalServerCards.length; // This is the index of the first real card
+      // Set initial index to the first *real* card in the new extended array
+      // This is after the `numClones` prepended clones.
+      currentIndex = numClones;
 
-      // Initial positioning without animation
-      updateCarousel(true);
+      updateCarousel(true); // Initial positioning without animation
     }
 
     // Function to update carousel position and card styles
     function updateCarousel(instant = false) {
-      if (isTransitioning && !instant) return; // Prevent multiple clicks during smooth transition
+      if (isTransitioning && !instant) return;
 
-      // Disable arrow clicks during an instant jump
       if (instant) {
-          prevButton.disabled = true;
+          carouselTrack.style.transition = 'none';
+          prevButton.disabled = true; // Disable buttons during instant jump
           nextButton.disabled = true;
+      } else {
+          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+          isTransitioning = true; // Set flag for smooth transitions
       }
 
-      // Set transition property
-      carouselTrack.style.transition = instant ? 'none' : 'transform 0.5s ease-in-out';
-
-      // Apply styles based on relative position to current (central) index
+      // Apply styles to show only 3 cards effectively
       serverCards.forEach((card, index) => {
           card.classList.remove('is-center');
-          card.style.transform = 'scale(0.7)'; // Default for side cards
-          card.style.opacity = '0.3'; // Default for side cards
+          card.style.opacity = '0'; // Hide all cards initially
+          card.style.pointerEvents = 'none';
 
-          // Determine if this card should be the center, left, or right visible card
-          let visibleIndex = (index - currentIndex);
-          // Adjust for circular behavior in visible display (e.g., last card can be 'left' of first)
-          if (visibleIndex > originalServerCards.length / 2) { // if the gap is too large to the right
-              visibleIndex -= serverCards.length;
-          } else if (visibleIndex < -originalServerCards.length / 2) { // if the gap is too large to the left
-              visibleIndex += serverCards.length;
+          // Determine visibility based on relative position to currentIndex
+          const relativeIndex = index - currentIndex;
+
+          // Display the center card, and one to its left and one to its right.
+          // Adjust for circular presentation (e.g., last card of original set can be "left" of first)
+          let targetIndex = relativeIndex;
+
+          // Logic to handle wrapping around the original set for visual positioning
+          if (targetIndex < -originalServerCards.length / 2) {
+              targetIndex += originalServerCards.length;
+          } else if (targetIndex > originalServerCards.length / 2) {
+              targetIndex -= originalServerCards.length;
           }
 
-          if (index === currentIndex) {
+          if (targetIndex === 0) { // Center card
               card.classList.add('is-center');
               card.style.transform = 'scale(1)';
               card.style.opacity = '1';
+              card.style.pointerEvents = 'auto';
+          } else if (targetIndex === -1) { // Left card
+              card.style.transform = 'scale(0.7)';
+              card.style.opacity = '0.3';
+              card.style.pointerEvents = 'auto';
+          } else if (targetIndex === 1) { // Right card
+              card.style.transform = 'scale(0.7)';
+              card.style.opacity = '0.3';
+              card.style.pointerEvents = 'auto';
           }
       });
 
@@ -826,23 +837,21 @@
       const containerWidth = carouselContainer.offsetWidth;
       const currentCentralCard = serverCards[currentIndex];
 
-      // Use `getBoundingClientRect().left` relative to `carouselTrack.getBoundingClientRect().left`
-      // to get the true offset accounting for scaling and layout.
+      // Calculate the current card's center relative to the track's start
       const currentCardLeftInTrack = currentCentralCard.getBoundingClientRect().left - carouselTrack.getBoundingClientRect().left;
       const currentCardCenterInTrack = currentCardLeftInTrack + (currentCentralCard.offsetWidth / 2);
       const containerCenter = containerWidth / 2;
 
       let translateXValue = containerCenter - currentCardCenterInTrack;
-
       carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
+      // Timeout to reset transitioning flag and re-enable buttons after smooth transition
       if (!instant) {
-          isTransitioning = true; // Only set to true for smooth transitions
-      } else {
-          // For instant jumps, immediately allow interactions
-          isTransitioning = false;
-          prevButton.disabled = false;
-          nextButton.disabled = false;
+          setTimeout(() => {
+              isTransitioning = false;
+              prevButton.disabled = false;
+              nextButton.disabled = false;
+          }, 500); // Match CSS transition duration
       }
     }
 
@@ -853,13 +862,13 @@
         nextButton.disabled = false; // Re-enable buttons
 
         // Infinite looping logic
-        // If we slid to the first clone of the original cards (which is at the end of the real ones)
-        if (currentIndex >= originalServerCards.length * 2) { // e.g., if original is 3 cards, index 3+3=6 is first real card. If currentIndex reaches 6 (first clone), jump to original first (index 3)
-            currentIndex = originalServerCards.length;
-            updateCarousel(true); // Instant update
+        // If we slid to a 'post-clone' card (at the end of the real ones)
+        if (currentIndex >= originalServerCards.length * 2) {
+            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
+            updateCarousel(true); // Instant update to the corresponding real card
         }
-        // If we slid to the last clone of the original cards (which is at the start of the real ones)
-        else if (currentIndex < originalServerCards.length) { // e.g., if original is 3 cards, index 0,1,2 are clones. If currentIndex is 0,1,2, jump to real one.
+        // If we slid to a 'pre-clone' card (at the beginning of the real ones)
+        else if (currentIndex < originalServerCards.length) {
             currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
             updateCarousel(true); // Instant update
         }
@@ -867,13 +876,13 @@
 
     // Navigation functions
     nextButton.addEventListener('click', () => {
-      if (isTransitioning) return; // Prevent clicks during transition
+      if (isTransitioning) return;
       currentIndex++;
       updateCarousel();
     });
 
     prevButton.addEventListener('click', () => {
-      if (isTransitioning) return; // Prevent clicks during transition
+      if (isTransitioning) return;
       currentIndex--;
       updateCarousel();
     });
@@ -906,6 +915,35 @@
     window.addEventListener('resize', () => {
         setupInfiniteCarousel(); // Re-setup carousel on resize to correctly re-calculate widths and positions
     });
+
+
+    /* REVEAL DE HABILIDADES AO SCROLLAR */
+    const skillCards = document.querySelectorAll('#skills-container > .skill-category-card');
+    // The first card is already visible, so we start observing from the second.
+    const skillCardsToObserve = Array.from(skillCards).slice(1);
+
+    const revealObserverOptions = {
+        root: null, // viewport as the root
+        rootMargin: '0px',
+        threshold: 0.2 // Trigger when 20% of the target is visible
+    };
+
+    const skillRevealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('initial-hidden-skill');
+                entry.target.classList.add('is-revealed-skill');
+                observer.unobserve(entry.target); // Stop observing once revealed
+            }
+        });
+    }, revealObserverOptions);
+
+    // Initially hide all but the first skill card using JavaScript
+    skillCardsToObserve.forEach(card => {
+        card.classList.add('initial-hidden-skill');
+        skillRevealObserver.observe(card); // Start observing each hidden card
+    });
+
   </script>
 </body>
 </html>
