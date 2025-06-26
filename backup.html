@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caio Duque – Portfólio</title>
+  <!-- Tailwind via CDN (ideal para GitHub Pages) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tooltip simples */
+    .tooltip span {
+      position: absolute;
+      bottom: -1.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(31, 41, 55, 0.9);
+      color: #fff;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      z-index: 10;
+    }
+    .tooltip:hover span {
+      opacity: 1;
+    }
+
+    /* base: gradiente linear (scroll) */
+    .dynamic-gradient {
+      position: relative;
+      display: inline-block;
+      background-image: linear-gradient(90deg,
+                        #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%);
+      background-size: 150% 150%;
+      background-position: 0% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transition: background-position .4s ease;
+    }
+
+    .dynamic-gradient::after {
+      content: attr(data-glow);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: inherit;
+      background-size: inherit;
+      background-position: inherit;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: blur(6px) brightness(2);
+      opacity: 0;
+      transition: opacity .2s linear;
+      pointer-events: none;
+    }
+
+    /* gira sem emenda e acompanha o cursor (cx / cy) */
+    .dynamic-gradient.radial {
+      background-image: conic-gradient(
+        from var(--angle, 0deg)
+        at var(--cx, 50%) var(--cy, 50%),
+        #5A4BFF 0deg,
+        #7B46FF 120deg,
+        #8E5CFF 240deg,
+        #5A4BFF 360deg
+      );
+      background-size: 150% 150%;
+      transition: none;
+    }
+
+    .dynamic-gradient.radial::after {
+      opacity: 1;
+    }
+
+    /* -------- Glass card (pode ser aplicado com class="card") -------- */
+    .card {
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+      background-color: rgba(44, 47, 51, .60);
+      border: 1px solid rgba(114, 137, 218, .30);
+      transition:
+        transform .25s ease,
+        background-color .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.04);
+      background-color: rgba(44, 47, 51, .25);
+      box-shadow: 0 0 20px rgba(114, 137, 218, .35);
+      z-index: 3;
+    }
+
+    /* (opcional) para quem prefere menos movimento */
+    @media (prefers-reduced-motion: reduce) {
+      .card,
+      .card:hover {
+        transition: none
+      }
+    }
+
+    /* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
+    canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* -------- Evita scroll extra gerado pelo canvas -------- */
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-behavior: smooth; /* Adicionado para rolagem suave */
+    }
+
+    /* Estilos para ícones SVG */
+    .icon-svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor; /* Permite que a cor do texto CSS afete o preenchimento do SVG */
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans">
+  <canvas id="particleCanvas"></canvas>
+  <!-- NAVBAR -->
+  <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
+      <nav>
+        <ul class="flex space-x-6 font-semibold">
+          <li><a href="#home" class="hover:text-indigo-200 transition">Início</a></li>
+          <li><a href="#about" class="hover:text-indigo-200 transition">Sobre Mim</a></li>
+          <li><a href="#skills" class="hover:text-indigo-200 transition">Habilidades</a></li>
+          <li><a href="https://github.com/cai0duque" target="_blank" class="hover:text-indigo-200 transition">GitHub</a></li>
+          <li><a href="#contatos" class="hover:text-indigo-200 transition">Contatos</a></li>
+          <li><a href="#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO / BANNER -->
+  <section id="home" class="relative">
+    <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
+    <!-- Cartão de perfil -->
+    <div class="container mx-auto px-4">
+      <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
+        <div class="flex flex-col items-center md:items-start md:flex-row">
+          <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
+          <div class="md:ml-6 text-center md:text-left mt-4 md:mt-0 max-w-xl">
+            <h2 id="nome"
+                class="dynamic-gradient text-3xl font-bold drop-shadow-lg tracking-tight"
+                data-glow="Caio Duque">
+              Caio Duque
+            </h2>
+            <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Ex-Moderador do servidor Viggle (4.3 M membros) e criador do Old Duque's.</p>
+          </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Designer</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Dono do Old Duque's</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Fluente em Idiomas</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Full‑stack Dev</span>
+          </div>
+          <div class="tooltip relative group mb-2 md:mb-0">
+            <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+            <span>Pesquisador</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE MIM -->
+  <section id="about" class="container mx-auto px-4 py-16">
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Sobre Mim</h3>
+    <div class="card rounded-xl p-8 max-w-3xl mx-auto text-center">
+      <p class="text-gray-300 text-lg mb-4">Olá! Eu sou o Caio Duque, um entusiasta da tecnologia com uma paixão inesgotável por desvendar os segredos da programação e do design. Atualmente, estou imerso nos estudos de Ciência da Computação, buscando não apenas conhecimento, mas a capacidade de criar soluções inovadoras que impactem positivamente o mundo.</p>
+      <p class="text-gray-300 text-lg mb-4">Minha jornada inclui experiências significativas como Moderador no servidor Viggle, onde aprimorei minhas habilidades de comunicação e gestão de comunidades, e como criador do "Old Duque's", um espaço dedicado ao compartilhamento de conhecimento em diversas áreas tech.</p>
+      <p class="text-gray-300 text-lg">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
+      <div class="mt-8">
+        <a href="assets/CaioDuque_CV.pdf" download class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-6 py-3 rounded-full shadow-lg font-semibold">
+            Baixar CV
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HABILIDADES -->
+  <section id="skills" class="container mx-auto px-4 py-16">
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Minhas Habilidades</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      <!-- Categoria: Linguagens de Programação -->
+      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Linguagens</h4>
+        <div class="flex flex-wrap justify-center gap-4">
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/python.png -->
+            <img src="assets/images/python.png" onerror="this.src='https://placehold.co/32x32/FFD43B/000000?text=PY';" alt="Python" class="w-8 h-8"/>
+            <span>Python</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/javascript.png -->
+            <img src="assets/images/javascript.png" onerror="this.src='https://placehold.co/32x32/F7DF1E/000000?text=JS';" alt="JavaScript" class="w-8 h-8"/>
+            <span>JavaScript</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/cpp.png -->
+            <img src="assets/images/cpp.png" onerror="this.src='https://placehold.co/32x32/00599C/FFFFFF?text=C++;';" alt="C++" class="w-8 h-8"/>
+            <span>C++</span>
+          </div>
+          <!-- Adicione mais linguagens aqui e crie as imagens correspondentes -->
+        </div>
+      </div>
+
+      <!-- Categoria: Frameworks e Bibliotecas -->
+      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Frameworks/Bibliotecas</h4>
+        <div class="flex flex-wrap justify-center gap-4">
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/react.png -->
+            <img src="assets/images/react.png" onerror="this.src='https://placehold.co/32x32/61DAFB/000000?text=REACT';" alt="React" class="w-8 h-8"/>
+            <span>React</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/nextjs.png -->
+            <img src="assets/images/nextjs.png" onerror="this.src='https://placehold.co/32x32/000000/FFFFFF?text=NEXT';" alt="Next.js" class="w-8 h-8"/>
+            <span>Next.js</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/tailwindcss.png -->
+            <img src="assets/images/tailwindcss.png" onerror="this.src='https://placehold.co/32x32/38B2AC/FFFFFF?text=TAIL';" alt="Tailwind CSS" class="w-8 h-8"/>
+            <span>Tailwind CSS</span>
+          </div>
+          <!-- Adicione mais frameworks aqui e crie as imagens correspondentes -->
+        </div>
+      </div>
+
+      <!-- Categoria: Ferramentas e Outros -->
+      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Ferramentas e Outros</h4>
+        <div class="flex flex-wrap justify-center gap-4">
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/git.png -->
+            <img src="assets/images/git.png" onerror="this.src='https://placehold.co/32x32/F05032/FFFFFF?text=GIT';" alt="Git" class="w-8 h-8"/>
+            <span>Git</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/sql.png -->
+            <img src="assets/images/sql.png" onerror="this.src='https://placehold.co/32x32/CC2927/FFFFFF?text=SQL';" alt="SQL" class="w-8 h-8"/>
+            <span>SQL</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/figma.png -->
+            <img src="assets/images/figma.png" onerror="this.src='https://placehold.co/32x32/F24E1E/FFFFFF?text=FGM';" alt="Figma" class="w-8 h-8"/>
+            <span>Figma</span>
+          </div>
+          <!-- Adicione mais ferramentas aqui e crie as imagens correspondentes -->
+        </div>
+      </div>
+       <!-- Categoria: Design e Cibersegurança -->
+      <div class="card rounded-xl p-6 text-center flex flex-col items-center">
+        <h4 class="text-xl font-semibold mb-4 text-indigo-300">Design e Segurança</h4>
+        <div class="flex flex-wrap justify-center gap-4">
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/uiux_design.png -->
+            <img src="assets/images/uiux_design.png" onerror="this.src='https://placehold.co/32x32/8C52FF/FFFFFF?text=UI/UX';" alt="UI/UX Design" class="w-8 h-8"/>
+            <span>UI/UX Design</span>
+          </div>
+          <div class="flex flex-col items-center tooltip relative group">
+            <!-- Por favor, crie uma imagem em assets/images/cybersecurity.png -->
+            <img src="assets/images/cybersecurity.png" onerror="this.src='https://placehold.co/32x32/DC2626/FFFFFF?text=CYB';" alt="Cibersegurança" class="w-8 h-8"/>
+            <span>Cibersegurança</span>
+          </div>
+          <!-- Adicione mais habilidades aqui e crie as imagens correspondentes -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJETOS -->
+  <section id="learnconnect" class="container mx-auto px-4 py-16">
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Projetos em Destaque</h3>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+        <img src="assets/images/learnconnect_logo.png" alt="LearnConnect Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
+        <h4 class="text-xl font-semibold mb-2">LearnConnect</h4>
+        <p class="text-gray-300 text-center mb-4">Plataforma de aprendizado colaborativo que integra servidor Discord e website Next.js, oferecendo material e networking em tecnologia.</p>
+        <a href="http://168.75.74.153:3001/" target="_blank" class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-5 py-2 rounded-full shadow">Visitar Site</a>
+      </div>
+      <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+        <img src="assets/images/amadeusAI.png"
+             alt="Amadeus AI Logo"
+             class="w-24 h-24 object-contain rounded-lg mb-4" />
+        <h4 class="text-xl font-semibold mb-2">Amadeus AI</h4>
+        <p class="text-gray-300 text-center mb-4">
+          Amadeus é uma solução inovadora para atendimento especial
+          no projeto LearnConnect e Old Duque’s. Uma IA avançada que
+          funciona via Discord Bot e API.
+        </p>
+        <a href="https://github.com/cai0duque/Discord-Bot-IA"
+           target="_blank"
+           class="inline-block bg-emerald-500 hover:bg-emerald-400 transition
+                         text-white px-5 py-2 rounded-full shadow">
+          Acessar repositório
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVIDORES DISCORD -->
+  <section class="py-16">
+    <div class="card rounded-xl container mx-auto px-4 py-12">
+      <div class="container mx-auto px-4">
+        <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- VIGGLE -->
+<div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center">
+    <img src="assets/images/viggle_logo.png" alt="Viggle Logo"
+         class="w-20 h-20 rounded-full object-cover" />
+
+    <div class="ml-4">
+      <h4 class="text-xl font-semibold flex items-center">
+        Viggle
+        <img src="assets/images/verified_server.png"
+             alt="Verificado" class="w-5 h-5 ml-1" />
+      </h4>
+
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png"
+             alt="Membros" class="w-4 h-4 mr-1" />
+        4.300.000+
+      </p>
+    </div>
+  </div>
+
+  <p class="mt-4 text-gray-300 flex-1">
+    Servidor oficial da IA Viggle, líder mundial em mixagem de animações
+    e vídeos gerados por IA. Participe e experimente gratuitamente!
+  </p>
+
+  <div class="mt-6 flex items-center">
+    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+      <img src="assets/images/moderator_role.png"
+           alt="Ex-Moderador" class="w-4 h-4 mr-1" />
+      Ex-Moderador
+    </span>
+
+    <button onclick="window.open('https://discord.gg/viggle','_blank')"
+            class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition
+                   text-white px-5 py-2 rounded-full shadow">
+      Entrar
+    </button>
+  </div>
+</div>
+
+
+
+         <!-- OLD DUQUE’S -->
+<div class="card rounded-xl p-6 flex flex-col hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center">
+    <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo"
+         class="w-20 h-20 rounded-full object-cover" />
+
+    <div class="ml-4">
+      <h4 class="text-xl font-semibold flex items-center">
+        Old Duque's
+        <img src="assets/images/server_booster_badge.png"
+             alt="Booster" class="w-5 h-5 ml-1" />
+      </h4>
+
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png"
+             alt="Membros" class="w-4 h-4 mr-1" />
+        220
+      </p>
+    </div>
+  </div>
+
+  <p class="mt-4 text-gray-300 flex-1">
+    Clã Old Duque's: central de materiais e conteúdos de qualidade
+    sobre programação, design, edição de vídeo, moderação e muito mais.
+  </p>
+
+  <div class="mt-6 flex items-center">
+    <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+      <img src="assets/images/emperor.png"
+           alt="Proprietário" class="w-4 h-4 mr-1" />
+      Proprietário
+    </span>
+
+    <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')"
+            class="ml-auto bg-emerald-500 hover:bg-emerald-400 transition
+                   text-white px-5 py-2 rounded-full shadow">
+      Entrar
+    </button>
+  </div>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATOS -->
+  <section id="contatos" class="container mx-auto px-4 py-16">
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Contatos</h3>
+    <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-10">
+      <a href="mailto:contact@caioduque.dev" class="flex items-center space-x-2 hover:text-indigo-400 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m8 0a4 4 0 10-8 0 4 4 0 008 0z" /></svg>
+        <span>Email</span>
+      </a>
+      <a href="https://github.com/cai0duque" target="_blank" class="flex items-center space-x-2 hover:text-indigo-400 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 0a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.3c-3.3.7-4-1.6-4-1.6-.6-1.3-1.5-1.7-1.5-1.7-1.2-.8.1-.8.1-.8 1.3.1 2 .9 2 .9 1.2 2 3.1 1.4 3.9 1 0-.9.5-1.4.9-1.7-2.7-.3-5.5-1.3-5.5-6a4.7 4.7 0 011.2-3.2 4.3 4.3 0 01.1-3.2s1-.3 3.3 1.2a11.5 11.5 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.5 1.2.5 2.3.1 3.2a4.7 4.7 0 011.2 3.2c0 4.7-2.8 5.7-5.5 6 .4.3.8 1 .8 2v3c0 .3.2.7.8.6A12 12 0 0012 0z" clip-rule="evenodd"/></svg>
+        <span>GitHub</span>
+      </a>
+      <a href="https://linkedin.com/in/cai0duque" target="_blank" class="flex items-center space-x-2 hover:text-indigo-400 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.762 2.239 5 5 5h14c2.761 0 5-2.238 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.784-1.75-1.749s.784-1.75 1.75-1.75c.965 0 1.749.785 1.749 1.75 0 .965-.784 1.749-1.749 1.749zm13.5 12.268h-3v-5.5c0-1.378-.026-3.152-1.918-3.152-1.918 0-2.212 1.5-2.212 3.053v5.599h-3v-11h2.879v1.507h.041c.401-.76 1.382-1.562 2.848-1.562 3.048 0 3.611 2.008 3.611 4.62v6.435z"/></svg>
+        <span>LinkedIn</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 py-6">
+    <p class="text-center text-sm text-gray-500">© 2025 Caio Duque. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    const nameEl = document.getElementById('nome');
+
+    /* ---------- variáveis ---------- */
+    let spinning = false;
+    let rafId;
+    let angle = 0;
+
+    /* ---------- helpers ---------- */
+    function frame() {
+      if (!spinning) return;
+      angle = (angle + 6) % 360; // velocidade do giro
+      nameEl.style.setProperty('--angle', angle + 'deg');
+      rafId = requestAnimationFrame(frame);
+    }
+
+    /* ---------- eventos ---------- */
+    nameEl.addEventListener('mouseenter', () => {
+      nameEl.classList.add('radial');
+      angle = 0; // ← NOVO
+      nameEl.style.setProperty('--angle', '0deg'); // ← NOVO
+      spinning = true;
+      frame(); // inicia o loop
+    });
+
+    nameEl.addEventListener('mousemove', (e) => {
+      const rect = nameEl.getBoundingClientRect();
+      /* centro em % dentro do elemento */
+      const cx = ((e.clientX - rect.left) / rect.width) * 100;
+      const cy = ((e.clientY - rect.top) / rect.height) * 100;
+      nameEl.style.setProperty('--cx', cx + '%');
+      nameEl.style.setProperty('--cy', cy + '%');
+    });
+
+    nameEl.addEventListener('mouseleave', () => {
+      spinning = false;
+      cancelAnimationFrame(rafId);
+      nameEl.classList.remove('radial');
+      nameEl.style.backgroundPosition = '0% 50%'; // volta ao linear
+    });
+
+    /* ---------- scroll linear ---------- */
+    window.addEventListener('scroll', () => {
+      if (!nameEl.classList.contains('radial')) {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        const pct = (scrollY / max) * 100;
+        nameEl.style.backgroundPosition = `${pct}% 50%`;
+      }
+    });
+
+    /* -------- partículas estilo Discord -------- */
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const NUM = 100;
+    const MAX_DIST = 120;
+    const MOUSE_R = 150;
+
+    /* redimensiona o canvas */
+    function resize() {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* -------- classe Partícula -------- */
+    class Particle {
+      constructor() {
+        this.size = 1 + Math.random() * 5;
+        this.x = Math.random() * innerWidth;
+        this.y = Math.random() * innerHeight;
+        this.vx = (Math.random() - .5) * .5;
+        this.vy = (Math.random() - .5) * .5;
+        const palette = ['#7289DA', '#99AAB5', '#FFFFFF'];
+        this.color = palette[Math.floor(Math.random() * palette.length)];
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+      update() {
+        if (this.x < this.size || this.x > innerWidth - this.size) this.vx *= -1;
+        if (this.y < this.size || this.y > innerHeight - this.size) this.vy *= -1;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.draw();
+      }
+    }
+
+    /* cria as partículas */
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < NUM; i++) particles.push(new Particle());
+    }
+    initParticles();
+
+    /* mouse */
+    const mouse = {
+      x: null,
+      y: null,
+      radius: MOUSE_R
+    };
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+    window.addEventListener('mouseout', () => {
+      mouse.x = mouse.y = null;
+    });
+
+    /* conecta partículas */
+    function connect() {
+      for (let a = 0; a < NUM; a++) {
+        for (let b = a + 1; b < NUM; b++) {
+          const dx = particles[a].x - particles[b].x;
+          const dy = particles[a].y - particles[b].y;
+          const dist = dx * dx + dy * dy;
+          if (dist < MAX_DIST * MAX_DIST) {
+            const opacity = 1 - dist / (MAX_DIST * MAX_DIST);
+            ctx.strokeStyle = `rgba(114,137,218,${opacity})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    /* animação */
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      particles.forEach(p => p.update());
+      /* repulsão simples */
+      if (mouse.x !== null) {
+        particles.forEach(p => {
+          const dx = mouse.x - p.x,
+            dy = mouse.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < p.size + mouse.radius) {
+            const angle = Math.atan2(dy, dx);
+            p.x -= Math.cos(angle);
+            p.y -= Math.sin(angle);
+          }
+        });
+      }
+      connect();
+    }
+    animate();
+  </script>
+</body>
+</html>
