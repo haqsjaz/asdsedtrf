@@ -343,6 +343,15 @@ html,body{
 /* CAROUSEL – impede que cartões ultrapassem a viewport */
 .server-card{ max-width:90vw }
 
+    /* faz o topo da imagem 100 % opaco e o rodapé totalmente transparente  */
+.fade-mask{
+  /* Chrome/Edge/Firefox */
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  /* Safari precisa do prefixo */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+
+
     
   </style>
 </head>
@@ -372,7 +381,7 @@ html,body{
 
   <!-- HERO / BANNER -->
   <section id="home" class="relative">
-    <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
+    <img src="assets/images/banner.png" alt="Banner" class="fade-mask w-full h-[300px] object-cover object-center" />
     <!-- Cartão de perfil -->
     <div id="profileCard" class="container mx-auto px-4"> 
       <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
