@@ -136,18 +136,12 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
   </div>
 
   <script>
-    const kaliTerminalScreen = document.getElementById('kaliTerminalScreen');
-    const closeTerminalBtn = document.getElementById('closeTerminalBtn');
-    const terminalOutput = document.getElementById('terminalOutput');
-    const terminalInput = document.getElementById('terminalInput');
-    const terminalPrompt = document.getElementById('terminalPrompt');
-    const currentPathHeader = document.getElementById('currentPathHeader');
-
+    // Variáveis de estado do terminal (declaradas no topo para serem acessíveis por todas as funções)
     let currentDirectory = '/root';
     let commandHistory = [];
     let historyIndex = -1;
 
-    // Simulated Filesystem Structure
+    // Estrutura de Sistema de Arquivos Simulada
     const fileSystem = {
         '/': {
             type: 'directory',
@@ -214,7 +208,7 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
             }
         };
 
-    // Helper to get directory object from path
+    // Função auxiliar para obter objeto de diretório a partir do caminho
     function getDirFromPath(path) {
         let parts = path.split('/').filter(p => p !== '');
         let current = fileSystem['/'];
@@ -222,34 +216,37 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
             if (current.children && current.children[part] && current.children[part].type === 'directory') {
                 current = current.children[part];
             } else {
-                return null; // Path part is not a directory or doesn't exist
+                return null; // Parte do caminho não é um diretório ou não existe
             }
         }
         return current;
     }
 
-    // Print to terminal
+    // Imprime no terminal
     function printToTerminal(text) {
         terminalOutput.innerHTML += text + '\n';
-        terminalOutput.scrollTop = terminalOutput.scrollHeight; // Auto-scroll
+        terminalOutput.scrollTop = terminalOutput.scrollHeight; // Rola automaticamente
     }
 
-    // Update prompt
+    // Atualiza o prompt
     function updatePrompt() {
-        let displayPath = currentDirectory.replace('/root', '~'); // Shorten /root to ~
+        let displayPath = currentDirectory.replace('/root', '~'); // Encurta /root para ~
         terminalPrompt.textContent = `root@kali:${displayPath}#`;
         currentPathHeader.textContent = displayPath;
     }
 
-    // Process command
+    // Processa o comando
     function processCommand(command) {
         if (command.trim() === '') {
-            printToTerminal(''); // Just new line if empty
+            printToTerminal(''); // Apenas nova linha se vazio
             return;
         }
 
-        commandHistory.unshift(command); // Add to history
-        historyIndex = -1; // Reset history index
+        // Adiciona o comando ao histórico apenas se não for uma repetição do último comando
+        if (commandHistory.length === 0 || commandHistory[0] !== command) {
+            commandHistory.unshift(command);
+        }
+        historyIndex = -1; // Reinicia o índice do histórico após o Enter
 
         const parts = command.split(' ');
         const cmd = parts[0];
@@ -285,7 +282,7 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
                 let output = '';
                 for (let key in dirContent.children) {
                     const item = dirContent.children[key];
-                    const color = item.type === 'directory' ? '#3498db' : '#ffffff'; // Blue for dir, white for file
+                    const color = item.type === 'directory' ? '#3498db' : '#ffffff'; // Azul para diretório, branco para arquivo
                     output += `<span style="color:${color};">${key}</span>   `;
                 }
                 printToTerminal(output);
@@ -300,19 +297,19 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
 
                 if (targetPath === '..') {
                     const pathParts = currentDirectory.split('/');
-                    if (pathParts.length > 1) { // Prevent going above root
+                    if (pathParts.length > 1) { // Impede ir acima da raiz
                         pathParts.pop();
                         currentDirectory = pathParts.join('/') || '/';
                     }
                 } else if (targetPath.startsWith('/')) {
-                    // Absolute path
+                    // Caminho absoluto
                     if (getDirFromPath(targetPath)) {
                         currentDirectory = targetPath;
                     } else {
                         printToTerminal(`cd: ${targetPath}: Arquivo ou diretório inexistente`);
                     }
                 } else {
-                    // Relative path
+                    // Caminho relativo
                     let newPath = `${currentDirectory}/${targetPath}`;
                     if (getDirFromPath(newPath)) {
                         currentDirectory = newPath;
@@ -498,9 +495,9 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
 `);
                 break;
             case 'exit':
-                // For standalone kali.html, redirect back to the main portfolio
-                window.location.href = 'index.html'; // Or whatever your main portfolio file is named
-                return; // Exit function early
+                // Para kali.html autônomo, redireciona de volta para o portfólio principal
+                window.location.href = 'index.html'; // Ou o nome do seu arquivo principal
+                return; // Sai da função mais cedo
             case 'sudo':
                 printToTerminal('sudo: Acredite em mim, você já é o root.');
                 break;
@@ -513,41 +510,53 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
         updatePrompt();
     }
 
-    // Event Listeners for Terminal
+    // Event Listeners para o Terminal (executados após o DOM estar completamente carregado)
     document.addEventListener('DOMContentLoaded', () => {
-        terminalInput.focus(); // Focus input on load
-        printToTerminal('\n'); // Add a new line for cleanliness
+        // Obtenção de referências aos elementos DOM
+        const kaliTerminalScreen = document.getElementById('kaliTerminalScreen');
+        const closeTerminalBtn = document.getElementById('closeTerminalBtn');
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalInput = document.getElementById('terminalInput');
+        const terminalPrompt = document.getElementById('terminalPrompt');
+        const currentPathHeader = document.getElementById('currentPathHeader');
+
+        // Configuração inicial do terminal
+        terminalInput.focus(); // Foca no input ao carregar
+        printToTerminal('\n'); // Adiciona uma nova linha para limpeza
         updatePrompt();
-    });
 
-    // Close button now redirects back to main portfolio
-    closeTerminalBtn.addEventListener('click', () => {
-        window.location.href = 'index.html'; // Redirect to your main portfolio file
-    });
+        // Listener para o botão de fechar (redireciona para o portfólio principal)
+        closeTerminalBtn.addEventListener('click', () => {
+            window.location.href = 'index.html'; // Redireciona para o seu arquivo principal do portfólio
+        });
 
-    terminalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const command = terminalInput.value;
-            terminalInput.value = ''; // Clear input
-            processCommand(command);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault(); // Prevent cursor from moving to start of input
-            if (commandHistory.length > 0) {
-                historyIndex = (historyIndex + 1) % commandHistory.length;
-                terminalInput.value = commandHistory[historyIndex];
+        // Listener para eventos de teclado no input do terminal
+        terminalInput.addEventListener('keydown', (e) => {
+            // Debugging: Log key pressed and input value
+            // console.log('Key pressed:', e.key, 'Current input value:', terminalInput.value);
+
+            if (e.key === 'Enter') {
+                const command = terminalInput.value;
+                terminalInput.value = ''; // Limpa o input
+                processCommand(command);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault(); // Previne o cursor de mover para o início do input
+                if (commandHistory.length > 0) {
+                    historyIndex = (historyIndex + 1) % commandHistory.length;
+                    terminalInput.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Previne o cursor de mover para o final do input
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = -1;
+                    terminalInput.value = '';
+                }
             }
-        } else if (e.key === 'ArrowDown') {
-            e.preventDefault(); // Prevent cursor from moving to end of input
-            if (historyIndex > 0) {
-                historyIndex--;
-                terminalInput.value = commandHistory[historyIndex];
-            } else {
-                historyIndex = -1;
-                terminalInput.value = '';
-            }
-        }
+        });
     });
-
   </script>
 </body>
 </html>
