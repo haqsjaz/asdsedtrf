@@ -135,13 +135,16 @@
     }
 
     /* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
-    canvas {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-    }
+    canvas{
+  display:block;
+  position:fixed;
+  inset:0;
+  width:100dvw;       /* garante que nunca passe da viewport */
+  height:100dvh;
+  z-index:-1;
+  pointer-events:none;
+}
+
 
     /* -------- Evita scroll extra gerado pelo canvas -------- */
     body {
@@ -299,13 +302,55 @@
     #cybersecurityModeBtn:hover img {
       filter: invert(1); /* Inverte a cor da imagem para ficar preta */
     }
+
+    /* --- correções de responsividade --- */
+html,body{
+  width:100%;
+  overflow-x:hidden;       /* mata qualquer scroll lateral */
+  box-sizing:border-box;
+}
+
+*,*::before,*::after{box-sizing:inherit}
+
+/* HEADER responsivo */
+@media (max-width:768px){
+  header .container{
+    flex-wrap:wrap;                  /* empilha linhas */
+    gap:0.5rem 1rem;                 /* respiro vertical + horizontal */
+  }
+  header h1{
+    font-size:1.75rem;               /* logo menor no mobile */
+    flex:1 0 100%;                   /* força ocupar linha inteira */
+    text-align:center;
+  }
+
+  /* botão “Modo Cybersecurity” abaixo do menu */
+  #cybersecurityModeBtn{
+    order:3;                         /* vai para a 3ª linha */
+    width:100%;
+    justify-content:center;
+  }
+
+  /* menu navegação: quebra de linha e letra menor */
+  nav ul{
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:0.75rem 1rem;
+  }
+  nav a{ font-size:0.875rem }
+}
+
+/* CAROUSEL – impede que cartões ultrapassem a viewport */
+.server-card{ max-width:90vw }
+
+    
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
   <canvas id="particleCanvas"></canvas>
   <!-- NAVBAR -->
   <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
       <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
       <nav>
         <ul class="flex space-x-6 font-semibold">
