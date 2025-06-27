@@ -20,7 +20,8 @@
       width: 100%;
       height: 100%;
       background-color: #000; /* Fundo preto */
-      background-image: url('assets/images/kali_wallpaper.png'); /* Imagem de fundo do Kali */
+      /* IMPORTANTE: Certifique-se de que 'assets/images/kali_wallpaper.png' existe! */
+      background-image: url('assets/images/kali_wallpaper.png');
       background-size: cover;
       background-position: center;
       z-index: 1000; /* Acima de todo o conteúdo */
@@ -107,14 +108,15 @@
   <!-- Cybersecurity Terminal Screen -->
   <div id="kaliTerminalScreen">
     <div class="terminal-window">
-      <div class="terminal-header">
-        <span>root@kali:~<span id="currentPathHeader"></span></span>
-        <div class="terminal-header-buttons">
-          <span class="red" id="closeTerminalBtn"></span>
-          <span class="yellow"></span>
-          <span class="green"></span>
-        </div>
-      </div>
+     <div class="terminal-header">
+  <span id="currentPathHeader"></span>   <!-- ← fica vazio; o JS preenche -->
+  <div class="terminal-header-buttons">
+    <span class="red"    id="closeTerminalBtn"></span>
+    <span class="yellow"></span>
+    <span class="green"></span>
+  </div>
+</div>
+
       <div class="terminal-output" id="terminalOutput">
         <pre>
  ____        _             _ _
@@ -136,77 +138,142 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
   </div>
 
   <script>
+    // Limpa o console do navegador ao carregar (útil para depuração)
+    console.clear();
+    console.log("Script kali.html carregado e pronto para execução.");
+
     // Variáveis de estado do terminal (declaradas no topo para serem acessíveis por todas as funções)
     let currentDirectory = '/root';
     let commandHistory = [];
     let historyIndex = -1;
 
     // Estrutura de Sistema de Arquivos Simulada
-    const fileSystem = {
-        '/': {
+   const fileSystem = {
+  '/': {
+    type: 'directory',
+    children: {
+      'bin':  {
+        type: 'directory',
+        children: {
+          'ls':   { type: 'file' },
+          'cd':   { type: 'file' },
+          'help': { type: 'file' }
+        }
+      },
+
+      'etc':  {
+        type: 'directory',
+        children: {
+          'passwd': { type: 'file' },
+          'shadow': { type: 'file' }
+        }
+      },
+
+      'home': {
+        type: 'directory',
+        children: {
+          'guest': { type: 'directory', children: {} }
+        }
+      },
+
+      'opt':  {
+        type: 'directory',
+        children: {
+          'tools': {
             type: 'directory',
             children: {
-                'bin': { type: 'directory', children: { 'ls': { type: 'file' }, 'cd': { type: 'file' }, 'help': { type: 'file' } } },
-                'etc': { type: 'directory', children: { 'passwd': { type: 'file' }, 'shadow': { type: 'file' } } },
-                'home': { type: 'directory', children: { 'guest': { type: 'directory', children: {} } } },
-                'opt': {
-                    type: 'directory',
-                    children: {
-                        'tools': {
-                            type: 'directory',
-                            children: {
-                                'gobuster.sh': { type: 'file' },
-                                'hydra.sh': { type: 'file' },
-                                'nmap.sh': { type: 'file' },
-                                'wireshark.sh': { type: 'file' },
-                                'metasploit.sh': { type: 'file' }
-                            }
-                        },
-                        'hackthebox': {
-                            type: 'directory',
-                            children: {
-                                'machine_omega': {
-                                    type: 'directory',
-                                    children: {
-                                        'website_dev': { type: 'directory', children: {} },
-                                        'internal_network_scan': { type: 'directory', children: {} }
-                                    }
-                                },
-                                'tryhackme': {
-                                    type: 'directory',
-                                    children: {
-                                        'web_exploitation': { type: 'directory', children: {} },
-                                        'privilege_escalation': { type: 'directory', children: {} }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                'root': {
-                    type: 'directory',
-                    children: {
-                        'Desktop': { type: 'directory', children: {} },
-                        'Documents': { type: 'directory', children: { 'notes.txt': { type: 'file', content: 'Credenciais de backup: admin:password123' } } },
-                        'Downloads': { type: 'directory', children: {} }
-                    }
-                },
-                'var': {
-                    type: 'directory',
-                    children: {
-                        'log': {
-                            type: 'directory',
-                            children: {
-                                'apache': { type: 'directory', children: { 'access.log': { type: 'file', content: '192.168.1.10 - - [27/Jun/2025:10:00:00 -0300] "GET /admin/login.php HTTP/1.1" 200 1234' } },
-                                'auth.log': { type: 'file', content: 'Jun 27 10:05:01 kali sshd[1234]: Failed password for invalid user user from 192.168.1.5 port 22 ssh2' }
-                                }
-                            }
-                        }
-                    }
-                },
-                'www': { type: 'directory', children: { 'html': { type: 'directory', children: { 'index.html': { type: 'file' }, 'admin': { type: 'directory', children: { 'panel.php': { type: 'file' } } } } } } }
+              'gobuster.sh':  { type: 'file' },
+              'hydra.sh':     { type: 'file' },
+              'nmap.sh':      { type: 'file' },
+              'wireshark.sh': { type: 'file' },
+              'metasploit.sh':{ type: 'file' }
             }
-        };
+          },
+
+          'hackthebox': {
+            type: 'directory',
+            children: {
+              'machine_omega': {
+                type: 'directory',
+                children: {
+                  'website_dev':          { type: 'directory', children: {} },
+                  'internal_network_scan':{ type: 'directory', children: {} }
+                }
+              },
+              'tryhackme': {
+                type: 'directory',
+                children: {
+                  'web_exploitation':   { type: 'directory', children: {} },
+                  'privilege_escalation':{ type: 'directory', children: {} }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      'root': {
+        type: 'directory',
+        children: {
+          'Desktop':   { type: 'directory', children: {} },
+          'Documents': {
+            type: 'directory',
+            children: {
+              'notes.txt': {
+                type: 'file',
+                content: 'Credenciais de backup: admin:password123'
+              }
+            }
+          },
+          'Downloads': { type: 'directory', children: {} }
+        }
+      },
+
+      'var':  {
+        type: 'directory',
+        children: {
+          'log': {
+            type: 'directory',
+            children: {
+              'apache': {
+                type: 'directory',
+                children: {
+                  'access.log': {
+                    type: 'file',
+                    content: '192.168.1.10 - - [27/Jun/2025:10:00:00 -0300] "GET /admin/login.php HTTP/1.1" 200 1234'
+                  }
+                }
+              },
+              'auth.log': {
+                type: 'file',
+                content: 'Jun 27 10:05:01 kali sshd[1234]: Failed password for invalid user user from 192.168.1.5 port 22 ssh2'
+              }
+            }
+          }
+        }
+      },
+
+      'www': {
+        type: 'directory',
+        children: {
+          'html': {
+            type: 'directory',
+            children: {
+              'index.html': { type: 'file' },
+              'admin': {
+                type: 'directory',
+                children: {
+                  'panel.php': { type: 'file' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 
     // Função auxiliar para obter objeto de diretório a partir do caminho
     function getDirFromPath(path) {
@@ -223,20 +290,33 @@ Bem-vindo, root. Use 'help' para comandos disponíveis.
     }
 
     // Imprime no terminal
+    let terminalOutput; // Definida fora do DOMContentLoaded
     function printToTerminal(text) {
-        terminalOutput.innerHTML += text + '\n';
-        terminalOutput.scrollTop = terminalOutput.scrollHeight; // Rola automaticamente
+        if (terminalOutput) { // Garante que o elemento existe antes de tentar manipulá-lo
+          terminalOutput.innerHTML += text + '\n';
+          terminalOutput.scrollTop = terminalOutput.scrollHeight; // Rola automaticamente
+        } else {
+          console.error("Erro: terminalOutput não está definido!");
+        }
     }
 
     // Atualiza o prompt
+    let terminalPrompt; // Definida fora do DOMContentLoaded
+    let currentPathHeader; // Definida fora do DOMContentLoaded
     function updatePrompt() {
-        let displayPath = currentDirectory.replace('/root', '~'); // Encurta /root para ~
-        terminalPrompt.textContent = `root@kali:${displayPath}#`;
-        currentPathHeader.textContent = displayPath;
+        if (terminalPrompt && currentPathHeader) { // Garante que os elementos existem
+          let displayPath = currentDirectory.replace('/root', '~'); // Encurta /root para ~
+          terminalPrompt.textContent = `root@kali:${displayPath}#`;
+          currentPathHeader.textContent = displayPath;
+        } else {
+          console.error("Erro: terminalPrompt ou currentPathHeader não estão definidos!");
+        }
     }
 
     // Processa o comando
+    let terminalInput; // Definida fora do DOMContentLoaded
     function processCommand(command) {
+        console.log("Comando recebido:", command); // Debugging
         if (command.trim() === '') {
             printToTerminal(''); // Apenas nova linha se vazio
             return;
@@ -512,13 +592,12 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
 
     // Event Listeners para o Terminal (executados após o DOM estar completamente carregado)
     document.addEventListener('DOMContentLoaded', () => {
-        // Obtenção de referências aos elementos DOM
-        const kaliTerminalScreen = document.getElementById('kaliTerminalScreen');
-        const closeTerminalBtn = document.getElementById('closeTerminalBtn');
-        const terminalOutput = document.getElementById('terminalOutput');
-        const terminalInput = document.getElementById('terminalInput');
-        const terminalPrompt = document.getElementById('terminalPrompt');
-        const currentPathHeader = document.getElementById('currentPathHeader');
+        // Obtenção de referências aos elementos DOM. Agora estas são as únicas declarações aqui.
+        terminalOutput = document.getElementById('terminalOutput');
+        terminalInput = document.getElementById('terminalInput');
+        terminalPrompt = document.getElementById('terminalPrompt');
+        currentPathHeader = document.getElementById('currentPathHeader');
+        const closeTerminalBtn = document.getElementById('closeTerminalBtn'); // Este também deve ser acessado aqui
 
         // Configuração inicial do terminal
         terminalInput.focus(); // Foca no input ao carregar
@@ -532,9 +611,6 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
 
         // Listener para eventos de teclado no input do terminal
         terminalInput.addEventListener('keydown', (e) => {
-            // Debugging: Log key pressed and input value
-            // console.log('Key pressed:', e.key, 'Current input value:', terminalInput.value);
-
             if (e.key === 'Enter') {
                 const command = terminalInput.value;
                 terminalInput.value = ''; // Limpa o input
@@ -542,7 +618,10 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault(); // Previne o cursor de mover para o início do input
                 if (commandHistory.length > 0) {
-                    historyIndex = (historyIndex + 1) % commandHistory.length;
+                    historyIndex = (historyIndex + 1);
+                    if (historyIndex >= commandHistory.length) {
+                        historyIndex = commandHistory.length - 1; // Não deixa ir além do histórico
+                    }
                     terminalInput.value = commandHistory[historyIndex];
                 }
             } else if (e.key === 'ArrowDown') {
@@ -551,7 +630,7 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
                     historyIndex--;
                     terminalInput.value = commandHistory[historyIndex];
                 } else {
-                    historyIndex = -1;
+                    historyIndex = -1; // Volta para o estado de input vazio
                     terminalInput.value = '';
                 }
             }
