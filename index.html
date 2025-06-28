@@ -949,22 +949,29 @@ if (instant) {
 }
 
     // Event listener for transition end to handle snapping back for infinite loop
-    carouselTrack.addEventListener('transitionend', () => {
-        isTransitioning = false; // Transition has ended, allow interaction
-        prevButton.disabled = false; // Re-enable buttons
-        nextButton.disabled = false; // Re-enable buttons
+carouselTrack.addEventListener('transitionend', e => {
+  // Garantimos que é a transição de transform
+  if (e.propertyName !== 'transform') return;
 
-        // Infinite looping logic
-        // If the current card is one of the 'post-clones' (at the end of the logical track)
-        if (currentIndex >= serverCards.length - postClones) {
-  currentIndex = preClones;            // voltou para o início real
-  updateCarousel(true);
-} else if (currentIndex < preClones) {
-  currentIndex = serverCards.length - postClones - 1; // foi para o fim real
-  updateCarousel(true);
-}
+  /* Detecta se estamos em um dos clones */
+  if (currentIndex >= serverCards.length - postClones) {
+    currentIndex = preClones;                               // volta ao 1º real
+  } else if (currentIndex < preClones) {
+    currentIndex = serverCards.length - postClones - 1;     // último real
+  } else {
+    // Se não era clone, nada a fazer
+    return;
+  }
 
-    });
+  /* --- Snap invisível --- */
+  carouselTrack.style.transition = 'none';  // corta animação
+  updateCarousel();                         // reposiciona sem animar
+  void carouselTrack.offsetWidth;           // força re-flow
+
+  /* Reativa a animação para futuras navegações */
+  carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+});
+
 
     // Navigation functions
     nextButton.addEventListener('click', () => {
