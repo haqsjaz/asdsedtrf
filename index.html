@@ -708,6 +708,8 @@ html,body{
     let spinning = false;
     let rafId;
     let angle = 0;
+    let preClones = 1;
+    let postClones = 1;
 
     /* ---------- helpers ---------- */
     function frame() {
@@ -859,42 +861,25 @@ html,body{
     let currentIndex = 0; // Index in the 'serverCards' array (including clones)
     let isTransitioning = false;
     let autoScrollInterval;
-
+    
+function setupInfiniteCarousel() {
     // Function to set up the infinite loop by cloning cards
-    function setupInfiniteCarousel() {
-      carouselTrack.innerHTML = ''; // Clear existing cards
+const preClone  = originalServerCards[originalServerCards.length - 1]
+                      .cloneNode(true);          // último → antes
+const postClone = originalServerCards[0].cloneNode(true); // primeiro → depois
 
-      // Create a more robust set of clones for seamless looping (previous + current + next visible)
-      const numClones = originalServerCards.length; // Clone a full set for effective looping
+carouselTrack.innerHTML = '';                    // zera
+carouselTrack.appendChild(preClone);             // [C]
+originalServerCards.forEach(c =>                 // [C][A][B][C]
+  carouselTrack.appendChild(c.cloneNode(true)));
+carouselTrack.appendChild(postClone);            // [C][A][B][C][A]
 
-      // Prepend clones of the *last* few original cards (for smooth transition from first original to last original)
-      for (let i = originalServerCards.length - 1; i >= 0; i--) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `pre-clone-${i}`);
-          carouselTrack.appendChild(clone); // Append temporarily
-      }
-      // Move them to the beginning of the track
-      for (let i = 0; i < numClones; i++) {
-          carouselTrack.prepend(carouselTrack.lastChild);
-      }
-
-      // Add actual original cards
-      originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
-
-      // Append clones of the *first* few original cards (for smooth transition from last original to first original)
-      for (let i = 0; i < originalServerCards.length; i++) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `post-clone-${i}`);
-          carouselTrack.appendChild(clone);
-      }
-
-      serverCards = Array.from(carouselTrack.children);
-      // Set initial index to the first *real* card in the new extended array
-      // This is after the `numClones` prepended clones.
-      currentIndex = numClones;
-
-      updateCarousel(true); // Initial positioning without animation
-    }
+serverCards   = Array.from(carouselTrack.children);
+currentIndex  = 1;                               // começa em A real
+preClones     = 1;                               // ← guarde isso
+postClones    = 1;                               // idem
+updateCarousel(true);
+}
 
     // Function to update carousel position and card styles
     function updateCarousel(instant = false) {
@@ -943,25 +928,25 @@ html,body{
       });
 
       // Calculate translateX to center the current card
-      const containerWidth = carouselContainer.offsetWidth;
-      const currentCentralCard = serverCards[currentIndex];
+const containerCenter     = carouselContainer.offsetWidth / 2;
+const currentCentralCard  = serverCards[currentIndex];        //  ←  NOVO
+const currentCardCenter   = currentCentralCard.offsetLeft +
+                            currentCentralCard.offsetWidth / 2;
+const translateXValue     = containerCenter - currentCardCenter;
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
-      const currentCardLeftInTrack = currentCentralCard.getBoundingClientRect().left - carouselTrack.getBoundingClientRect().left;
-      const currentCardCenterInTrack = currentCardLeftInTrack + (currentCentralCard.offsetWidth / 2);
-      const containerCenter = containerWidth / 2;
+// re-habilita imediatamente se foi um salto instantâneo
+if (instant) {
+  prevButton.disabled  = false;
+  nextButton.disabled  = false;
+} else {
+  setTimeout(() => {
+    isTransitioning     = false;
+    prevButton.disabled = false;
+    nextButton.disabled = false;
+  }, 500); // mesmo tempo do CSS
+}
 
-      let translateXValue = containerCenter - currentCardCenterInTrack;
-      carouselTrack.style.transform = `translateX(${translateXValue}px)`;
-
-      // Timeout to reset transitioning flag and re-enable buttons after smooth transition
-      if (!instant) {
-          setTimeout(() => {
-              isTransitioning = false;
-              prevButton.disabled = false;
-              nextButton.disabled = false;
-          }, 500); // Match CSS transition duration
-      }
-    }
 
     // Event listener for transition end to handle snapping back for infinite loop
     carouselTrack.addEventListener('transitionend', () => {
@@ -971,17 +956,14 @@ html,body{
 
         // Infinite looping logic
         // If the current card is one of the 'post-clones' (at the end of the logical track)
-        if (currentIndex >= originalServerCards.length + originalServerCards.length) {
-            // Jump instantly back to the corresponding original card's position
-            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
-            updateCarousel(true); // Call update instantly
-        }
-        // If the current card is one of the 'pre-clones' (at the beginning of the logical track)
-        else if (currentIndex < originalServerCards.length) {
-            // Jump instantly back to the corresponding original card's position
-            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
-            updateCarousel(true); // Call update instantly
-        }
+        if (currentIndex >= serverCards.length - postClones) {
+  currentIndex = preClones;            // voltou para o início real
+  updateCarousel(true);
+} else if (currentIndex < preClones) {
+  currentIndex = serverCards.length - postClones - 1; // foi para o fim real
+  updateCarousel(true);
+}
+
     });
 
     // Navigation functions
