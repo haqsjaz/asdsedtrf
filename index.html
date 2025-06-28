@@ -159,6 +159,26 @@
         opacity: 0.2;
     }
 
+    /* --- nós com glassmorphism --- */
+.skill-node circle.glass {
+  fill: rgba(44,47,51,.45);             /* vidro escuro */
+  backdrop-filter: blur(6px);
+  stroke: rgba(255,255,255,.35);
+  stroke-width: 1px;
+  transition: filter .3s ease, stroke .3s ease, transform .3s ease;
+}
+.skill-node:hover circle.glass {
+  stroke: rgba(128,160,255,.90);        /* brilho azulado */
+  filter: drop-shadow(0 0 8px rgba(114,137,218,.6));
+  transform: scale(1.25);
+}
+/* imagem interna mantém-se redonda */
+.skill-node image {
+  pointer-events:none;                  /* não intercepta o mouse */
+  clip-path: circle(50%);
+}
+
+
 
     /* -- Mantendo outros estilos -- */
     .icon-svg { width: 24px; height: 24px; fill: currentColor; }
@@ -704,6 +724,24 @@
             ]
         };
 
+        const skillIcons = {
+  "Python":        "assets/images/python.png",
+  "JavaScript":    "assets/images/javascript.png",
+  "Java":          "assets/images/java.png",
+  "React":         "assets/images/react.png",
+  "Next.js":       "assets/images/nextjs.png",
+  "Tailwind CSS":  "assets/images/tailwindcss.png",
+  "D3.js":         "assets/images/d3.png",          //  ←   NOVAS!
+  "Three.js":      "assets/images/threejs.png",
+  "SQL":           "assets/images/sql.png",
+  "Git":           "assets/images/git.png",
+  "Figma":         "assets/images/figma.png",
+  "UI/UX":         "assets/images/uiux_design.png",
+  "Cybersecurity": "assets/images/cybersecurity.png",
+  // os “core” (Programação, etc.) podem ficar sem ícone
+};
+
+
         const width = container.clientWidth;
         const height = container.clientHeight;
 
@@ -732,18 +770,50 @@
             .enter().append("g")
             .attr("class", "skill-node");
 
-        node.append("circle")
-            .attr("r", d => d.group === "core" ? 20 : 15)
-            .attr("fill", d => colorScale(d.group));
+        node.each(function(d) {
+        const g = d3.select(this);
+    /* vidro */
+        g.append("circle")
+       .attr("class","glass")
+       .attr("r", d.group === "core" ? 26 : 20);
+
+  /* imagem se existir */
+  if (skillIcons[d.id]) {
+    g.append("image")
+     .attr("href", skillIcons[d.id])
+     .attr("width", d.group === "core" ? 40 : 32)
+     .attr("height", d.group === "core" ? 40 : 32)
+     .attr("x", d.group === "core" ? -20 : -16)
+     .attr("y", d.group === "core" ? -20 : -16);
+  }
+});
+
 
         node.append("text")
-            .text(d => d.id)
-            .attr("y", d => d.group === "core" ? -28 : -22);
+        .text(d => d.id)
+        .attr("y", d => (d.group === "core" ? 34 : 28))   /* vai para baixo da bolinha */
+        .attr("font-size", 11);
+
 
         node.call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended));
+
+        // wrapper interno para aplicar transform via zoom
+const gZoom = svg.append("g");
+gZoom.append(() => link.node().parentNode.removeChild(link.node()));
+gZoom.append(() => node.node().parentNode.removeChild(node.node()));
+gZoom.append(() => link.node());
+gZoom.append(() => node.node());
+
+// Zoom + pan (arrastar) + pinch
+svg.call(
+  d3.zoom()
+     .scaleExtent([.5, 3])
+     .on("zoom", e => gZoom.attr("transform", e.transform))
+);
+
             
         // Hover/Focus functionality
         const linkedByIndex = {};
@@ -771,8 +841,14 @@
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
+            const margin = 40;                       // distância mínima da borda
             node
+                .each(d => {                           // mantém dentro da viewBox
+                  d.x = Math.max(-width/2  + margin, Math.min(width/2  - margin, d.x));
+                  d.y = Math.max(-height/2 + margin, Math.min(height/2 - margin, d.y));
+          })
                 .attr("transform", d => `translate(${d.x},${d.y})`);
+
         });
 
         function dragstarted(event, d) {
@@ -791,6 +867,15 @@
             d.fx = null;
             d.fy = null;
         }
+
+        window.addEventListener("resize", () => {
+  const w      = container.clientWidth;
+  const h      = container.clientHeight;
+  svg.attr("viewBox", [-w/2, -h/2, w, h]);
+  simulation.force("center").x(0).y(0);
+  simulation.alpha(0.2).restart();       // reposiciona suavemente
+        });
+
       })();
     });
   </script>
