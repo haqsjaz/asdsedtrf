@@ -4,10 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caio Duque – Portfólio</title>
-  <!-- Tailwind via CDN (ideal para GitHub Pages) -->
+  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Bibliotecas para a nova versão -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    /* Tooltip simples */
+    /* Estilos Gerais e Antigos (mantidos para consistência) */
     .tooltip span {
       position: absolute;
       bottom: -1.75rem;
@@ -28,12 +31,10 @@
       opacity: 1;
     }
 
-    /* base: gradiente linear (scroll) */
     .dynamic-gradient {
       position: relative;
       display: inline-block;
-      background-image: linear-gradient(90deg,
-                        #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%);
+      background-image: linear-gradient(90deg, #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%);
       background-size: 150% 150%;
       background-position: 0% 50%;
       -webkit-background-clip: text;
@@ -59,54 +60,17 @@
       pointer-events: none;
     }
 
-    /* gira sem emenda e acompanha o cursor (cx / cy) */
     .dynamic-gradient.radial {
       background-image: conic-gradient(
         from var(--angle, 0deg)
         at var(--cx, 50%) var(--cy, 50%),
-        #5A4BFF 0deg,
-        #7B46FF 120deg,
-        #8E5CFF 240deg,
-        #5A4BFF 360deg
+        #5A4BFF 0deg, #7B46FF 120deg, #8E5CFF 240deg, #5A4BFF 360deg
       );
       background-size: 150% 150%;
       transition: none;
     }
+    .dynamic-gradient.radial::after { opacity: 1; }
 
-    .dynamic-gradient.radial::after {
-      opacity: 1;
-    }
-
-    /* Custom gradients for skill titles */
-    .gradient-languages {
-        background-image: linear-gradient(90deg, #5A4BFF 0%, #7B46FF 50%, #8E5CFF 100%); /* Tons de azul */
-    }
-    .dynamic-gradient.radial.gradient-languages {
-        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #5A4BFF 0deg, #7B46FF 120deg, #8E5CFF 240deg, #5A4BFF 360deg);
-    }
-
-    .gradient-frameworks {
-        background-image: linear-gradient(90deg, #22C55E 0%, #06B6D4 50%, #3B82F6 100%); /* Tons de verde para azul */
-    }
-    .dynamic-gradient.radial.gradient-frameworks {
-        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #22C55E 0deg, #06B6D4 120deg, #3B82F6 240deg, #22C55E 360deg);
-    }
-
-    .gradient-tools {
-        background-image: linear-gradient(90deg, #8B5CF6 0%, #EC4899 50%, #EF4444 100%); /* Tons de roxo para vermelho */
-    }
-    .dynamic-gradient.radial.gradient-tools {
-        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #8B5CF6 0deg, #EC4899 120deg, #EF4444 240deg, #8B5CF6 360deg);
-    }
-
-    .gradient-design-security {
-        background-image: linear-gradient(90deg, #60A5FA 0%, #8B5CF6 50%, #A855F7 100%); /* Tons de azul claro para roxo */
-    }
-    .dynamic-gradient.radial.gradient-design-security {
-        background-image: conic-gradient(from var(--angle,0deg) at var(--cx,50%) var(--cy,50%), #60A5FA 0deg, #8B5CF6 120deg, #A855F7 240deg, #60A5FA 360deg);
-    }
-
-    /* -------- Glass card (pode ser aplicado com class="card") -------- */
     .card {
       position: relative;
       z-index: 2;
@@ -126,237 +90,118 @@
       z-index: 3;
     }
 
-    /* (opcional) para quem prefere menos movimento */
-    @media (prefers-reduced-motion: reduce) {
-      .card,
-      .card:hover {
-        transition: none
-      }
+    canvas#bg-canvas { /* ID alterado para evitar conflitos */
+      display: block;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
     }
 
-    /* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
-    canvas{
-  display:block;
-  position:fixed;
-  inset:0;
-  width:100dvw;       /* garante que nunca passe da viewport */
-  height:100dvh;
-  z-index:-1;
-  pointer-events:none;
-}
-
-
-    /* -------- Evita scroll extra gerado pelo canvas -------- */
     body {
       overflow-x: hidden;
       overflow-y: auto;
-      scroll-behavior: smooth; /* Adicionado para rolagem suave */
+      scroll-behavior: smooth;
     }
 
-    /* Estilos para ícones SVG */
-    .icon-svg {
-        width: 24px;
-        height: 24px;
-        fill: currentColor; /* Permite que a cor do texto CSS afete o preenchimento do SVG */
+    /* ---- NOVOS ESTILOS para Constelação de Habilidades (D3.js) ---- */
+    #skills-constellation-container {
+        width: 100%;
+        max-width: 900px;
+        height: 600px; /* Altura fixa para a visualização */
+        margin: 0 auto;
+        position: relative;
+        z-index: 5;
     }
 
-    /* CAROUSEL CUSTOM STYLES */
-    .carousel-container {
-      position: relative;
-      overflow: hidden;
-      margin: 0 auto;
-      max-width: 960px; /* Limita a largura do carrossel */
-      padding: 0 2rem; /* Adiciona padding para as setas não ficarem coladas */
+    #skills-constellation-container svg {
+        width: 100%;
+        height: 100%;
     }
 
-    .carousel-track {
-      display: flex;
-      align-items: center; /* Alinha os cards verticalmente no centro */
-      transition: transform 0.5s ease-in-out;
+    .skill-link {
+        stroke: rgba(114, 137, 218, 0.4);
+        stroke-width: 1.5px;
+        transition: stroke 0.3s ease;
     }
 
-    .server-card {
-      flex-shrink: 0; /* Impede que os cards encolham */
-      width: 380px; /* Largura original dos cards */
-      max-width: 90%; /* Fallback responsivo */
-      margin: 0 1rem; /* Espaçamento entre os cards */
-      /* Removi as transições daqui para gerenciar via JS is-center/is-left/is-right */
-      opacity: 0; /* Default: hidden */
-      transform: scale(0.7); /* Default: scaled down */
-      pointer-events: none; /* Default: non-interactive */
-      transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease;
+    .skill-node circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+        transition: transform 0.3s ease, fill 0.3s ease;
+    }
+    .skill-node:hover circle {
+        transform: scale(1.5);
     }
 
-    .server-card.is-center {
-      opacity: 1; /* Opacidade total para o card central */
-      transform: scale(1); /* Tamanho total para o card central */
-      box-shadow: 0 0 30px rgba(114, 137, 218, .5); /* Sombra mais forte para o centro */
-      pointer-events: auto; /* Make interactive */
+    .skill-node text {
+        fill: #E0E0E0;
+        font-size: 12px;
+        font-weight: 500;
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
     }
 
-    .server-card.is-left,
-    .server-card.is-right {
-      opacity: 0.3; /* Translucidez para cards laterais */
-      transform: scale(0.7); /* Tamanho menor para cards laterais */
-      pointer-events: auto; /* Make interactive */
+    /* Estilos para estado focado/hover */
+    .skill-node.focused circle, .skill-node:hover circle {
+        stroke: #5A4BFF;
+        stroke-width: 3px;
+    }
+    .skill-link.focused {
+        stroke: #8E5CFF;
+        stroke-width: 2.5px;
+    }
+    /* Estilos para elementos não focados */
+    .faded {
+        opacity: 0.2;
     }
 
-    .carousel-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(114, 137, 218, 0.4); /* Roxo Discord translúcido */
-      color: white;
-      padding: 0.75rem 0.5rem;
-      border-radius: 9999px; /* Full rounded */
-      cursor: pointer;
-      z-index: 10;
-      opacity: 0.7;
-      transition: background-color 0.3s ease, opacity 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px; /* Tamanho do botão */
-      height: 40px;
-    }
 
-    .carousel-arrow:hover {
-      background-color: rgba(114, 137, 218, 0.8);
-      opacity: 1;
-    }
+    /* -- Mantendo outros estilos -- */
+    .icon-svg { width: 24px; height: 24px; fill: currentColor; }
+    .carousel-container { position: relative; overflow: hidden; margin: 0 auto; max-width: 960px; padding: 0 2rem; }
+    .carousel-track { display: flex; align-items: center; transition: transform 0.5s ease-in-out; }
+    .server-card { flex-shrink: 0; width: 380px; max-width: 90%; margin: 0 1rem; opacity: 0; transform: scale(0.7); pointer-events: none; transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease; }
+    .server-card.is-center { opacity: 1; transform: scale(1); box-shadow: 0 0 30px rgba(114, 137, 218, .5); pointer-events: auto; }
+    .server-card.is-left, .server-card.is-right { opacity: 0.3; transform: scale(0.7); pointer-events: auto; }
+    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(114, 137, 218, 0.4); color: white; padding: 0.75rem 0.5rem; border-radius: 9999px; cursor: pointer; z-index: 10; opacity: 0.7; transition: background-color 0.3s ease, opacity 0.3s ease; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .carousel-arrow:hover { background-color: rgba(114, 137, 218, 0.8); opacity: 1; }
+    .carousel-arrow.left { left: 0; }
+    .carousel-arrow.right { right: 0; }
 
-    .carousel-arrow.left {
-      left: 0; /* Posiciona a seta à esquerda, dentro do padding do container */
-    }
+    #cybersecurityModeBtn { background-color: #000; color: #fff; border: 1px solid #000; transition: all 0.3s ease; box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
+    #cybersecurityModeBtn:hover { background-color: #fff; color: #000; border-color: #000; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+    #cybersecurityModeBtn:hover img { filter: invert(1); }
 
-    .carousel-arrow.right {
-      right: 0; /* Posiciona a seta à direita, dentro do padding do container */
-    }
+    html, body { width: 100%; overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: inherit }
 
-    /* Responsividade para o carrossel */
-    @media (max-width: 768px) {
-      .carousel-container {
-        padding: 0 1rem; /* Ajusta o padding do container em telas menores */
-      }
-      .server-card {
-        width: 280px; /* Ajusta o tamanho base dos cards em telas menores */
-        margin: 0 0.5rem;
-      }
-      .server-card.is-center {
-        transform: scale(1); /* Mantém o tamanho real em telas pequenas */
-      }
-      .carousel-arrow {
-        width: 30px;
-        height: 30px;
-        padding: 0.5rem 0.25rem;
-      }
+    .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+
+    /* Responsividade */
+    @media (max-width:768px) {
+        header .container { flex-wrap: wrap; gap: 0.5rem 1rem; }
+        header h1 { font-size: 1.75rem; flex: 1 0 100%; text-align: center; }
+        #cybersecurityModeBtn { order: 3; width: 100%; justify-content: center; }
+        nav ul { flex-wrap: wrap; justify-content: center; gap: 0.75rem 1rem; }
+        nav a { font-size: 0.875rem; }
+        .server-card { width: 280px; margin: 0 0.5rem; }
+        .carousel-arrow { width: 30px; height: 30px; padding: 0.5rem 0.25rem; }
+        #skills-constellation-container { height: 450px; }
     }
     @media (max-width: 640px) {
-      .server-card {
-        width: 90%; /* Ajuste para telas muito pequenas, pode se comportar como 1 card por vez */
-      }
+        .server-card { width: 90%; }
+         #skills-constellation-container { height: 400px; }
     }
-
-    /* Styles for skill cards reveal effect */
-    .skill-category-card {
-      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-      width: 100%; /* Ensure they take full width in flex-col */
-      max-width: 500px; /* Limit their max width to keep them centered and not too wide */
-    }
-
-    .initial-hidden-skill {
-      opacity: 0;
-      transform: translateY(50px);
-      pointer-events: none; /* Prevent interaction when hidden */
-    }
-
-    .is-revealed-skill {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto; /* Allow interaction when revealed */
-    }
-
-    /* Centering for the skill cards */
-    #skills-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Centers items horizontally */
-    }
-
-    /* Cybersecurity Mode Button */
-    #cybersecurityModeBtn {
-      background-color: #000; /* Preto */
-      color: #fff;
-      border: 1px solid #000;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 0 rgba(139, 92, 246, 0); /* Sombra inicial (invisível) */
-    }
-
-    #cybersecurityModeBtn:hover {
-      background-color: #fff;
-      color: #000;
-      border-color: #000;
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); /* Sombra roxa escura */
-    }
-
-    #cybersecurityModeBtn:hover img {
-      filter: invert(1); /* Inverte a cor da imagem para ficar preta */
-    }
-
-    /* --- correções de responsividade --- */
-html,body{
-  width:100%;
-  overflow-x:hidden;       /* mata qualquer scroll lateral */
-  box-sizing:border-box;
-}
-
-*,*::before,*::after{box-sizing:inherit}
-
-/* HEADER responsivo */
-@media (max-width:768px){
-  header .container{
-    flex-wrap:wrap;                  /* empilha linhas */
-    gap:0.5rem 1rem;                 /* respiro vertical + horizontal */
-  }
-  header h1{
-    font-size:1.75rem;               /* logo menor no mobile */
-    flex:1 0 100%;                   /* força ocupar linha inteira */
-    text-align:center;
-  }
-
-  /* botão “Modo Cybersecurity” abaixo do menu */
-  #cybersecurityModeBtn{
-    order:3;                         /* vai para a 3ª linha */
-    width:100%;
-    justify-content:center;
-  }
-
-  /* menu navegação: quebra de linha e letra menor */
-  nav ul{
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:0.75rem 1rem;
-  }
-  nav a{ font-size:0.875rem }
-}
-
-/* CAROUSEL – impede que cartões ultrapassem a viewport */
-.server-card{ max-width:90vw }
-
-    /* faz o topo da imagem 100 % opaco e o rodapé totalmente transparente  */
-.fade-mask{
-  /* Chrome/Edge/Firefox */
-  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  /* Safari precisa do prefixo */
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-}
-
-
-    
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
-  <canvas id="particleCanvas"></canvas>
+  <!-- O canvas agora será controlado pelo three.js -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- NAVBAR -->
   <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
@@ -371,7 +216,6 @@ html,body{
           <li><a href="#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
         </ul>
       </nav>
-      <!-- Cybersecurity Mode Button - Link to the new kali.html -->
       <a href="kali.html" id="cybersecurityModeBtn" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold">
         <img src="assets/images/kali.png" onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';" alt="Kali Icon" class="w-6 h-6 mr-2 transition-filter duration-300" />
         Modo Cybersecurity
@@ -382,7 +226,6 @@ html,body{
   <!-- HERO / BANNER -->
   <section id="home" class="relative">
     <img src="assets/images/banner.png" alt="Banner" class="fade-mask w-full h-[300px] object-cover object-center" />
-    <!-- Cartão de perfil -->
     <div id="profileCard" class="container mx-auto px-4"> 
       <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
         <div class="flex flex-col items-center md:items-start md:flex-row">
@@ -396,29 +239,27 @@ html,body{
             <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Atualmente, sou Data Analyst na Federação Paranaense do Automobilismo.</p>
           </div>
         </div>
-
-        <!-- Badges -->
         <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Designer</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Dono do Old Duque's</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Fluente em Idiomas</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Full‑stack Dev</span>
-          </div>
-          <div class="tooltip relative group mb-2 md:mb-0">
-            <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
-            <span>Pesquisador</span>
-          </div>
+            <div class="tooltip relative group mb-2 md:mb-0">
+                <img src="assets/images/galaxy_badge.png" alt="Designer" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+                <span>Designer</span>
+            </div>
+            <div class="tooltip relative group mb-2 md:mb-0">
+                <img src="assets/images/old_duques_badge.png" alt="Dono do Old Duque's" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+                <span>Dono do Old Duque's</span>
+            </div>
+            <div class="tooltip relative group mb-2 md:mb-0">
+                <img src="assets/images/languages_badge.png" alt="Fluente em Idiomas" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+                <span>Fluente em Idiomas</span>
+            </div>
+            <div class="tooltip relative group mb-2 md:mb-0">
+                <img src="assets/images/developer_badge.png" alt="Full-stack Dev" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+                <span>Full‑stack Dev</span>
+            </div>
+            <div class="tooltip relative group mb-2 md:mb-0">
+                <img src="assets/images/researcher_badge.png" alt="Pesquisador" class="w-12 h-12 transition-transform duration-200 group-hover:scale-110" />
+                <span>Pesquisador</span>
+            </div>
         </div>
       </div>
     </div>
@@ -439,86 +280,11 @@ html,body{
     </div>
   </section>
 
-  <!-- HABILIDADES -->
+  <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
   <section id="skills" class="container mx-auto px-4 py-16">
-    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Minhas Habilidades</h3>
-    <div id="skills-container" class="flex flex-col items-center">
-      <!-- Categoria: Linguagens de Programação -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
-        <h4 id="languagesTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Linguagens">Linguagens</h4>
-        <div class="flex flex-wrap justify-center gap-4">
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/python.png" onerror="this.src='https://placehold.co/32x32/FFD43B/000000?text=PY';" alt="Python" class="w-8 h-8"/>
-            <span>Python</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/javascript.png" onerror="this.src='https://placehold.co/32x32/F7DF1E/000000?text=JS';" alt="JavaScript" class="w-8 h-8"/>
-            <span>JavaScript</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <!-- Alterado para Java -->
-            <img src="assets/images/java.png" onerror="this.src='https://placehold.co/32x32/E60000/FFFFFF?text=JAVA';" alt="Java" class="w-8 h-8"/>
-            <span>Java</span>
-          </div>
-          <!-- Adicione mais linguagens aqui e crie as imagens correspondentes -->
-        </div>
-      </div>
-
-      <!-- Categoria: Frameworks e Bibliotecas -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
-        <h4 id="frameworksTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Frameworks/Bibliotecas">Frameworks/Bibliotecas</h4>
-        <div class="flex flex-wrap justify-center gap-4">
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/react.png" onerror="this.src='https://placehold.co/32x32/61DAFB/000000?text=REACT';" alt="React" class="w-8 h-8"/>
-            <span>React</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/nextjs.png" onerror="this.src='https://placehold.co/32x32/000000/FFFFFF?text=NEXT';" alt="Next.js" class="w-8 h-8"/>
-            <span>Next.js</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/tailwindcss.png" onerror="this.src='https://placehold.co/32x32/38B2AC/FFFFFF?text=TAIL';" alt="Tailwind CSS" class="w-8 h-8"/>
-            <span>Tailwind CSS</span>
-          </div>
-          <!-- Adicione mais frameworks aqui e crie as imagens correspondentes -->
-        </div>
-      </div>
-
-      <!-- Categoria: Ferramentas e Outros -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
-        <h4 id="toolsTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Ferramentas e Outros">Ferramentas e Outros</h4>
-        <div class="flex flex-wrap justify-center gap-4">
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/git.png" onerror="this.src='https://placehold.co/32x32/F05032/FFFFFF?text=GIT';" alt="Git" class="w-8 h-8"/>
-            <span>Git</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/sql.png" onerror="this.src='https://placehold.co/32x32/CC2927/FFFFFF?text=SQL';" alt="SQL" class="w-8 h-8"/>
-            <span>SQL</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/figma.png" onerror="this.src='https://placehold.co/32x32/F24E1E/FFFFFF?text=FGM';" alt="Figma" class="w-8 h-8"/>
-            <span>Figma</span>
-          </div>
-          <!-- Adicione mais ferramentas aqui e crie as imagens correspondentes -->
-        </div>
-      </div>
-
-      <!-- Categoria: Design e Cibersegurança -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center">
-        <h4 id="designSecurityTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Design e Segurança">Design e Segurança</h4>
-        <div class="flex flex-wrap justify-center gap-4">
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/uiux_design.png" onerror="this.src='https://placehold.co/32x32/8C52FF/FFFFFF?text=UI/UX';" alt="UI/UX Design" class="w-8 h-8"/>
-            <span>UI/UX Design</span>
-          </div>
-          <div class="flex flex-col items-center tooltip relative group">
-            <img src="assets/images/cybersecurity.png" onerror="this.src='https://placehold.co/32x32/DC2626/FFFFFF?text=CYB';" alt="Cibersegurança" class="w-8 h-8"/>
-            <span>Cibersegurança</span>
-          </div>
-          <!-- Adicione mais habilidades aqui e crie as imagens correspondentes -->
-        </div>
-      </div>
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-12">Constelação de Habilidades</h3>
+    <div id="skills-constellation-container">
+        <!-- O SVG para o grafo D3 será inserido aqui pelo JavaScript -->
     </div>
   </section>
 
@@ -533,19 +299,12 @@ html,body{
         <a href="http://168.75.74.153:3001/" target="_blank" class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-5 py-2 rounded-full shadow">Visitar Site</a>
       </div>
       <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
-        <img src="assets/images/amadeusAI.png"
-             alt="Amadeus AI Logo"
-             class="w-24 h-24 object-contain rounded-lg mb-4" />
+        <img src="assets/images/amadeusAI.png" alt="Amadeus AI Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
         <h4 class="text-xl font-semibold mb-2">Amadeus AI</h4>
         <p class="text-gray-300 text-center mb-4">
-          Amadeus é uma solução inovadora para atendimento especial
-          no projeto LearnConnect e Old Duque’s. Uma IA avançada que
-          funciona via Discord Bot e API.
+          Amadeus é uma solução inovadora para atendimento especial no projeto LearnConnect e Old Duque’s. Uma IA avançada que funciona via Discord Bot e API.
         </p>
-        <a href="https://github.com/cai0duque/Discord-Bot-IA"
-           target="_blank"
-           class="inline-block bg-emerald-500 hover:bg-emerald-400 transition
-                         text-white px-5 py-2 rounded-full shadow">
+        <a href="https://github.com/cai0duque/Discord-Bot-IA" target="_blank" class="inline-block bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">
           Acessar repositório
         </a>
       </div>
@@ -561,118 +320,51 @@ html,body{
           <!-- VIGGLE -->
           <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
             <div class="flex items-center mb-4">
-              <img src="assets/images/viggle_logo.png" alt="Viggle Logo"
-                   class="w-20 h-20 rounded-full object-cover" />
+              <img src="assets/images/viggle_logo.png" alt="Viggle Logo" class="w-20 h-20 rounded-full object-cover" />
               <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">
-                  Viggle
-                  <img src="assets/images/verified_server.png"
-                       alt="Verificado" class="w-5 h-5 ml-1" />
-                </h4>
-                <p class="text-sm text-gray-400 flex items-center">
-                  <img src="assets/images/number_members.png"
-                       alt="Membros" class="w-4 h-4 mr-1" />
-                  4.300.000+
-                </p>
+                <h4 class="text-xl font-semibold flex items-center">Viggle <img src="assets/images/verified_server.png" alt="Verificado" class="w-5 h-5 ml-1" /></h4>
+                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">
-              Servidor oficial da IA Viggle, líder mundial em mixagem de animações
-              e vídeos gerados por IA. Participe e experimente gratuitamente!
-            </p>
+            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
-                <img src="assets/images/moderator_role.png"
-                     alt="Ex-Moderador" class="w-4 h-4 mr-1" />
-                Ex-Moderador
-              </span>
-              <button onclick="window.open('https://discord.gg/viggle','_blank')"
-                      class="bg-emerald-500 hover:bg-emerald-400 transition
-                             text-white px-5 py-2 rounded-full shadow">
-                Entrar
-              </button>
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/moderator_role.png" alt="Ex-Moderador" class="w-4 h-4 mr-1" /> Ex-Moderador</span>
+              <button onclick="window.open('https://discord.gg/viggle','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
-
           <!-- OLD DUQUE’S -->
           <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
             <div class="flex items-center mb-4">
-              <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo"
-                   class="w-20 h-20 rounded-full object-cover" />
+              <img src="assets/images/old_duques_logo.png" alt="Old Duque's Logo" class="w-20 h-20 rounded-full object-cover" />
               <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">
-                  Old Duque's
-                  <img src="assets/images/server_booster_badge.png"
-                       alt="Booster" class="w-5 h-5 ml-1" />
-                </h4>
-                <p class="text-sm text-gray-400 flex items-center">
-                  <img src="assets/images/number_members.png"
-                       alt="Membros" class="w-4 h-4 mr-1" />
-                  220
-                </p>
+                <h4 class="text-xl font-semibold flex items-center">Old Duque's <img src="assets/images/server_booster_badge.png" alt="Booster" class="w-5 h-5 ml-1" /></h4>
+                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" alt="Membros" class="w-4 h-4 mr-1" /> 220</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">
-              Clã Old Duque's: central de materiais e conteúdos de qualidade
-              sobre programação, design, edição de vídeo, moderação e muito mais.
-            </p>
+            <p class="mt-4 text-gray-300 flex-1 text-center">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, edição de vídeo, moderação e muito mais.</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
-                <img src="assets/images/emperor.png"
-                     alt="Proprietário" class="w-4 h-4 mr-1" />
-                Proprietário
-              </span>
-              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')"
-                      class="bg-emerald-500 hover:bg-emerald-400 transition
-                             text-white px-5 py-2 rounded-full shadow">
-                Entrar
-              </button>
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/emperor.png" alt="Proprietário" class="w-4 h-4 mr-1" /> Proprietário</span>
+              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
-
-          <!-- NOVO: FORMULA 1 -->
+          <!-- FORMULA 1 -->
           <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
             <div class="flex items-center mb-4">
-              <img src="assets/images/f1.png" alt="Formula 1 Logo"
-                   class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
+              <img src="assets/images/f1.png" alt="Formula 1 Logo" class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
               <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">
-                  Formula One
-                  <img src="assets/images/partner.png"
-                       alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" />
-                </h4>
-                <p class="text-sm text-gray-400 flex items-center">
-                  <img src="assets/images/number_members.png"
-                       alt="Membros" class="w-4 h-4 mr-1" />
-                  100.000+
-                </p>
+                <h4 class="text-xl font-semibold flex items-center">Formula One <img src="assets/images/partner.png" alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" /></h4>
+                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" alt="Membros" class="w-4 h-4 mr-1" /> 100.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">
-              Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!
-            </p>
+            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
-                <img src="assets/images/motorsport.png"
-                     alt="Motorsport Affiliated" class="w-4 h-4 mr-1" onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" />
-                Motorsport Affiliated
-              </span>
-              <button onclick="window.open('https://discord.gg/f1','_blank')"
-                      class="bg-emerald-500 hover:bg-emerald-400 transition
-                             text-white px-5 py-2 rounded-full shadow">
-                Entrar
-              </button>
+              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4 mr-1" onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" /> Motorsport Affiliated</span>
+              <button onclick="window.open('https://discord.gg/f1','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
         </div>
-
-        <!-- Arrows -->
-        <button class="carousel-arrow left" id="carouselPrev">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button class="carousel-arrow right" id="carouselNext">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-        </button>
+        <button class="carousel-arrow left" id="carouselPrev"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+        <button class="carousel-arrow right" id="carouselNext"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
       </div>
     </div>
   </section>
@@ -682,7 +374,7 @@ html,body{
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Contatos</h3>
     <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-10">
       <a href="mailto:contact@caioduque.dev" class="flex items-center space-x-2 hover:text-indigo-400 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m8 0a4 4 0 10-8 0 4 4 0 008 0z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
         <span>Email</span>
       </a>
       <a href="https://github.com/cai0duque" target="_blank" class="flex items-center space-x-2 hover:text-indigo-400 transition">
@@ -702,485 +394,405 @@ html,body{
   </footer>
 
   <script>
-    const nameEl = document.getElementById('nome');
-
-    /* ---------- variáveis ---------- */
-    let spinning = false;
-    let rafId;
-    let angle = 0;
-    let preClones = 1;
-    let postClones = 1;
-
-    /* ---------- helpers ---------- */
-    function frame() {
-      if (!spinning) return;
-      angle = (angle + 6) % 360; // velocidade do giro
-      nameEl.style.setProperty('--angle', angle + 'deg');
-      rafId = requestAnimationFrame(frame);
-    }
-
-    /* ---------- eventos ---------- */
-    nameEl.addEventListener('mouseenter', () => {
-      nameEl.classList.add('radial');
-      angle = 0; // ← NOVO
-      nameEl.style.setProperty('--angle', '0deg'); // ← NOVO
-      spinning = true;
-      frame(); // inicia o loop
-    });
-
-    nameEl.addEventListener('mousemove', (e) => {
-      const rect = nameEl.getBoundingClientRect();
-      /* centro em % dentro do elemento */
-      const cx = ((e.clientX - rect.left) / rect.width) * 100;
-      const cy = ((e.clientY - rect.top) / rect.height) * 100;
-      nameEl.style.setProperty('--cx', cx + '%');
-      nameEl.style.setProperty('--cy', cy + '%');
-    });
-
-    nameEl.addEventListener('mouseleave', () => {
-      spinning = false;
-      cancelAnimationFrame(rafId);
-      nameEl.classList.remove('radial');
-      nameEl.style.backgroundPosition = '0% 50%'; // volta ao linear
-    });
-
-    /* -------- partículas estilo Discord -------- */
-    const canvas = document.getElementById('particleCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let particles = [];
-    const NUM = 100;
-    const MAX_DIST = 120;
-    const MOUSE_R = 150;
-
-    /* redimensiona o canvas */
-    function resize() {
-      canvas.width = innerWidth;
-      canvas.height = innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    /* -------- classe Partícula -------- */
-    class Particle {
-      constructor() {
-        this.size = 1 + Math.random() * 5;
-        this.x = Math.random() * innerWidth;
-        this.y = Math.random() * innerHeight;
-        this.vx = (Math.random() - .5) * .5;
-        this.vy = (Math.random() - .5) * .5;
-        const palette = ['#7289DA', '#99AAB5', '#FFFFFF'];
-        this.color = palette[Math.floor(Math.random() * palette.length)];
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-      }
-      update() {
-        if (this.x < this.size || this.x > innerWidth - this.size) this.vx *= -1;
-        if (this.y < this.size || this.y > innerHeight - this.size) this.vy *= -1;
-        this.x += this.vx;
-        this.y += this.vy;
-        this.draw();
-      }
-    }
-
-    /* cria as partículas */
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < NUM; i++) particles.push(new Particle());
-    }
-    initParticles();
-
-    /* mouse */
-    const mouse = {
-      x: null,
-      y: null,
-      radius: MOUSE_R
-    };
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-    window.addEventListener('mouseout', () => {
-      mouse.x = mouse.y = null;
-    });
-
-    /* conecta partículas */
-    function connect() {
-      for (let a = 0; a < NUM; a++) {
-        for (let b = a + 1; b < NUM; b++) {
-          const dx = particles[a].x - particles[b].x;
-          const dy = particles[a].y - particles[b].y;
-          const dist = dx * dx + dy * dy;
-          if (dist < MAX_DIST * MAX_DIST) {
-            const opacity = 1 - dist / (MAX_DIST * MAX_DIST);
-            ctx.strokeStyle = `rgba(114,137,218,${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    /* animação */
-    function animate() {
-      requestAnimationFrame(animate);
-      ctx.clearRect(0, 0, innerWidth, innerHeight);
-      particles.forEach(p => p.update());
-      /* repulsão simples */
-      if (mouse.x !== null) {
-        particles.forEach(p => {
-          const dx = mouse.x - p.x,
-            dy = mouse.y - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < p.size + mouse.radius) {
-            const angle = Math.atan2(dy, dx);
-            p.x -= Math.cos(angle);
-            p.y -= Math.sin(angle);
-          }
-        });
-      }
-      connect();
-    }
-    animate();
-
-    /* CARROSSEL DE SERVIDORES JS */
-    const carouselContainer = document.querySelector('.carousel-container');
-    const carouselTrack = document.getElementById('serverCarouselTrack');
-    const prevButton = document.getElementById('carouselPrev');
-    const nextButton = document.getElementById('carouselNext');
-
-    let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
-    let serverCards = []; // This will contain original cards + clones
-    let currentIndex = 0; // Index in the 'serverCards' array (including clones)
-    let isTransitioning = false;
-    let autoScrollInterval;
+    document.addEventListener('DOMContentLoaded', () => {
     
-function setupInfiniteCarousel() {
-    // Function to set up the infinite loop by cloning cards
-const preClone  = originalServerCards[originalServerCards.length - 1]
-                      .cloneNode(true);          // último → antes
-const postClone = originalServerCards[0].cloneNode(true); // primeiro → depois
+      // --- MANTENDO LÓGICA EXISTENTE (GRADIENTE DINÂMICO E CARROSSEL) ---
+      // Esta parte do seu código original foi mantida, pois é excelente e funciona bem.
+      // Apenas a lógica do canvas 2D foi removida.
+      const nameEl = document.getElementById('nome');
+      const dynamicGradientAnimations = new Map();
 
-carouselTrack.innerHTML = '';                    // zera
-carouselTrack.appendChild(preClone);             // [C]
-originalServerCards.forEach(c =>                 // [C][A][B][C]
-  carouselTrack.appendChild(c.cloneNode(true)));
-carouselTrack.appendChild(postClone);            // [C][A][B][C][A]
-
-serverCards   = Array.from(carouselTrack.children);
-currentIndex  = 1;                               // começa em A real
-preClones     = 1;                               // ← guarde isso
-postClones    = 1;                               // idem
-updateCarousel(true);
-}
-
-    // Function to update carousel position and card styles
-    function updateCarousel(instant = false) {
-      if (isTransitioning && !instant) return;
-
-      if (instant) {
-          carouselTrack.style.transition = 'none';
-          prevButton.disabled = true; // Disable buttons during instant jump
-          nextButton.disabled = true;
-      } else {
-          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-          isTransitioning = true; // Set flag for smooth transitions
-      }
-
-      // Determine the indices of the currently visible cards (center, left, right)
-      // These indices are based on the full `serverCards` array (including clones)
-      const visibleCenterIndex = currentIndex;
-      let visibleLeftIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
-      let visibleRightIndex = (currentIndex + 1) % serverCards.length;
-      
-      // Apply styles to all cards based on their new state
-      serverCards.forEach((card, index) => {
-          card.classList.remove('is-center', 'is-left', 'is-right'); // Clean up old states
-
-          if (index === visibleCenterIndex) {
-              card.classList.add('is-center');
-              card.style.opacity = '1';
-              card.style.transform = 'scale(1)';
-              card.style.pointerEvents = 'auto';
-          } else if (index === visibleLeftIndex) {
-              card.classList.add('is-left'); // Add specific class for left side (if needed for further styling)
-              card.style.opacity = '0.3';
-              card.style.transform = 'scale(0.7)';
-              card.style.pointerEvents = 'auto';
-          } else if (index === visibleRightIndex) {
-              card.classList.add('is-right'); // Add specific class for right side (if needed for further styling)
-              card.style.opacity = '0.3';
-              card.style.transform = 'scale(0.7)';
-              card.style.pointerEvents = 'auto';
-          } else {
-              // Hide cards that are not part of the visible 3
-              card.style.opacity = '0';
-              card.style.transform = 'scale(0.7)'; // Keep consistent scale for smooth entry/exit
-              card.style.pointerEvents = 'none';
-          }
-      });
-
-      // Calculate translateX to center the current card
-const containerCenter     = carouselContainer.offsetWidth / 2;
-const currentCentralCard  = serverCards[currentIndex];        //  ←  NOVO
-const currentCardCenter   = currentCentralCard.offsetLeft +
-                            currentCentralCard.offsetWidth / 2;
-const translateXValue     = containerCenter - currentCardCenter;
-carouselTrack.style.transform = `translateX(${translateXValue}px)`;
-
-// re-habilita imediatamente se foi um salto instantâneo
-if (instant) {
-  prevButton.disabled  = false;
-  nextButton.disabled  = false;
-} else {
-  setTimeout(() => {
-    isTransitioning     = false;
-    prevButton.disabled = false;
-    nextButton.disabled = false;
-  }, 500); // mesmo tempo do CSS
- }
-}
-
-    // Event listener for transition end to handle snapping back for infinite loop
-/* -------------- bloco NOVO -------------- */
-carouselTrack.addEventListener('transitionend', e => {
-  // só tratamos o fim da transição do transform
-  if (e.propertyName !== 'transform') return;
-
-  /* concluiu a animação – pode clicar de novo */
-  isTransitioning       = false;
-  prevButton.disabled   = false;
-  nextButton.disabled   = false;
-
-  let needSnap = false;
-
-  /* Estamos sobre um clone?  Corrige o índice… */
-  if (currentIndex >= serverCards.length - postClones) {
-    currentIndex = preClones;                         // primeiro card real
-    needSnap     = true;
-  } else if (currentIndex < preClones) {
-    currentIndex = serverCards.length - postClones - 1; // último card real
-    needSnap     = true;
-  }
-
-  if (!needSnap) return;          // nada para corrigir
-
-  /* —— Snap invisível —— */
-  carouselTrack.style.transition = 'none'; // remove a animação
-  updateCarousel(true);                    // reposiciona **SEM** animar
-  void carouselTrack.offsetWidth;          // força re-flow / repaint
-
-  /* reativa a animação para os próximos cliques */
-  carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-});
-/* ---------------------------------------- */
-
-
-    // Navigation functions
-    nextButton.addEventListener('click', () => {
-      if (isTransitioning) return;
-      currentIndex++;
-      updateCarousel();
-    });
-
-    prevButton.addEventListener('click', () => {
-      if (isTransitioning) return;
-      currentIndex--;
-      updateCarousel();
-    });
-
-    // Auto-scrolling
-    function startAutoScroll() {
-      stopAutoScroll(); // Clear any existing interval to prevent duplicates
-      autoScrollInterval = setInterval(() => {
-        if (!isTransitioning) { // Only auto-scroll if not already transitioning
-            nextButton.click();
-        }
-      }, 6000); // Every 6 seconds
-    }
-
-    function stopAutoScroll() {
-      clearInterval(autoScrollInterval);
-    }
-
-    // Pause/Resume auto-scroll on hover
-    carouselContainer.addEventListener('mouseenter', stopAutoScroll);
-    carouselContainer.addEventListener('mouseleave', startAutoScroll);
-
-    // Initialize carousel on page load
-    window.addEventListener('load', () => {
-      setupInfiniteCarousel(); // Setup clones and initial position
-      startAutoScroll(); // Start auto-scroll
-    });
-
-    // Update carousel on window resize
-    window.addEventListener('resize', () => {
-        setupInfiniteCarousel(); // Re-setup carousel on resize to correctly re-calculate widths and positions
-    });
-
-
-    /* GERAL: LÓGICA DE ANIMAÇÃO PARA EFEITO DYNAMIC-GRADIENT */
-    // Map to store animation states for each dynamic-gradient element
-    const dynamicGradientAnimations = new Map(); // Map<HTMLElement, {rafId: number, angle: number, spinning: boolean}>
-
-    function startDynamicGradientAnimation(element) {
+      function startDynamicGradientAnimation(element) {
         let animState = dynamicGradientAnimations.get(element);
         if (!animState) {
-            animState = { rafId: null, angle: 0, spinning: false };
-            dynamicGradientAnimations.set(element, animState);
+          animState = { rafId: null, angle: 0, spinning: false };
+          dynamicGradientAnimations.set(element, animState);
         }
-
-        if (animState.spinning) return; // Already spinning
-
-        animState.angle = 0; // Reset angle for a fresh spin
-        element.style.setProperty('--angle', '0deg'); // Apply initial angle
-
+        if (animState.spinning) return;
+        animState.angle = 0;
+        element.style.setProperty('--angle', '0deg');
         animState.spinning = true;
         function frame() {
-            if (!animState.spinning) return;
-            animState.angle = (animState.angle + 6) % 360; // Spin speed
-            element.style.setProperty('--angle', animState.angle + 'deg');
-            animState.rafId = requestAnimationFrame(frame);
+          if (!animState.spinning) return;
+          animState.angle = (animState.angle + 6) % 360;
+          element.style.setProperty('--angle', animState.angle + 'deg');
+          animState.rafId = requestAnimationFrame(frame);
         }
-        frame(); // Start the animation loop
-        element.classList.add('radial'); // Add radial class to trigger conic gradient
-    }
+        frame();
+        element.classList.add('radial');
+      }
 
-    function stopDynamicGradientAnimation(element) {
+      function stopDynamicGradientAnimation(element) {
         let animState = dynamicGradientAnimations.get(element);
         if (animState) {
-            animState.spinning = false;
-            if (animState.rafId) {
-                cancelAnimationFrame(animState.rafId);
-                animState.rafId = null;
-            }
-            element.classList.remove('radial'); // Remove radial class
-            element.style.backgroundPosition = '0% 50%'; // Reset to linear gradient position
+          animState.spinning = false;
+          if (animState.rafId) cancelAnimationFrame(animState.rafId);
+          animState.rafId = null;
+          element.classList.remove('radial');
+          element.style.backgroundPosition = '0% 50%';
         }
-    }
+      }
 
-    function handleDynamicGradientMouseMove(element, e) {
+      function handleDynamicGradientMouseMove(element, e) {
         const rect = element.getBoundingClientRect();
         const cx = ((e.clientX - rect.left) / rect.width) * 100;
         const cy = ((e.clientY - rect.top) / rect.height) * 100;
         element.style.setProperty('--cx', cx + '%');
         element.style.setProperty('--cy', cy + '%');
-    }
+      }
 
-    // --- Efeito h2#nome acionado pelo profileCard ou pelo próprio h2 ---
-    const profileCardElement = document.getElementById('profileCard'); // Renomeado para evitar conflito com 'profileCard' em outra parte do código
-    
-    // Listeners para o CARD do perfil
-    profileCardElement.addEventListener('mouseenter', () => {
-        startDynamicGradientAnimation(nameEl);
-    });
-    profileCardElement.addEventListener('mousemove', (e) => {
-        handleDynamicGradientMouseMove(nameEl, e);
-    });
-    profileCardElement.addEventListener('mouseleave', () => {
-        stopDynamicGradientAnimation(nameEl);
-    });
-
-    // O listener direto no nameEl (seu nome) ainda é útil para um hover mais preciso sobre ele
-    nameEl.addEventListener('mouseenter', () => {
-        startDynamicGradientAnimation(nameEl);
-    });
-    nameEl.addEventListener('mousemove', (e) => {
-        handleDynamicGradientMouseMove(nameEl, e);
-    });
-    nameEl.addEventListener('mouseleave', (e) => {
-        // Se o mouse sair do nameEl e ainda estiver dentro do profileCard, não para a animação.
-        // A animação só parará quando sair do profileCard.
-        if (!profileCardElement.contains(e.relatedTarget)) { // Check if the relatedTarget is outside profileCard
-            stopDynamicGradientAnimation(nameEl);
+      const profileCardElement = document.getElementById('profileCard');
+      profileCardElement.addEventListener('mouseenter', () => startDynamicGradientAnimation(nameEl));
+      profileCardElement.addEventListener('mousemove', (e) => handleDynamicGradientMouseMove(nameEl, e));
+      profileCardElement.addEventListener('mouseleave', () => stopDynamicGradientAnimation(nameEl));
+      
+      nameEl.addEventListener('mouseenter', () => startDynamicGradientAnimation(nameEl));
+      nameEl.addEventListener('mousemove', (e) => handleDynamicGradientMouseMove(nameEl, e));
+      nameEl.addEventListener('mouseleave', (e) => {
+        if (!profileCardElement.contains(e.relatedTarget)) {
+          stopDynamicGradientAnimation(nameEl);
         }
-    });
-
-    // Modificar o listener de scroll do nameEl para usar as novas funções genéricas
-    window.addEventListener('scroll', () => {
-        // Apenas aplique o efeito de scroll linear ao nameEl se ele NÃO estiver no modo radial (ativo por hover)
-        // Isso evita conflito com a animação de rotação
-        if (!nameEl.classList.contains('radial')){
-            const max = document.documentElement.scrollHeight - innerHeight;
-            const pct = (scrollY / max) * 100;
-            nameEl.style.backgroundPosition = `${pct}% 50%`;
+      });
+      
+      window.addEventListener('scroll', () => {
+        if (!nameEl.classList.contains('radial')) {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = (window.scrollY / max) * 100;
+          nameEl.style.backgroundPosition = `${pct}% 50%`;
         }
-    });
+      });
 
+      // Lógica do Carrossel (mantida integralmente)
+      const carouselContainer = document.querySelector('.carousel-container');
+      const carouselTrack = document.getElementById('serverCarouselTrack');
+      const prevButton = document.getElementById('carouselPrev');
+      const nextButton = document.getElementById('carouselNext');
+      if(carouselTrack) { // Adicionando verificação para garantir que os elementos existem
+        let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
+        let serverCards = [];
+        let currentIndex = 0;
+        let isTransitioning = false;
+        let autoScrollInterval;
+        let preClones = 1;
+        let postClones = 1;
 
-    // --- Efeitos nos títulos das categorias de habilidades ---
-    const skillCategoryCards = document.querySelectorAll('#skills-container > .skill-category-card');
-    
-    // Iterar sobre cada card de categoria de habilidade
-    skillCategoryCards.forEach(card => {
-        const titleElement = card.querySelector('h4.dynamic-gradient'); // Encontrar o h4.dynamic-gradient dentro deste card
-        
-        if (titleElement) { // Garantir que o título existe
-            // Adicionar as classes de gradiente específicas (se ainda não estiverem no HTML)
-            if (titleElement.id === 'languagesTitle') {
-                titleElement.classList.add('gradient-languages');
-            } else if (titleElement.id === 'frameworksTitle') {
-                titleElement.classList.add('gradient-frameworks');
-            } else if (titleElement.id === 'toolsTitle') {
-                titleElement.classList.add('gradient-tools');
-            } else if (titleElement.id === 'designSecurityTitle') {
-                titleElement.classList.add('gradient-design-security');
+        function setupInfiniteCarousel() {
+            if (originalServerCards.length === 0) return;
+            const preClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
+            const postClone = originalServerCards[0].cloneNode(true);
+            carouselTrack.innerHTML = '';
+            carouselTrack.appendChild(preClone);
+            originalServerCards.forEach(c => carouselTrack.appendChild(c.cloneNode(true)));
+            carouselTrack.appendChild(postClone);
+            serverCards = Array.from(carouselTrack.children);
+            currentIndex = preClones;
+            updateCarousel(true);
+        }
+
+        function updateCarousel(instant = false) {
+            if (isTransitioning && !instant) return;
+            if (instant) {
+                carouselTrack.style.transition = 'none';
+            } else {
+                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+                isTransitioning = true;
             }
-
-            // Adicionar listeners ao card pai para ativar/desativar a animação no título
-            card.addEventListener('mouseenter', () => {
-                startDynamicGradientAnimation(titleElement);
+            serverCards.forEach((card, index) => {
+                card.classList.remove('is-center', 'is-left', 'is-right');
+                if (index === currentIndex) card.classList.add('is-center');
+                else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
+                else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            card.addEventListener('mousemove', (e) => {
-                handleDynamicGradientMouseMove(titleElement, e);
-            });
-            card.addEventListener('mouseleave', () => {
-                stopDynamicGradientAnimation(titleElement);
-            });
+            const containerCenter = carouselContainer.offsetWidth / 2;
+            const currentCentralCard = serverCards[currentIndex];
+            const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
+            const translateXValue = containerCenter - currentCardCenter;
+            carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+            if (!instant) {
+              setTimeout(() => { isTransitioning = false; }, 500);
+            }
         }
-    });
 
-    /* REVEAL DE HABILIDADES AO SCROLLAR (Efeito Gaveta) */
-    const skillCards = document.querySelectorAll('#skills-container > .skill-category-card');
-    // Define as opções para o IntersectionObserver
-    const revealObserverOptions = {
-        root: null, // O viewport é o elemento raiz
-        rootMargin: '0px',
-        threshold: 0.2 // Acionar quando 20% do elemento alvo estiver visível
-    };
-
-    // Cria o IntersectionObserver
-    const skillRevealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.remove('initial-hidden-skill');
-                entry.target.classList.add('is-revealed-skill');
-                observer.unobserve(entry.target); // Parar de observar depois de revelado
+        carouselTrack.addEventListener('transitionend', e => {
+            if (e.propertyName !== 'transform') return;
+            isTransitioning = false;
+            let needSnap = false;
+            if (currentIndex >= serverCards.length - postClones) {
+                currentIndex = preClones;
+                needSnap = true;
+            } else if (currentIndex < preClones) {
+                currentIndex = serverCards.length - postClones - preClones;
+                needSnap = true;
+            }
+            if (needSnap) {
+                carouselTrack.style.transition = 'none';
+                updateCarousel(true);
+                void carouselTrack.offsetWidth;
+                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
             }
         });
-    }, revealObserverOptions);
+        
+        nextButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex++; updateCarousel(); } });
+        prevButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex--; updateCarousel(); } });
+        
+        const startAutoScroll = () => { stopAutoScroll(); autoScrollInterval = setInterval(() => nextButton.click(), 6000); };
+        const stopAutoScroll = () => clearInterval(autoScrollInterval);
 
-    // Esconder inicialmente todos os cards de habilidade, exceto o primeiro, usando JavaScript
-    // E começar a observar todos eles.
-    Array.from(skillCards).forEach((card, index) => {
-        if (index === 0) {
-            // O primeiro card já está visível por padrão e centralizado via CSS.
-            // Apenas garanta que ele tenha as propriedades corretas.
-            card.classList.remove('initial-hidden-skill'); // Remove qualquer classe de esconder caso venha de outro estado
-            card.classList.add('is-revealed-skill'); // Garante que ele esteja 'revelado'
-            return; 
+        carouselContainer.addEventListener('mouseenter', stopAutoScroll);
+        carouselContainer.addEventListener('mouseleave', startAutoScroll);
+        window.addEventListener('resize', setupInfiniteCarousel);
+        setupInfiniteCarousel();
+        startAutoScroll();
+      }
+
+
+      // --- FEATURE 1: BACKGROUND 3D INTERATIVO COM THREE.JS ---
+      (() => {
+        const canvas = document.getElementById('bg-canvas');
+        if (!canvas) return;
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Particles
+        const particlesCount = 300;
+        const positions = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount; i++) {
+          positions[i * 3 + 0] = (Math.random() - 0.5) * 10; // x
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 10; // y
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
         }
-        card.classList.add('initial-hidden-skill'); // Adiciona a classe para esconder inicialmente
-        skillRevealObserver.observe(card); // Começa a observar cada card escondido
-    });
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+          color: 0x99AAB5,
+          size: 0.03,
+          blending: THREE.AdditiveBlending,
+          transparent: true,
+          sizeAttenuation: true
+        });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
 
+        // Lines
+        const linesGeometry = new THREE.BufferGeometry();
+        const linesMaterial = new THREE.LineBasicMaterial({
+          color: 0x7289DA,
+          transparent: true,
+          opacity: 0.3,
+          blending: THREE.AdditiveBlending
+        });
+        const linePositions = new Float32Array(particlesCount * particlesCount * 3);
+        linesGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+        const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+        scene.add(lines);
+
+        camera.position.z = 5;
+
+        // Mouse tracking
+        const mouse = new THREE.Vector2();
+        window.addEventListener('mousemove', (event) => {
+          mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+        
+        const clock = new THREE.Clock();
+
+        function animateThree() {
+          const elapsedTime = clock.getElapsedTime();
+          particles.rotation.y = elapsedTime * 0.05;
+          particles.rotation.x = elapsedTime * 0.05;
+          
+          // Animate camera based on scroll
+          const scrollY = window.scrollY;
+          const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+          const scrollPercent = scrollY / scrollMax;
+          camera.position.z = 5 - scrollPercent * 4;
+          camera.position.y = -scrollPercent * 2;
+
+
+          // Parallax effect
+          camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+          camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+          camera.lookAt(scene.position);
+          
+          // Update lines
+          let lineVertexIndex = 0;
+          const particlePositions = particles.geometry.attributes.position.array;
+          const maxDistSq = 1 * 1; // Square of max distance for connection
+          for (let i = 0; i < particlesCount; i++) {
+            for (let j = i + 1; j < particlesCount; j++) {
+                const ix = particlePositions[i * 3];
+                const iy = particlePositions[i * 3 + 1];
+                const iz = particlePositions[i * 3 + 2];
+                const jx = particlePositions[j * 3];
+                const jy = particlePositions[j * 3 + 1];
+                const jz = particlePositions[j * 3 + 2];
+                const dx = ix - jx;
+                const dy = iy - jy;
+                const dz = iz - jz;
+                const distSq = dx*dx + dy*dy + dz*dz;
+
+                if (distSq < maxDistSq) {
+                    linePositions[lineVertexIndex++] = ix;
+                    linePositions[lineVertexIndex++] = iy;
+                    linePositions[lineVertexIndex++] = iz;
+                    linePositions[lineVertexIndex++] = jx;
+                    linePositions[lineVertexIndex++] = jy;
+                    linePositions[lineVertexIndex++] = jz;
+                }
+            }
+          }
+          lines.geometry.attributes.position.needsUpdate = true;
+          // Important: only draw the lines that were updated
+          lines.geometry.setDrawRange(0, lineVertexIndex / 3);
+
+          renderer.render(scene, camera);
+          requestAnimationFrame(animateThree);
+        }
+        animateThree();
+      })();
+
+
+      // --- FEATURE 2: CONSTELAÇÃO DE HABILIDADES COM D3.JS ---
+      (() => {
+        const container = document.getElementById('skills-constellation-container');
+        if (!container) return;
+
+        const skillsData = {
+            nodes: [
+                { id: "Programação", group: "core" },
+                { id: "Python", group: "language" },
+                { id: "JavaScript", group: "language" },
+                { id: "Java", group: "language" },
+                { id: "Front-End", group: "core" },
+                { id: "React", group: "framework" },
+                { id: "Next.js", group: "framework" },
+                { id: "Tailwind CSS", group: "framework" },
+                { id: "D3.js", group: "library" },
+                { id: "Three.js", group: "library" },
+                { id: "Back-End", group: "core" },
+                { id: "SQL", group: "database" },
+                { id: "Ferramentas", group: "core" },
+                { id: "Git", group: "tool" },
+                { id: "Design", group: "core" },
+                { id: "Figma", group: "tool" },
+                { id: "UI/UX", group: "design" },
+                { id: "Segurança", group: "core" },
+                { id: "Cybersecurity", group: "security" },
+            ],
+            links: [
+                { source: "Programação", target: "Python" }, { source: "Programação", target: "JavaScript" }, { source: "Programação", target: "Java" },
+                { source: "Front-End", target: "JavaScript" }, { source: "Front-End", target: "React" }, { source: "Front-End", target: "Next.js" }, { source: "Front-End", target: "Tailwind CSS" },
+                { source: "React", target: "JavaScript" }, { source: "Next.js", target: "React" }, { source: "D3.js", target: "JavaScript" }, { source: "Three.js", target: "JavaScript" },
+                { source: "Back-End", target: "Python" }, { source: "Back-End", target: "Java" }, { source: "Back-End", target: "SQL" },
+                { source: "Ferramentas", target: "Git" }, { source: "Ferramentas", target: "Figma" },
+                { source: "Design", target: "Figma" }, { source: "Design", target: "UI/UX" }, { source: "Front-End", target: "UI/UX" },
+                { source: "Segurança", target: "Cybersecurity" }, { source: "Programação", target: "Cybersecurity" }
+            ]
+        };
+
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const svg = d3.select(container).append("svg")
+            .attr("viewBox", [-width / 2, -height / 2, width, height]);
+
+        const simulation = d3.forceSimulation(skillsData.nodes)
+            .force("link", d3.forceLink(skillsData.links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("center", d3.forceCenter());
+
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+            .domain(["core", "language", "framework", "library", "database", "tool", "design", "security"]);
+
+        const link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(skillsData.links)
+            .enter().append("line")
+            .attr("class", "skill-link");
+
+        const node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("g")
+            .data(skillsData.nodes)
+            .enter().append("g")
+            .attr("class", "skill-node");
+
+        node.append("circle")
+            .attr("r", d => d.group === "core" ? 20 : 15)
+            .attr("fill", d => colorScale(d.group));
+
+        node.append("text")
+            .text(d => d.id)
+            .attr("y", d => d.group === "core" ? -28 : -22);
+
+        node.call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+            
+        // Hover/Focus functionality
+        const linkedByIndex = {};
+        skillsData.links.forEach(d => {
+            linkedByIndex[`${d.source.id},${d.target.id}`] = 1;
+        });
+
+        function isConnected(a, b) {
+            return linkedByIndex[`${a.id},${b.id}`] || linkedByIndex[`${b.id},${a.id}`] || a.id === b.id;
+        }
+
+        node.on("mouseover", function(event, d) {
+            node.classed("faded", n => !isConnected(d, n));
+            link.classed("faded", l => d.id !== l.source.id && d.id !== l.target.id);
+            d3.select(this).classed("faded", false);
+        }).on("mouseout", function() {
+            node.classed("faded", false);
+            link.classed("faded", false);
+        });
+
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            node
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+      })();
+    });
   </script>
 </body>
 </html>
