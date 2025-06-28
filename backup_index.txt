@@ -135,13 +135,16 @@
     }
 
     /* -------- Canvas ocupa a viewport inteira e fica atrás -------- */
-    canvas {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-    }
+    canvas{
+  display:block;
+  position:fixed;
+  inset:0;
+  width:100dvw;       /* garante que nunca passe da viewport */
+  height:100dvh;
+  z-index:-1;
+  pointer-events:none;
+}
+
 
     /* -------- Evita scroll extra gerado pelo canvas -------- */
     body {
@@ -177,15 +180,25 @@
       width: 380px; /* Largura original dos cards */
       max-width: 90%; /* Fallback responsivo */
       margin: 0 1rem; /* Espaçamento entre os cards */
+      /* Removi as transições daqui para gerenciar via JS is-center/is-left/is-right */
+      opacity: 0; /* Default: hidden */
+      transform: scale(0.7); /* Default: scaled down */
+      pointer-events: none; /* Default: non-interactive */
       transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease;
-      opacity: 0.3; /* Opacidade padrão para cards não-centrais */
-      transform: scale(0.7); /* Escala padrão para cards não-centrais */
     }
 
     .server-card.is-center {
       opacity: 1; /* Opacidade total para o card central */
       transform: scale(1); /* Tamanho total para o card central */
       box-shadow: 0 0 30px rgba(114, 137, 218, .5); /* Sombra mais forte para o centro */
+      pointer-events: auto; /* Make interactive */
+    }
+
+    .server-card.is-left,
+    .server-card.is-right {
+      opacity: 0.3; /* Translucidez para cards laterais */
+      transform: scale(0.7); /* Tamanho menor para cards laterais */
+      pointer-events: auto; /* Make interactive */
     }
 
     .carousel-arrow {
@@ -269,13 +282,84 @@
         flex-direction: column;
         align-items: center; /* Centers items horizontally */
     }
+
+    /* Cybersecurity Mode Button */
+    #cybersecurityModeBtn {
+      background-color: #000; /* Preto */
+      color: #fff;
+      border: 1px solid #000;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 rgba(139, 92, 246, 0); /* Sombra inicial (invisível) */
+    }
+
+    #cybersecurityModeBtn:hover {
+      background-color: #fff;
+      color: #000;
+      border-color: #000;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); /* Sombra roxa escura */
+    }
+
+    #cybersecurityModeBtn:hover img {
+      filter: invert(1); /* Inverte a cor da imagem para ficar preta */
+    }
+
+    /* --- correções de responsividade --- */
+html,body{
+  width:100%;
+  overflow-x:hidden;       /* mata qualquer scroll lateral */
+  box-sizing:border-box;
+}
+
+*,*::before,*::after{box-sizing:inherit}
+
+/* HEADER responsivo */
+@media (max-width:768px){
+  header .container{
+    flex-wrap:wrap;                  /* empilha linhas */
+    gap:0.5rem 1rem;                 /* respiro vertical + horizontal */
+  }
+  header h1{
+    font-size:1.75rem;               /* logo menor no mobile */
+    flex:1 0 100%;                   /* força ocupar linha inteira */
+    text-align:center;
+  }
+
+  /* botão “Modo Cybersecurity” abaixo do menu */
+  #cybersecurityModeBtn{
+    order:3;                         /* vai para a 3ª linha */
+    width:100%;
+    justify-content:center;
+  }
+
+  /* menu navegação: quebra de linha e letra menor */
+  nav ul{
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:0.75rem 1rem;
+  }
+  nav a{ font-size:0.875rem }
+}
+
+/* CAROUSEL – impede que cartões ultrapassem a viewport */
+.server-card{ max-width:90vw }
+
+    /* faz o topo da imagem 100 % opaco e o rodapé totalmente transparente  */
+.fade-mask{
+  /* Chrome/Edge/Firefox */
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  /* Safari precisa do prefixo */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+
+
+    
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
   <canvas id="particleCanvas"></canvas>
   <!-- NAVBAR -->
   <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
       <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
       <nav>
         <ul class="flex space-x-6 font-semibold">
@@ -287,14 +371,19 @@
           <li><a href="#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
         </ul>
       </nav>
+      <!-- Cybersecurity Mode Button - Link to the new kali.html -->
+      <a href="kali.html" id="cybersecurityModeBtn" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold">
+        <img src="assets/images/kali.png" onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';" alt="Kali Icon" class="w-6 h-6 mr-2 transition-filter duration-300" />
+        Modo Cybersecurity
+      </a>
     </div>
   </header>
 
   <!-- HERO / BANNER -->
   <section id="home" class="relative">
-    <img src="assets/images/banner.png" alt="Banner" class="w-full h-[300px] object-cover object-center" />
+    <img src="assets/images/banner.png" alt="Banner" class="fade-mask w-full h-[300px] object-cover object-center" />
     <!-- Cartão de perfil -->
-    <div id="profileCard" class="container mx-auto px-4"> <!-- Added container back around the card -->
+    <div id="profileCard" class="container mx-auto px-4"> 
       <div class="card rounded-xl shadow-xl -mt-24 p-8 flex flex-col md:flex-row items-center">
         <div class="flex flex-col items-center md:items-start md:flex-row">
           <img src="assets/images/perfil.png" alt="Foto de Perfil" class="w-40 h-40 rounded-full ring-4 ring-indigo-500" />
@@ -341,7 +430,7 @@
     <div class="card rounded-xl p-8 max-w-3xl mx-auto text-center">
       <p class="text-gray-300 text-lg mb-4">Olá! Eu sou o Caio Duque, um entusiasta da tecnologia com uma paixão inesgotável por desvendar os segredos da programação e do design. Atualmente, estou imerso nos estudos de Ciência da Computação, buscando não apenas conhecimento, mas a capacidade de criar soluções inovadoras que impactem positivamente o mundo.</p>
       <p class="text-gray-300 text-lg mb-4">Minha jornada inclui experiências significativas como Moderador no servidor Viggle, onde aprimorei minhas habilidades de comunicação e gestão de comunidades, e como criador do "Old Duque's", um espaço dedicado ao compartilhamento de conhecimento em diversas áreas tech.</p>
-      <p class="text-gray-300 text-lg">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
+      <p class="text-300 text-lg">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
       <div class="mt-8">
         <a href="assets/CaioDuque_CV.pdf" download class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-6 py-3 rounded-full shadow-lg font-semibold">
             Baixar CV
@@ -376,7 +465,7 @@
       </div>
 
       <!-- Categoria: Frameworks e Bibliotecas -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
         <h4 id="frameworksTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Frameworks/Bibliotecas">Frameworks/Bibliotecas</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -396,7 +485,7 @@
       </div>
 
       <!-- Categoria: Ferramentas e Outros -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8 initial-hidden-skill">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center mb-8">
         <h4 id="toolsTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Ferramentas e Outros">Ferramentas e Outros</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -416,7 +505,7 @@
       </div>
 
       <!-- Categoria: Design e Cibersegurança -->
-      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center initial-hidden-skill">
+      <div class="skill-category-card card rounded-xl p-6 text-center flex flex-col items-center">
         <h4 id="designSecurityTitle" class="dynamic-gradient text-xl font-semibold mb-4 text-indigo-300" data-glow="Design e Segurança">Design e Segurança</h4>
         <div class="flex flex-wrap justify-center gap-4">
           <div class="flex flex-col items-center tooltip relative group">
@@ -619,6 +708,8 @@
     let spinning = false;
     let rafId;
     let angle = 0;
+    let preClones = 1;
+    let postClones = 1;
 
     /* ---------- helpers ---------- */
     function frame() {
@@ -770,42 +861,25 @@
     let currentIndex = 0; // Index in the 'serverCards' array (including clones)
     let isTransitioning = false;
     let autoScrollInterval;
-
+    
+function setupInfiniteCarousel() {
     // Function to set up the infinite loop by cloning cards
-    function setupInfiniteCarousel() {
-      carouselTrack.innerHTML = ''; // Clear existing cards
+const preClone  = originalServerCards[originalServerCards.length - 1]
+                      .cloneNode(true);          // último → antes
+const postClone = originalServerCards[0].cloneNode(true); // primeiro → depois
 
-      // Create a more robust set of clones for seamless looping (previous + current + next visible)
-      const numClones = originalServerCards.length; // Max clones needed for a full loop
+carouselTrack.innerHTML = '';                    // zera
+carouselTrack.appendChild(preClone);             // [C]
+originalServerCards.forEach(c =>                 // [C][A][B][C]
+  carouselTrack.appendChild(c.cloneNode(true)));
+carouselTrack.appendChild(postClone);            // [C][A][B][C][A]
 
-      // Add clones of the *last* few original cards to the beginning of the conceptual track
-      for (let i = originalServerCards.length - 1; i >= 0; i--) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `pre-clone-${i}`);
-          carouselTrack.appendChild(clone); // Temporarily append
-      }
-      // Move them to the beginning of the track
-      for (let i = 0; i < numClones; i++) {
-          carouselTrack.prepend(carouselTrack.lastChild);
-      }
-
-      // Add actual original cards
-      originalServerCards.forEach(card => carouselTrack.appendChild(card.cloneNode(true)));
-
-      // Add clones of the *first* few original cards to the end of the conceptual track
-      for (let i = 0; i < originalServerCards.length; i++) {
-          const clone = originalServerCards[i].cloneNode(true);
-          clone.classList.add('clone', `post-clone-${i}`);
-          carouselTrack.appendChild(clone);
-      }
-
-      serverCards = Array.from(carouselTrack.children);
-      // Set initial index to the first *real* card in the new extended array
-      // This is after the `numClones` prepended clones.
-      currentIndex = numClones;
-
-      updateCarousel(true); // Initial positioning without animation
-    }
+serverCards   = Array.from(carouselTrack.children);
+currentIndex  = 1;                               // começa em A real
+preClones     = 1;                               // ← guarde isso
+postClones    = 1;                               // idem
+updateCarousel(true);
+}
 
     // Function to update carousel position and card styles
     function updateCarousel(instant = false) {
@@ -820,81 +894,94 @@
           isTransitioning = true; // Set flag for smooth transitions
       }
 
-      // Apply styles to show only 3 cards effectively
+      // Determine the indices of the currently visible cards (center, left, right)
+      // These indices are based on the full `serverCards` array (including clones)
+      const visibleCenterIndex = currentIndex;
+      let visibleLeftIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
+      let visibleRightIndex = (currentIndex + 1) % serverCards.length;
+      
+      // Apply styles to all cards based on their new state
       serverCards.forEach((card, index) => {
-          card.classList.remove('is-center');
-          card.style.opacity = '0'; // Hide all cards initially
-          card.style.transform = 'scale(0.7)'; // Default scale for hidden/side cards
-          card.style.pointerEvents = 'none';
+          card.classList.remove('is-center', 'is-left', 'is-right'); // Clean up old states
 
-          // Determine visibility based on relative position to currentIndex
-          const relativeIndex = index - currentIndex;
-
-          // Display the center card, and one to its left and one to its right.
-          // Handle circular array for determining which cards are 'left' and 'right'
-          let visibleLeftIndex = (currentIndex - 1 + serverCards.length) % serverCards.length;
-          let visibleRightIndex = (currentIndex + 1) % serverCards.length;
-          
-          // Re-adjust for clones for visual effect (only if more than 3 original cards)
-          if (originalServerCards.length > 1) { // Only need to adjust if more than 1 card for "left" and "right" logic to make sense
-              // For visual purposes, ensure the 'left' and 'right' cards wrap correctly from the original set.
-              // Example: If original is [A,B,C] and current is A (index N), then left is C (index N-1), right is B (index N+1)
-              // This is covered by `visibleLeftIndex` and `visibleRightIndex`
-          }
-
-
-          if (index === currentIndex) { // Center card
+          if (index === visibleCenterIndex) {
               card.classList.add('is-center');
-              card.style.transform = 'scale(1)';
               card.style.opacity = '1';
+              card.style.transform = 'scale(1)';
               card.style.pointerEvents = 'auto';
-          } else if (index === visibleLeftIndex || index === visibleRightIndex) { // Immediate left/right cards
-              card.style.transform = 'scale(0.7)';
+          } else if (index === visibleLeftIndex) {
+              card.classList.add('is-left'); // Add specific class for left side (if needed for further styling)
               card.style.opacity = '0.3';
+              card.style.transform = 'scale(0.7)';
               card.style.pointerEvents = 'auto';
+          } else if (index === visibleRightIndex) {
+              card.classList.add('is-right'); // Add specific class for right side (if needed for further styling)
+              card.style.opacity = '0.3';
+              card.style.transform = 'scale(0.7)';
+              card.style.pointerEvents = 'auto';
+          } else {
+              // Hide cards that are not part of the visible 3
+              card.style.opacity = '0';
+              card.style.transform = 'scale(0.7)'; // Keep consistent scale for smooth entry/exit
+              card.style.pointerEvents = 'none';
           }
       });
 
       // Calculate translateX to center the current card
-      const containerWidth = carouselContainer.offsetWidth;
-      const currentCentralCard = serverCards[currentIndex];
+const containerCenter     = carouselContainer.offsetWidth / 2;
+const currentCentralCard  = serverCards[currentIndex];        //  ←  NOVO
+const currentCardCenter   = currentCentralCard.offsetLeft +
+                            currentCentralCard.offsetWidth / 2;
+const translateXValue     = containerCenter - currentCardCenter;
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
-      // Calculate the current card's center relative to the track's start
-      const currentCardLeftInTrack = currentCentralCard.getBoundingClientRect().left - carouselTrack.getBoundingClientRect().left;
-      const currentCardCenterInTrack = currentCardLeftInTrack + (currentCentralCard.offsetWidth / 2);
-      const containerCenter = containerWidth / 2;
+// re-habilita imediatamente se foi um salto instantâneo
+if (instant) {
+  prevButton.disabled  = false;
+  nextButton.disabled  = false;
+} else {
+  setTimeout(() => {
+    isTransitioning     = false;
+    prevButton.disabled = false;
+    nextButton.disabled = false;
+  }, 500); // mesmo tempo do CSS
+ }
+}
 
-      let translateXValue = containerCenter - currentCardCenterInTrack;
-      carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+    // Event listener for transition end to handle snapping back for infinite loop
+/* -------------- bloco NOVO -------------- */
+carouselTrack.addEventListener('transitionend', e => {
+  // só tratamos o fim da transição do transform
+  if (e.propertyName !== 'transform') return;
 
-      // Timeout to reset transitioning flag and re-enable buttons after smooth transition
-      if (!instant) {
-          setTimeout(() => {
-              isTransitioning = false;
-              prevButton.disabled = false;
-              nextButton.disabled = false;
-          }, 500); // Match CSS transition duration
-      }
-    }
+  /* concluiu a animação – pode clicar de novo */
+  isTransitioning       = false;
+  prevButton.disabled   = false;
+  nextButton.disabled   = false;
 
-    // Event listener for transition end to handle snapping back
-    carouselTrack.addEventListener('transitionend', () => {
-        isTransitioning = false; // Transition has ended, allow interaction
-        prevButton.disabled = false; // Re-enable buttons
-        nextButton.disabled = false; // Re-enable buttons
+  let needSnap = false;
 
-        // Infinite looping logic
-        // If we slid to a 'post-clone' card (at the end of the real ones)
-        if (currentIndex >= originalServerCards.length + originalServerCards.length) {
-            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
-            updateCarousel(true); // Instant update to the corresponding real card
-        }
-        // If we slid to a 'pre-clone' card (at the beginning of the real ones)
-        else if (currentIndex < originalServerCards.length) {
-            currentIndex = originalServerCards.length + (currentIndex % originalServerCards.length);
-            updateCarousel(true); // Instant update
-        }
-    });
+  /* Estamos sobre um clone?  Corrige o índice… */
+  if (currentIndex >= serverCards.length - postClones) {
+    currentIndex = preClones;                         // primeiro card real
+    needSnap     = true;
+  } else if (currentIndex < preClones) {
+    currentIndex = serverCards.length - postClones - 1; // último card real
+    needSnap     = true;
+  }
+
+  if (!needSnap) return;          // nada para corrigir
+
+  /* —— Snap invisível —— */
+  carouselTrack.style.transition = 'none'; // remove a animação
+  updateCarousel(true);                    // reposiciona **SEM** animar
+  void carouselTrack.offsetWidth;          // força re-flow / repaint
+
+  /* reativa a animação para os próximos cliques */
+  carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+});
+/* ---------------------------------------- */
+
 
     // Navigation functions
     nextButton.addEventListener('click', () => {
@@ -988,32 +1075,30 @@
     }
 
     // --- Efeito h2#nome acionado pelo profileCard ou pelo próprio h2 ---
-    const profileCard = document.getElementById('profileCard'); // This now refers to the outer container
-
-    profileCard.addEventListener('mouseenter', () => {
+    const profileCardElement = document.getElementById('profileCard'); // Renomeado para evitar conflito com 'profileCard' em outra parte do código
+    
+    // Listeners para o CARD do perfil
+    profileCardElement.addEventListener('mouseenter', () => {
         startDynamicGradientAnimation(nameEl);
     });
-    profileCard.addEventListener('mousemove', (e) => {
-        // Need to calculate mouse position relative to the h2 element itself for the gradient effect
+    profileCardElement.addEventListener('mousemove', (e) => {
         handleDynamicGradientMouseMove(nameEl, e);
     });
-    profileCard.addEventListener('mouseleave', () => {
+    profileCardElement.addEventListener('mouseleave', () => {
         stopDynamicGradientAnimation(nameEl);
     });
 
-    // O listener direto no nameEl ainda é útil para um hover mais preciso sobre ele
+    // O listener direto no nameEl (seu nome) ainda é útil para um hover mais preciso sobre ele
     nameEl.addEventListener('mouseenter', () => {
-        // If the mouse enters nameEl *directly* (not via profileCard), activate.
-        // This case might be redundant if profileCard already covers nameEl, but good for robustness.
         startDynamicGradientAnimation(nameEl);
     });
     nameEl.addEventListener('mousemove', (e) => {
         handleDynamicGradientMouseMove(nameEl, e);
     });
     nameEl.addEventListener('mouseleave', (e) => {
-        // If mouse leaves nameEl and is still within profileCard, do not stop animation.
-        // Animation only stops when mouse leaves profileCard entirely.
-        if (!profileCard.contains(e.relatedTarget)) { // Check if the relatedTarget is outside profileCard
+        // Se o mouse sair do nameEl e ainda estiver dentro do profileCard, não para a animação.
+        // A animação só parará quando sair do profileCard.
+        if (!profileCardElement.contains(e.relatedTarget)) { // Check if the relatedTarget is outside profileCard
             stopDynamicGradientAnimation(nameEl);
         }
     });
@@ -1064,15 +1149,14 @@
 
     /* REVEAL DE HABILIDADES AO SCROLLAR (Efeito Gaveta) */
     const skillCards = document.querySelectorAll('#skills-container > .skill-category-card');
-    // Começa a observar a partir do segundo card, pois o primeiro já está visível
-    const skillCardsToObserve = Array.from(skillCards).slice(1);
-
+    // Define as opções para o IntersectionObserver
     const revealObserverOptions = {
         root: null, // O viewport é o elemento raiz
         rootMargin: '0px',
         threshold: 0.2 // Acionar quando 20% do elemento alvo estiver visível
     };
 
+    // Cria o IntersectionObserver
     const skillRevealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -1084,9 +1168,17 @@
     }, revealObserverOptions);
 
     // Esconder inicialmente todos os cards de habilidade, exceto o primeiro, usando JavaScript
-    skillCardsToObserve.forEach(card => {
-        card.classList.add('initial-hidden-skill');
-        skillRevealObserver.observe(card); // Começar a observar cada card escondido
+    // E começar a observar todos eles.
+    Array.from(skillCards).forEach((card, index) => {
+        if (index === 0) {
+            // O primeiro card já está visível por padrão e centralizado via CSS.
+            // Apenas garanta que ele tenha as propriedades corretas.
+            card.classList.remove('initial-hidden-skill'); // Remove qualquer classe de esconder caso venha de outro estado
+            card.classList.add('is-revealed-skill'); // Garante que ele esteja 'revelado'
+            return; 
+        }
+        card.classList.add('initial-hidden-skill'); // Adiciona a classe para esconder inicialmente
+        skillRevealObserver.observe(card); // Começa a observar cada card escondido
     });
 
   </script>
