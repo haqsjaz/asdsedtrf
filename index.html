@@ -949,28 +949,38 @@ if (instant) {
 }
 
     // Event listener for transition end to handle snapping back for infinite loop
+/* -------------- bloco NOVO -------------- */
 carouselTrack.addEventListener('transitionend', e => {
-  // Garantimos que é a transição de transform
+  // só tratamos o fim da transição do transform
   if (e.propertyName !== 'transform') return;
 
-  /* Detecta se estamos em um dos clones */
+  /* concluiu a animação – pode clicar de novo */
+  isTransitioning       = false;
+  prevButton.disabled   = false;
+  nextButton.disabled   = false;
+
+  let needSnap = false;
+
+  /* Estamos sobre um clone?  Corrige o índice… */
   if (currentIndex >= serverCards.length - postClones) {
-    currentIndex = preClones;                               // volta ao 1º real
+    currentIndex = preClones;                         // primeiro card real
+    needSnap     = true;
   } else if (currentIndex < preClones) {
-    currentIndex = serverCards.length - postClones - 1;     // último real
-  } else {
-    // Se não era clone, nada a fazer
-    return;
+    currentIndex = serverCards.length - postClones - 1; // último card real
+    needSnap     = true;
   }
 
-  /* --- Snap invisível --- */
-  carouselTrack.style.transition = 'none';  // corta animação
-  updateCarousel();                         // reposiciona sem animar
-  void carouselTrack.offsetWidth;           // força re-flow
+  if (!needSnap) return;          // nada para corrigir
 
-  /* Reativa a animação para futuras navegações */
+  /* —— Snap invisível —— */
+  carouselTrack.style.transition = 'none'; // remove a animação
+  updateCarousel(true);                    // reposiciona **SEM** animar
+  void carouselTrack.offsetWidth;          // força re-flow / repaint
+
+  /* reativa a animação para os próximos cliques */
   carouselTrack.style.transition = 'transform 0.5s ease-in-out';
 });
+/* ---------------------------------------- */
 
 
     // Navigation functions
