@@ -177,6 +177,48 @@
   pointer-events:none;                  /* não intercepta o mouse */
   clip-path: circle(50%);
 }
+    /* ─────── Cartão-descrição que surge sobre o nó ─────── */
+.skill-info-card{
+  position:fixed;                 /* fora do fluxo; fácil de mover */
+  max-width:240px;
+  padding:1rem 1.25rem;
+  border-radius:1rem;
+  backdrop-filter:blur(12px);
+  background:rgba(44,47,51,.55);
+  border:1px solid rgba(114,137,218,.35);
+  box-shadow:0 0 20px rgba(114,137,218,.25);
+  color:#F9FAFB;
+  opacity:0;                      /* invisível por padrão */
+  pointer-events:none;            /* não “rouba” o mouse */
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:50;
+}
+.skill-info-card.visible{         /* classe que mostramos via JS */
+  opacity:1;
+}
+
+/* Texto interno */
+.skill-info-card h4{
+  font-size:1rem;
+  font-weight:700;
+  margin-bottom:.35rem;
+}
+.skill-info-card p{
+  font-size:.875rem;
+  line-height:1.35rem;
+}
+
+/* No mobile ocupamos a largura quase toda e centralizamos */
+@media (max-width:768px){
+  .skill-info-card.mobile{
+    width:calc(100% - 3rem);
+    max-width:none;
+    left:50%!important;           /* forçado pelo JS */
+    top:50%!important;
+    transform:translate(-50%,-50%) scale(.95);
+  }
+}
+
 
     /* estrela adota um leve glow ao passar o mouse */
 .skill-node.core-star:hover image {
@@ -732,6 +774,49 @@
             ]
         };
 
+        const skillDescriptions = {
+  "Python": `Comecei a estudar Python aos 14 anos enquanto mergulhava
+  em cybersecurity. A linguagem acabou virando minha porta de entrada
+  para automação e para os bots de Discord que já construí.`,
+  "JavaScript": `Gosto de pensar no JavaScript como meu “canivete
+  suíço”, do front-end à lógica de servidores, ele me permite
+  transformar ideias em interfaces vivas.`,
+  "Java": `É a linguagem que me deu disciplina de engenharia de
+  software. Comecei a estudar na UniFil, dentro do curso de Ciência da
+  Computação. Usei Java em projetos acadêmicos de POO e em APIs
+  simples para a Federação de Automobilismo.`,
+  "React": `React foi a base do LearnConnect. Curto o fluxo de dados
+  previsível que ele traz para UIs complexas.`,
+  "Next.js": `Server Side Rendering no LearnConnect veio com Next.js,
+  garantindo SEO e páginas super rápidas.`,
+  "Tailwind CSS": `Meu framework favorito para estilização. Posso
+  prototipar interfaces em minutos sem sair do HTML.`,
+  "D3.js": `Ferramenta essencial para criar as visualizações interativas
+  de dados de corridas da FPrA, inclusive esta constelação.`,
+  "Three.js": `Exploro 3D na web por hobby, foi com Three.js que criei
+  o background de partículas deste portfólio.`,
+  "SQL": `Nada como um bom SELECT para descobrir padrões nos resultados
+  das pistas. Uso SQL todos os dias como data-analyst.`,
+  "Git": `Tudo o que eu faço no mundo dev é feito com versionamento,
+  sempre busco manter um bom padrão de comunicação e informação nos
+  commits`,
+  "Figma": `Faço do Figma meu caderno de rascunhos digitais antes de
+  qualquer linha de código. Literalmente a minha paixão mais forte no
+  mundo dev é a arte do design gráfico. Desde pequeno, sempre amei criar.`,
+  "UI/UX": `Acredito que código bonito é inútil se a experiência
+  desaponta. Por isso estudo fluxos, acessibilidade e micro-interações.`,
+  "Cybersecurity": `CTFs, labs e muita curiosidade: segurança é meu
+  combustível para aprender como as coisas realmente funcionam.`,
+  /* Os nós-“core” podem usar descrições genéricas curtas */
+  "Programação":  "O centro de tudo que faço.",
+  "Front-End":    "Onde criatividade vira interface.",
+  "Back-End":     "A engrenagem por trás da mágica.",
+  "Ferramentas":  "Utilitários que aceleram meu dia a dia.",
+  "Design":       "Transformando ideias em valor visual.",
+  "Segurança":    "Camada crítica para qualquer projeto."
+};
+
+
         const skillIcons = {
   "Python":        "assets/images/python.png",
   "JavaScript":    "assets/images/javascript.png",
@@ -760,6 +845,10 @@
         const linkDist       = isMobile ? 70  : 100;   // ↓ encurta no mobile
         const chargeStrength = isMobile ? -120 : -200; // ↓ repulsão menor
 
+        /* ───────── Elemento único de cartão ───────── */
+        const infoCard = document.createElement("div");
+        infoCard.className = "skill-info-card";
+        document.body.appendChild(infoCard);
 
         const svg = d3.select(container).append("svg")
             .attr("viewBox", [-width / 2, -height / 2, width, height]);
@@ -873,14 +962,48 @@
             return linkedByIndex[`${a.id},${b.id}`] || linkedByIndex[`${b.id},${a.id}`] || a.id === b.id;
         }
 
-        node.on("mouseover", function(event, d) {
-            node.classed("faded", n => !isConnected(d, n));
-            link.classed("faded", l => d.id !== l.source.id && d.id !== l.target.id);
-            d3.select(this).classed("faded", false);
-        }).on("mouseout", function() {
-            node.classed("faded", false);
-            link.classed("faded", false);
-        });
+        function showCard(d, evt){
+  const desc = skillDescriptions[d.id] || "Em construção…";
+  infoCard.innerHTML = `<h4>${d.id}</h4><p>${desc}</p>`;
+
+  if (isMobile){
+    infoCard.classList.add("mobile");
+    // centralizado – posição ajustada só pela classe
+  }else{
+    infoCard.classList.remove("mobile");
+    moveCard(evt);                 // posiciona perto do cursor
+  }
+
+  requestAnimationFrame(()=>infoCard.classList.add("visible"));
+}
+
+function moveCard(evt){
+  // margem mínima para não “vazar” da tela
+  const pad = 12;
+  let x = evt.clientX + 18;        // 18 px à direita do cursor
+  let y = evt.clientY + 18;
+  // corrige se bater na borda direita / baixo
+  if (x + infoCard.offsetWidth  > window.innerWidth  - pad) x = evt.clientX - infoCard.offsetWidth - 18;
+  if (y + infoCard.offsetHeight > window.innerHeight - pad) y = evt.clientY - infoCard.offsetHeight - 18;
+  infoCard.style.left = x + "px";
+  infoCard.style.top  = y + "px";
+}
+
+function hideCard(){
+  infoCard.classList.remove("visible","mobile");
+}
+
+node
+  .on("mouseenter", (evt,d)=>showCard(d, evt))
+  .on("mousemove",  (evt)=>{ if (!isMobile) moveCard(evt); })
+  .on("mouseleave", hideCard)
+  // suporto toque: um tap mostra, segundo tap fora some
+  .on("touchstart", (evt,d)=>{
+     evt.preventDefault();
+     showCard(d, evt.touches[0]);
+     window.addEventListener("touchend", hideCard, { once:true });
+  });
+
 
 
         simulation.on("tick", () => {
