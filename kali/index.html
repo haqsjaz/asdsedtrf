@@ -183,7 +183,12 @@ const shared = {
     this.phase = Math.max(this.phase, id);
     print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
     if (id === 3){
+      fileSystem['/'].children.root.children['flag_final.txt'] = {
+        type:'file',
+        content:'flag{4dm1n_r00t_pwn3d}'
+        };
       print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
+      print('<span class="info-message">Dica: ls em /root 😉</span>');
     } else {
       const hints = {
         2: 'Analise o tráfego em /home/analyst/pcap',
@@ -221,9 +226,7 @@ const fileSystem = {        /* — RESUMIDO para caber —            */
        }}
      }}
    }},
-   root:{type:'directory',children:{
-     'flag_final.txt':{type:'file',content:'flag{4dm1n_r00t_pwn3d}'}
-   }}
+   root:{type:'directory',children:{}}
  }}};
 
 /* ──────────────────────────────────────────────────────────────
