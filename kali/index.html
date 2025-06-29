@@ -290,7 +290,7 @@ function initSingleTerminal(rootEl, idx=0){
     const [c, ...args] = cmd.trim().split(' ');
     switch(c){
       case 'help':
-        p('Comandos: ls, cd, cat, whoami, su, nmap, gobuster, wireshark, hydra, metasploit, clear, exit');
+        p('Comandos: ls, cd, cat, whoami, su, nmap, gobuster, wireshark, hydra, metasploit, clear.   Para retornar à tela inicial, use exit.');
         break;
       case 'ls':{
         const target = args[0] ?? '';
@@ -344,7 +344,7 @@ function initSingleTerminal(rootEl, idx=0){
       case 'gobuster':
         if(cmd.includes('http://10.10.10.10')){
           p('/backup (Status:301)\n/secret.txt (Status:200)');
-          fileSystem['\/'].children.home.children.dev.children['FLAG1.txt'] =
+          fileSystem['/'].children.home.children.dev.children['FLAG1.txt'] =
             {type:'file',content:'flag{g0bu5t3r_rocks}'};
           shared.awardFlag(1,'g0bu5t3r_rocks',p);
         }else p('Exemplo: gobuster dir -u http://10.10.10.10 -w …');
