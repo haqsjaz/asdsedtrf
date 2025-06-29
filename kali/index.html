@@ -200,41 +200,78 @@ const shared = {
 };
 
 /* sistema de arquivos (uma única “máquina”) */
-const fileSystem = {        /* — RESUMIDO para caber —            */
- '/':{type:'directory',children:{
-   bin:{type:'directory',children:{}},
-   etc:{type:'directory',children:{
-     passwd:{type:'file'},
-     shadow:{type:'file',content:'root:$6$...'}
-   }},
-   home:{type:'directory',children:{
-     dev:{type:'directory',children:{
-       'README.md':{type:'file',
-         content:'O admin deixou um backup em 10.10.10.30:445'}
-     }},
-     analyst:{type:'directory',children:{
-       pcap:{type:'directory',children:{
-         'http_leak.pcap':{type:'file',content:'<dados>'}
-       }}
-     }}
-   }},
-   var:{type:'directory',children:{
-     log:{type:'directory',children:{
-       apache:{type:'directory',children:{
-         'access.log':{type:'file',
-           content:'192.168.56.1 - - [28/Jun/2025] "GET /backup/"'}
-       }}
-     }}
-   }},
-   root:{type:'directory',children:{
-     Desktop  :{type:'directory',children:{}},
-     Documents:{type:'directory',children:{
-       'notes.txt':{type:'file',
-                    content:'Credenciais de backup: admin:password123'}
-       }},
-     Downloads:{type:'directory',children:{}}
-     }}
- }}};
+/* ============ filesystem v3 ============ */
+const fileSystem = {
+  '/':{ type:'directory', children:{
+    bin:{ type:'directory', children:{
+      'suid-cat':{ type:'file', content:'ELF…' }          // pista p/ privilege-escalation
+    }},
+    etc:{ type:'directory', children:{
+      passwd:{ type:'file', content:
+`root:x:0:0:root:/root:/bin/bash
+analyst:x:1001:1001:Network Analyst:/home/analyst:/bin/bash
+dev:x:1002:1002:Junior Dev:/home/dev:/bin/bash`},
+      shadow:{ type:'file', content:'root:$6$...\nanalyst:!!\ndev:$6$...' }
+    }},
+    home:{ type:'directory', children:{
+      dev:{ type:'directory', perms:'750', children:{
+        projects:{ type:'directory', children:{
+          src:{ type:'directory', children:{
+            'secret.cpp':{ type:'file',
+              content:'#include <iostream> // senha escondida' }
+          }},
+          'FLAG1.txt':{ type:'file',
+                        content:'flag{g0bu5t3r_rocks}' }      // criada em runtime
+        }},
+        '.ssh':{ type:'directory', perms:'700', children:{
+          'id_rsa':{ type:'file', content:'-----BEGIN OPENSSH PRIVATE KEY-----' }
+        }},
+        'README.md':{ type:'file',
+          content:'Há um backup (.tar.gz) em 10.10.10.30:21 (FTP)' }
+      }},
+      analyst:{ type:'directory', children:{
+        pcap:{ type:'directory', children:{
+          'http_leak.pcap':{ type:'file', content:'(dados binários)' }
+        }},
+        notes:{ type:'directory', children:{
+          'to-root.txt':{ type:'file',
+            content:'Hint: exploit o suid-cat para ler /root/...' }
+        }},
+        'FLAG2.txt':{ type:'file', content:'flag{p4ck3t_sn1ff3r}' } // dropada via Wireshark
+      }}
+    }},
+    opt:{ type:'directory', children:{
+      targets:{ type:'directory', children:{
+        internal_web:{ type:'directory', children:{
+          'backup.zip':{ type:'file',
+                         content:'PK… (senha=SameAsUser)' }
+        }}
+      }}
+    }},
+    tmp:{ type:'directory', perms:'777', children:{} },
+    var:{ type:'directory', children:{
+      log:{ type:'directory', children:{
+        apache:{ type:'directory', children:{
+          'access.log':{ type:'file',
+            content:'192.168.56.1 - - "GET /secret.txt HTTP/1.1" 200 -' }
+        }}
+      }}
+    }},
+    root:{ type:'directory', perms:'700', children:{
+      Desktop  :{ type:'directory', children:{} },
+      Documents:{ type:'directory', children:{
+        'notes.txt':{ type:'file',
+          content:'Use nmap –sC –p445 10.10.10.30' }
+      }},
+      Downloads:{ type:'directory', children:{} },
+      'FLAG3.txt'   :{ type:'file',
+                       content:'flag{4dm1n_r00t_pwn3d}' },   // ganho via metasploit
+      'flag_final.txt':{ type:'file',
+                         content:'flag{ultimate_victory}'}   // criado só se FLAGS 1-3 ok
+    }}
+  }}
+};
+
 
 /* ──────────────────────────────────────────────────────────────
    2 ▪ FUNÇÃO QUE INSTALA UMA *ÚNICA* JANELA DE TERMINAL
@@ -292,21 +329,34 @@ function initSingleTerminal(rootEl, idx=0){
       case 'help':
         p('Comandos: ls, cd, cat, whoami, su, nmap, gobuster, wireshark, hydra, metasploit, clear.   Para retornar à tela inicial, use exit.');
         break;
-      case 'ls':{
-        const target = args[0] ?? '';
-        const defaultHome = user === 'root' ? '/root' : `/home/${user}`;
-        const r = resolve(target || cwd);
-        if(r && r.node.type==='directory'){
-          p(Object.keys(r.node.children).map(k=>{
-            const t=r.node.children[k].type;
-            return `<span class="${t==='directory'?'command-output-dir':'command-output-file'}">${k}</span>`;
-          }).join('  '));
-        }else p(`ls: ${args[0]||'.'}: não encontrado`,'error-message');
-      }break;
-      case 'cd':{
-        const r=resolve(args[0]||'/'); if(r&&r.node.type==='directory') cwd=r.full;
-        else p(`cd: ${args[0]}: não é diretório`,'error-message');
-      }break;
+case 'ls': {
+  const targetPath = args[0] || cwd;  
+  const res = resolve(targetPath);
+
+  if (res && res.node.type === 'directory') {
+    /* monta a listagem colorida */
+    const listing = Object.keys(res.node.children).map(name => {
+      const isDir = res.node.children[name].type === 'directory';
+      return `<span class="${isDir ? 'command-output-dir'
+                                   : 'command-output-file'}">${name}</span>`;
+    }).join('  ');    
+    p(listing);
+  } else {
+    p(`ls: ${args[0] || '.'}: não encontrado`, 'error-message');
+  }
+} break;
+      /* ---------- cd --------------------------------------------------------- */
+case 'cd': {
+  /* destino explicitamente informado ou diretório “home” do usuário */
+  const dest = args[0] || (user === 'root' ? '/root' : `/home/${user}`);
+  const res  = resolve(dest);
+
+  if (res && res.node.type === 'directory') {
+    cwd = res.full;              // move!
+  } else {
+    p(`cd: ${args[0] || dest}: não é diretório`, 'error-message');
+  }
+} break;
       case 'cat':{
         const r=resolve(args[0]||''); if(r&&r.node.type==='file') p(r.node.content.replace(/</g,'&lt;'));
         else p(`cat: ${args[0]}: não encontrado`,'error-message');
