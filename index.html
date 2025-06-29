@@ -752,6 +752,10 @@
 
         const width = container.clientWidth;
         const height = container.clientHeight;
+        // ——— ajuste automático para mobile ———
+        const isMobile = window.innerWidth <= 768;   // mesmo corte do seu CSS
+        const SCALE    = isMobile ? 0.65 : 1;       // 65 % do tamanho no mobile
+
 
         const svg = d3.select(container).append("svg")
             .attr("viewBox", [-width / 2, -height / 2, width, height]);
@@ -778,41 +782,47 @@
             .enter().append("g")
             .attr("class", "skill-node");
 
-        node.each(function (d) {
+       node.each(function (d) {
   const g = d3.select(this);
 
-  /* ───────── NÓS “CORE” VIRAM ESTRELA ───────── */
+  /* ─── NÓS “CORE” → ESTRELA ─── */
   if (d.group === "core") {
-    g.classed("core-star", true)            // classe p/ CSS
+    const starSize = 52 * SCALE;          // ↓ 52 px desktop → 34 px mobile
+    g.classed("core-star", true)
      .append("image")
      .attr("href", "assets/images/star.png")
-     .attr("width", 52)                     // ≈ 2 × 26 px
-     .attr("height", 52)
-     .attr("x", -26)
-     .attr("y", -26);
+     .attr("width",  starSize)
+     .attr("height", starSize)
+     .attr("x", -starSize / 2)
+     .attr("y", -starSize / 2);
   }
-  /* ──────── Todos os demais continuam vidro ──────── */
+
+  /* ─── Demais nós: círculo de vidro + ícone ─── */
   else {
+    const r        = 20 * SCALE;          // ↓ 20 px → 13 px
+    const imgSize  = 32 * SCALE;          // ↓ 32 px → 21 px
+
     g.append("circle")
      .attr("class", "glass")
-     .attr("r", 20);
+     .attr("r", r);
 
-  /* imagem se existir */
-  if (skillIcons[d.id]) {
-    g.append("image")
-     .attr("href", skillIcons[d.id])
-     .attr("width", d.group === "core" ? 40 : 32)
-     .attr("height", d.group === "core" ? 40 : 32)
-     .attr("x", d.group === "core" ? -20 : -16)
-     .attr("y", d.group === "core" ? -20 : -16);
-   }
+    if (skillIcons[d.id]) {
+      g.append("image")
+       .attr("href",   skillIcons[d.id])
+       .attr("width",  imgSize)
+       .attr("height", imgSize)
+       .attr("x", -imgSize / 2)
+       .attr("y", -imgSize / 2);
+    }
   }
 });
 
+
         node.append("text")
-        .text(d => d.id)
-        .attr("y", d => (d.group === "core" ? 34 : 28))   /* vai para baixo da bolinha */
-        .attr("font-size", 11);
+       .text(d => d.id)
+       .attr("y", d => (d.group === "core" ? 34 * SCALE : 28 * SCALE))
+       .attr("font-size", isMobile ? 9 : 11);
+
 
 
         node.call(d3.drag()
@@ -861,7 +871,7 @@
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
-            const margin = 40;                       // distância mínima da borda
+            const margin = 40 * SCALE;                       // distância mínima da borda
             node
                 .each(d => {                           // mantém dentro da viewBox
                   d.x = Math.max(-width/2  + margin, Math.min(width/2  - margin, d.x));
