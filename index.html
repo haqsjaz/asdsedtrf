@@ -821,18 +821,18 @@
             .on("end", dragended));
 
         // wrapper interno para aplicar transform via zoom
-const gZoom = svg.append("g");
-gZoom.append(() => link.node().parentNode.removeChild(link.node()));
-gZoom.append(() => node.node().parentNode.removeChild(node.node()));
-gZoom.append(() => link.node());
-gZoom.append(() => node.node());
+//const gZoom = svg.append("g");
+//gZoom.append(() => link.node().parentNode.removeChild(link.node()));
+//gZoom.append(() => node.node().parentNode.removeChild(node.node()));
+//gZoom.append(() => link.node());
+//gZoom.append(() => node.node());
 
 // Zoom + pan (arrastar) + pinch
-svg.call(
-  d3.zoom()
-     .scaleExtent([.5, 3])
-     .on("zoom", e => gZoom.attr("transform", e.transform))
-);
+//svg.call(
+  //d3.zoom()
+    // .scaleExtent([.5, 3])
+     //.on("zoom", e => gZoom.attr("transform", e.transform))
+//);
 
             
         // Hover/Focus functionality
