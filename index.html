@@ -269,6 +269,13 @@ body.has-fixed-header{
         .server-card { width: 90%; }
          #skills-constellation-container { height: 400px; }
     }
+
+    /* navbar desliza para cima suavemente; o "voltar" é instantâneo         */
+header.nav-hidden{
+  transform: translateY(-110%);   /* empurra totalmente para fora       */
+  transition: transform .35s ease;/* só existe quando a classe está ativa*/
+}
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -292,6 +299,7 @@ body.has-fixed-header{
     border-b border-white/10  /* linha sutil na base (opcional)        */
     shadow-md shadow-black/20 /* leve sombra para leitura em claros    */
     transition-colors
+    will-change-transform
   ">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
       <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
@@ -550,6 +558,23 @@ body.has-fixed-header{
           nameEl.style.backgroundPosition = `${pct}% 50%`;
         }
       });
+
+      /* === esconder navbar ao rolar para baixo, mostrar ao rolar para cima === */
+const nav = document.querySelector('header');
+let lastY  = window.scrollY;
+
+window.addEventListener('scroll', () => {
+  const curY = window.scrollY;
+
+  /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
+  if (curY > lastY + 16) {
+    nav.classList.add('nav-hidden');      // desce → esconde suavemente
+    lastY = curY;
+  } else if (curY < lastY - 16) {
+    nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
+    lastY = curY;
+  }
+});
 
       // Lógica do Carrossel (mantida integralmente)
       const carouselContainer = document.querySelector('.carousel-container');
