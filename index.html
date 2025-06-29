@@ -178,6 +178,14 @@
   clip-path: circle(50%);
 }
 
+    /* estrela adota um leve glow ao passar o mouse */
+.skill-node.core-star:hover image {
+  filter: drop-shadow(0 0 8px rgba(114,137,218,.7))
+          brightness(1.2);
+  transform: scale(1.15);
+  transition: filter .3s ease, transform .3s ease;
+}
+
 
 
     /* -- Mantendo outros estilos -- */
@@ -770,12 +778,24 @@
             .enter().append("g")
             .attr("class", "skill-node");
 
-        node.each(function(d) {
-        const g = d3.select(this);
-    /* vidro */
-        g.append("circle")
-       .attr("class","glass")
-       .attr("r", d.group === "core" ? 26 : 20);
+        node.each(function (d) {
+  const g = d3.select(this);
+
+  /* ───────── NÓS “CORE” VIRAM ESTRELA ───────── */
+  if (d.group === "core") {
+    g.classed("core-star", true)            // classe p/ CSS
+     .append("image")
+     .attr("href", "assets/images/star.png")
+     .attr("width", 52)                     // ≈ 2 × 26 px
+     .attr("height", 52)
+     .attr("x", -26)
+     .attr("y", -26);
+  }
+  /* ──────── Todos os demais continuam vidro ──────── */
+  else {
+    g.append("circle")
+     .attr("class", "glass")
+     .attr("r", 20);
 
   /* imagem se existir */
   if (skillIcons[d.id]) {
@@ -785,9 +805,9 @@
      .attr("height", d.group === "core" ? 40 : 32)
      .attr("x", d.group === "core" ? -20 : -16)
      .attr("y", d.group === "core" ? -20 : -16);
+   }
   }
 });
-
 
         node.append("text")
         .text(d => d.id)
