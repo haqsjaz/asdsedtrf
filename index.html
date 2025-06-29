@@ -269,6 +269,12 @@
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
+
+    <script>
+    if (location.pathname.endsWith('/index.html')) {
+      history.replaceState(null,'',location.pathname.replace('/index.html','/'));
+    }
+    </script>
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
 
