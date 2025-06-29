@@ -386,7 +386,7 @@
             break;
 
           case 'exit':
-            window.location.href = 'index.html';
+            window.location.href = '/';
             break;
 
           default:
@@ -469,7 +469,7 @@ Use '<span class="info-message">help</span>' para ver os comandos disponíveis. 
       };
 
       terminalInput.addEventListener('keydown', commandHandler);
-      closeTerminalBtn.addEventListener('click', () => window.location.href = 'index.html');
+      closeTerminalBtn.addEventListener('click', () => window.location.href = '/');
       
       document.querySelector('.terminal-window').addEventListener('click', (e) => {
         if (e.target.id !== 'terminalInput') {
