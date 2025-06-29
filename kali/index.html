@@ -226,7 +226,14 @@ const fileSystem = {        /* — RESUMIDO para caber —            */
        }}
      }}
    }},
-   root:{type:'directory',children:{}}
+   root:{type:'directory',children:{
+     Desktop  :{type:'directory',children:{}},
+     Documents:{type:'directory',children:{
+       'notes.txt':{type:'file',
+                    content:'Credenciais de backup: admin:password123'}
+       }},
+     Downloads:{type:'directory',children:{}}
+     }}
  }}};
 
 /* ──────────────────────────────────────────────────────────────
@@ -286,7 +293,9 @@ function initSingleTerminal(rootEl, idx=0){
         p('Comandos: ls, cd, cat, whoami, su, nmap, gobuster, wireshark, hydra, metasploit, clear, exit');
         break;
       case 'ls':{
-        const r = resolve(args[0]||cwd);
+        const target = args[0] ?? '';
+        const defaultHome = user === 'root' ? '/root' : `/home/${user}`;
+        const r = resolve(target || defaultHome);
         if(r && r.node.type==='directory'){
           p(Object.keys(r.node.children).map(k=>{
             const t=r.node.children[k].type;
