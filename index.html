@@ -781,7 +781,7 @@
             .radius(d => (d.group === "core" ? 26 : 20) * SCALE + 6)
             .iterations(2)
   );
-       
+       if (isMobile) simulation.alpha(0.6);
 
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
             .domain(["core", "language", "framework", "library", "database", "tool", "design", "security"]);
