@@ -295,7 +295,7 @@ function initSingleTerminal(rootEl, idx=0){
       case 'ls':{
         const target = args[0] ?? '';
         const defaultHome = user === 'root' ? '/root' : `/home/${user}`;
-        const r = resolve(target || defaultHome);
+        const r = resolve(target || cwd);
         if(r && r.node.type==='directory'){
           p(Object.keys(r.node.children).map(k=>{
             const t=r.node.children[k].type;
