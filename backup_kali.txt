@@ -608,7 +608,7 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
                 break;
             case 'exit':
                 // Para kali.html autônomo, redireciona de volta para o portfólio principal
-                window.location.href = 'index.html'; // Ou o nome do seu arquivo principal
+                window.location.href = '/'; // Ou o nome do seu arquivo principal
                 return; // Sai da função mais cedo
             case 'sudo':
                 printToTerminal('sudo: Acredite em mim, você já é o root.');
@@ -638,7 +638,7 @@ Dados de credenciais (usuário: 'admin', senha: 'backup_pass') capturados via HT
 
         // Listener para o botão de fechar (redireciona para o portfólio principal)
         closeTerminalBtn.addEventListener('click', () => {
-            window.location.href = 'index.html'; // Redireciona para o seu arquivo principal do portfólio
+            window.location.href = '/'; // Redireciona para o seu arquivo principal do portfólio
         });
 
         // Listener para eventos de teclado no input do terminal
