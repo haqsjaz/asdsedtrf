@@ -178,32 +178,32 @@ const shared = {
   phase      : 0,
   foundFlags : new Set(),
 awardFlag(id, txt, print){
-  if (this.foundFlags.has(id)) return;      // evita repetição
+  if (this.foundFlags.has(id)) return;          // evita duplicar
   this.foundFlags.add(id);
 
   print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
 
-  switch (id){
-    case 1: /* nada novo a liberar ainda */ break;
-
-    case 2: /* libera FLAG3 em /root */
-      fileSystem['/'].children.root.children['FLAG3.txt'] = {
-        type:'file',
-        content:'flag{4dm1n_r00t_pwn3d}'
-      };
-      print(`<span class="info-message">Dica: explorar SMB 10.10.10.30 com metasploit</span>`);
-      break;
-
-    case 3: /* cria flag FINAL só agora */
-      fileSystem['/'].children.root.children['flag_final.txt'] = {
-        type:'file',
-        content:'flag{ultimate_victory}'
-      };
-      print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
-      print('<span class="info-message">Dica: ls em /root 😉</span>');
-      break;
+  /* ─── desbloqueios em cadeia ─── */
+  if (id === 2){           // depois do Wireshark
+    fileSystem['/'].children.root.children['FLAG3.txt'] = {
+      type:'file', content:'flag{4dm1n_r00t_pwn3d}'
+    };
   }
-} else {
+
+  if (id === 3){           // depois do Metasploit
+    fileSystem['/'].children.root.children['flag_final.txt'] = {
+      type:'file', content:'flag{ultimate_victory}'
+    };
+    print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
+    print('<span class="info-message">Dica: ls em /root 😉</span>');
+  } else {
+    const hints = {
+      1 : 'Próximo passo: analise o tráfego em /home/analyst/pcap',
+      2 : 'Use metasploit no SMB 10.10.10.30'
+    };
+    print(`<span class="info-message">${hints[id]}</span>`);
+  }
+}, else {
       const hints = {
         2: 'Analise o tráfego em /home/analyst/pcap',
         3: 'Explore SMB na 10.10.10.30 com metasploit'
