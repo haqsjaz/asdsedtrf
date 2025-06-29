@@ -30,7 +30,10 @@
     .tooltip:hover span {
       opacity: 1;
     }
-
+    
+body.has-fixed-header{
+  padding-top: 4rem;
+}
     .dynamic-gradient {
       position: relative;
       display: inline-block;
@@ -274,12 +277,22 @@
     if (location.pathname.endsWith('/index.html')) {
       history.replaceState(null,'',location.pathname.replace('/index.html','/'));
     }
+      document.documentElement.classList.add('has-fixed-header');
     </script>
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
 
   <!-- NAVBAR -->
-  <header class="bg-indigo-600 shadow-md sticky top-0 z-50">
+  <!-- header fixo + vidro ultra-transparente -->
+<header
+  class="
+    fixed top-0 left-0 w-full z-50
+    bg-[#2c2f33]/15           /* cinza-escuro 15 % (quase invisível)   */
+    backdrop-blur-md          /* aplica o efeito glassmorphism         */
+    border-b border-white/10  /* linha sutil na base (opcional)        */
+    shadow-md shadow-black/20 /* leve sombra para leitura em claros    */
+    transition-colors
+  ">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
       <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
       <nav>
