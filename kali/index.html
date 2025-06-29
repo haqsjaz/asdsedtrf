@@ -177,31 +177,33 @@
 const shared = {
   phase      : 0,
   foundFlags : new Set(),
-  awardFlag(id, txt, print){
-  if (this.foundFlags.has(id)) return;
+awardFlag(id, txt, print){
+  if (this.foundFlags.has(id)) return;      // evita repetição
   this.foundFlags.add(id);
-  this.phase = Math.max(this.phase, id);
+
   print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
 
-  /* —— liberar nova flag conforme a fase —— */
-  if (id === 3){
-    /* cria ***AGORA*** a flag final em /root */
-    fileSystem['/'].children.root.children['flag_final.txt'] = {
-      type:'file',
-      content:'flag{ultimate_victory}'
-    };
-    print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
-    print('<span class="info-message">Dica: ls em /root 😉</span>');
-  } else if (id === 2){
-    /* dropa FLAG3.txt (root flag) depois do metasploit */
-    fileSystem['/'].children.root.children['FLAG3.txt'] = {
-      type:'file',
-      content:'flag{4dm1n_r00t_pwn3d}'
-    };
-  }
+  switch (id){
+    case 1: /* nada novo a liberar ainda */ break;
+
+    case 2: /* libera FLAG3 em /root */
+      fileSystem['/'].children.root.children['FLAG3.txt'] = {
+        type:'file',
+        content:'flag{4dm1n_r00t_pwn3d}'
+      };
+      print(`<span class="info-message">Dica: explorar SMB 10.10.10.30 com metasploit</span>`);
+      break;
+
+    case 3: /* cria flag FINAL só agora */
+      fileSystem['/'].children.root.children['flag_final.txt'] = {
+        type:'file',
+        content:'flag{ultimate_victory}'
+      };
       print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
       print('<span class="info-message">Dica: ls em /root 😉</span>');
-    } else {
+      break;
+  }
+} else {
       const hints = {
         2: 'Analise o tráfego em /home/analyst/pcap',
         3: 'Explore SMB na 10.10.10.30 com metasploit'
@@ -294,9 +296,9 @@ function initSingleTerminal(rootEl, idx=0){
   const close = rootEl.querySelector('.closeTerminalBtn, #closeTerminalBtn');
 
   /* estado isolado */
-  let user = 'root';
-  let cwd  = '/root';
-  const pw = { dev:'P@ssw0rdDev!' };
+let user = 'analyst';
+let cwd  = '/home/analyst';
+const pw = { dev:'P@ssw0rdDev!', analyst:'Passw0rd!' };
   let hist = [], hIdx=-1, pwPrompt=false;
 
   /* helpers */
@@ -356,16 +358,15 @@ case 'ls': {
 } break;
       /* ---------- cd --------------------------------------------------------- */
 case 'cd': {
-  /* destino explicitamente informado ou diretório “home” do usuário */
   const dest = args[0] || (user === 'root' ? '/root' : `/home/${user}`);
   const res  = resolve(dest);
-
-  if (res && res.node.type === 'directory') {
-    cwd = res.full;              // move!
+  if (res && res.node.type === 'directory'){
+    cwd = res.full;
   } else {
     p(`cd: ${args[0] || dest}: não é diretório`, 'error-message');
   }
 } break;
+
       case 'cat':{
         const r=resolve(args[0]||''); if(r&&r.node.type==='file') p(r.node.content.replace(/</g,'&lt;'));
         else p(`cat: ${args[0]}: não encontrado`,'error-message');
