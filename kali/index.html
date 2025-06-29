@@ -178,15 +178,27 @@ const shared = {
   phase      : 0,
   foundFlags : new Set(),
   awardFlag(id, txt, print){
-    if (this.foundFlags.has(id)) return;
-    this.foundFlags.add(id);
-    this.phase = Math.max(this.phase, id);
-    print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
-    if (id === 3){
-      fileSystem['/'].children.root.children['flag_final.txt'] = {
-        type:'file',
-        content:'flag{4dm1n_r00t_pwn3d}'
-        };
+  if (this.foundFlags.has(id)) return;
+  this.foundFlags.add(id);
+  this.phase = Math.max(this.phase, id);
+  print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
+
+  /* —— liberar nova flag conforme a fase —— */
+  if (id === 3){
+    /* cria ***AGORA*** a flag final em /root */
+    fileSystem['/'].children.root.children['flag_final.txt'] = {
+      type:'file',
+      content:'flag{ultimate_victory}'
+    };
+    print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
+    print('<span class="info-message">Dica: ls em /root 😉</span>');
+  } else if (id === 2){
+    /* dropa FLAG3.txt (root flag) depois do metasploit */
+    fileSystem['/'].children.root.children['FLAG3.txt'] = {
+      type:'file',
+      content:'flag{4dm1n_r00t_pwn3d}'
+    };
+  }
       print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
       print('<span class="info-message">Dica: ls em /root 😉</span>');
     } else {
@@ -258,17 +270,14 @@ dev:x:1002:1002:Junior Dev:/home/dev:/bin/bash`},
       }}
     }},
     root:{ type:'directory', perms:'700', children:{
-      Desktop  :{ type:'directory', children:{} },
-      Documents:{ type:'directory', children:{
-        'notes.txt':{ type:'file',
-          content:'Use nmap –sC –p445 10.10.10.30' }
-      }},
-      Downloads:{ type:'directory', children:{} },
-      'FLAG3.txt'   :{ type:'file',
-                       content:'flag{4dm1n_r00t_pwn3d}' },   // ganho via metasploit
-      'flag_final.txt':{ type:'file',
-                         content:'flag{ultimate_victory}'}   // criado só se FLAGS 1-3 ok
-    }}
+  Desktop  :{ type:'directory', children:{} },
+  Documents:{ type:'directory', children:{
+    'notes.txt':{ type:'file',
+      content:'Use nmap –sC –p445 10.10.10.30' }
+  }},
+  Downloads:{ type:'directory', children:{} }
+  /*  – nada de FLAG aqui! */
+}}
   }}
 };
 
