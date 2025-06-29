@@ -68,6 +68,8 @@
     .terminal-header-buttons .red { background-color: #ff5f56; }
     .terminal-header-buttons .yellow { background-color: #ffbd2e; }
     .terminal-header-buttons .green { background-color: #27c93f; }
+    .terminal-header-buttons .plus{ background-color:#7289da; }
+
 
     .terminal-output {
       flex-grow: 1;
@@ -125,6 +127,7 @@
           <span class="red" id="closeTerminalBtn"></span>
           <span class="yellow"></span>
           <span class="green"></span>
+          <span class="plus"   id="newTermBtn"></span>
         </div>
       </div>
 
@@ -138,289 +141,241 @@
     </div>
   </div>
 
+    <!--  TEMPLATE para novos terminais  -->
+<template id="terminalTemplate">
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <span class="currentPathHeader"></span>
+
+      <div class="terminal-header-buttons">
+        <span class="red   closeTerminalBtn"></span>
+        <span class="yellow"></span>
+        <span class="green"></span>
+        <span class="plus" id="newTermBtn"></span>
+      </div>
+    </div>
+
+    <div class="terminal-output"></div>
+
+    <div class="terminal-input-line">
+      <span class="terminal-prompt"></span>
+      <input type="text"
+             class="terminal-input"
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false">
+    </div>
+  </div>
+</template>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // --- ELEMENTOS DO DOM ---
-      const terminalOutput = document.getElementById('terminalOutput');
-      const terminalInput = document.getElementById('terminalInput');
-      const terminalPrompt = document.getElementById('terminalPrompt');
-      const currentPathHeader = document.getElementById('currentPathHeader');
-      const closeTerminalBtn = document.getElementById('closeTerminalBtn');
+    // === TerminalManager – cria cópias independentes =======================
+/* ──────────────────────────────────────────────────────────────
+   1 ▪ ESTADO COMPARTILHADO ENTRE TODAS AS JANELAS DO CTF
+   ────────────────────────────────────────────────────────────── */
+const shared = {
+  phase      : 0,
+  foundFlags : new Set(),
+  awardFlag(id, txt, print){
+    if (this.foundFlags.has(id)) return;
+    this.foundFlags.add(id);
+    this.phase = Math.max(this.phase, id);
+    print(`<span class="success-message">[+] FLAG ${id} conquistada:</span> ${txt}`);
+    if (id === 3){
+      print('<br><span class="success-message">CTF COMPLETO – parabéns! 🎉</span>');
+    } else {
+      const hints = {
+        2: 'Analise o tráfego em /home/analyst/pcap',
+        3: 'Explore SMB na 10.10.10.30 com metasploit'
+      };
+      print(`<span class="info-message">Dica para a próxima etapa: ${hints[id+1]}</span>`);
+    }
+  }
+};
 
-      // --- ESTADO DO TERMINAL ---
-      let currentUser = 'root';
-      let currentDirectory = '/root';
-      const userPasswords = { 'dev': 'P@ssw0rdDev!' };
-      let commandHistory = [];
-      let historyIndex = -1;
-      let isPasswordPrompt = false;
+/* sistema de arquivos (uma única “máquina”) */
+const fileSystem = {        /* — RESUMIDO para caber —            */
+ '/':{type:'directory',children:{
+   bin:{type:'directory',children:{}},
+   etc:{type:'directory',children:{
+     passwd:{type:'file'},
+     shadow:{type:'file',content:'root:$6$...'}
+   }},
+   home:{type:'directory',children:{
+     dev:{type:'directory',children:{
+       'README.md':{type:'file',
+         content:'O admin deixou um backup em 10.10.10.30:445'}
+     }},
+     analyst:{type:'directory',children:{
+       pcap:{type:'directory',children:{
+         'http_leak.pcap':{type:'file',content:'<dados>'}
+       }}
+     }}
+   }},
+   var:{type:'directory',children:{
+     log:{type:'directory',children:{
+       apache:{type:'directory',children:{
+         'access.log':{type:'file',
+           content:'192.168.56.1 - - [28/Jun/2025] "GET /backup/"'}
+       }}
+     }}
+   }},
+   root:{type:'directory',children:{
+     'flag_final.txt':{type:'file',content:'flag{4dm1n_r00t_pwn3d}'}
+   }}
+ }}};
 
-      // --- SISTEMA DE ARQUIVOS SIMULADO (com trilha do CTF) ---
-      const fileSystem = {
-        '/': {
-          type: 'directory',
-          children: {
-            'bin': { type: 'directory', children: {} },
-            'etc': { type: 'directory', children: { 'passwd': { type: 'file' }, 'shadow': { type: 'file', content: 'root:$6$...:18650::::::\ndev:!!:18650::::::' } } },
-            'home': {
-              type: 'directory',
-              children: {
-                'dev': {
-                  type: 'directory',
-                  children: {
-                    'flag.txt': {
-                      type: 'file',
-                      content: 'Parabéns, você encontrou a flag!\n\nflag{m3_ch4m3_n0_d!Sc0rD_zcaioduque_e_3nviE_est4_fl4g}\n\nObrigado por jogar! Isso demonstra sua curiosidade e habilidade em seguir pistas, características essenciais de um bom profissional de tecnologia e segurança.'
-                    }
-                  }
-                }
-              }
-            },
-            'opt': { type: 'directory', children: {} },
-            'root': {
-              type: 'directory',
-              children: {
-                'Desktop': { type: 'directory', children: {} },
-                'Documents': { type: 'directory', children: { 'notes.txt': { type: 'file', content: 'Credenciais de backup: admin:password123' } } },
-                'Downloads': { type: 'directory', children: {} }
-              }
-            },
-            'var': {
-              type: 'directory',
-              children: {
-                'log': {
-                  type: 'directory',
-                  children: {
-                    'apache': {
-                      type: 'directory',
-                      children: {
-                        'access.log': { type: 'file', content: '127.0.0.1 - - [28/Jun/2025:10:00:00 -0300] "GET /index.html HTTP/1.1" 200 1234\n10.10.10.5 - - [28/Jun/2025:10:05:12 -0300] "GET /backup/config.php.bak HTTP/1.1" 200 512' }
-                      }
-                    },
-                    'auth.log': { type: 'file', content: 'Jun 28 10:05:01 kali sshd[1234]: Failed password for invalid user from 10.10.10.5 port 22 ssh2' }
-                  }
-                }
-              }
-            },
-            'www': {
-                type: 'directory',
-                children: {
-                    'html': {
-                        type: 'directory',
-                        children: {
-                            'index.html': { type: 'file' },
-                            'backup': {
-                                type: 'directory',
-                                children: {
-                                    'config.php.bak': {
-                                        type: 'file',
-                                        content: '<?php\n// ARQUIVO DE CONFIGURAÇÃO DE BACKUP\n\n$db_host = "localhost";\n$db_user = "admin_db";\n$db_pass = "S3nh@F0rt3!";\n\n// TODO: Remover credenciais hardcoded do usuário de desenvolvimento!\n// user: \'dev\', pass: \'P@ssw0rdDev!\'\n\n?>'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+/* ──────────────────────────────────────────────────────────────
+   2 ▪ FUNÇÃO QUE INSTALA UMA *ÚNICA* JANELA DE TERMINAL
+   ────────────────────────────────────────────────────────────── */
+function initSingleTerminal(rootEl, idx=0){
+  /* elementos desta janela */
+  const out   = rootEl.querySelector('.terminal-output');
+  const inp   = rootEl.querySelector('.terminal-input');
+  const prmpt = rootEl.querySelector('.terminal-prompt');
+  const hdr   = rootEl.querySelector('.currentPathHeader, #currentPathHeader');
+  const close = rootEl.querySelector('.closeTerminalBtn, #closeTerminalBtn');
+
+  /* estado isolado */
+  let user = 'root';
+  let cwd  = '/root';
+  const pw = { dev:'P@ssw0rdDev!' };
+  let hist = [], hIdx=-1, pwPrompt=false;
+
+  /* helpers */
+  const p = (t,c='')=>{ const d=document.createElement('div');
+    if(c) d.classList.add(c); d.innerHTML=t; out.appendChild(d);
+    out.scrollTop=out.scrollHeight; };
+  const updPrompt = ()=>{
+    const path = cwd.replace(`/home/${user}`,'~').replace('/root','~');
+    const col  = user==='root'?'#ff5555':'#50fa7b';
+    prmpt.innerHTML =
+      `<span style="color:${col}">${user}@kali</span>`+
+      `<span class="prompt-host">:</span>`+
+      `<span class="prompt-path">${path}</span><span class="prompt-symbol"># </span>`;
+    if(hdr) hdr.textContent = `${user}:${path}`;
+  };
+  const resolve = path=>{
+    const parts = path.split('/').filter(x=>x && x!=='.');
+    let cur = fileSystem['/']; const built=[];
+    if(!path.startsWith('/')) built.push(...cwd.split('/').filter(x=>x));
+    for(const part of parts){
+      if(part==='..') built.pop(); else built.push(part);
+    }
+    for(const part of built){
+      if(!cur.children?.[part]) return null;
+      cur = cur.children[part];
+    }
+    return {node:cur, full:'/'+built.join('/')};
+  };
+
+  /* comando principal -------------------------------------------------- */
+  const run = cmd=>{
+    if(pwPrompt) return;
+    p(prmpt.innerHTML+cmd);
+    if(!cmd.trim()) return;
+    hist.unshift(cmd); hIdx=-1;
+
+    const [c, ...args] = cmd.trim().split(' ');
+    switch(c){
+      case 'help':
+        p('Comandos: ls, cd, cat, whoami, su, nmap, gobuster, wireshark, hydra, metasploit, clear, exit');
+        break;
+      case 'ls':{
+        const r = resolve(args[0]||cwd);
+        if(r && r.node.type==='directory'){
+          p(Object.keys(r.node.children).map(k=>{
+            const t=r.node.children[k].type;
+            return `<span class="${t==='directory'?'command-output-dir':'command-output-file'}">${k}</span>`;
+          }).join('  '));
+        }else p(`ls: ${args[0]||'.'}: não encontrado`,'error-message');
+      }break;
+      case 'cd':{
+        const r=resolve(args[0]||'/'); if(r&&r.node.type==='directory') cwd=r.full;
+        else p(`cd: ${args[0]}: não é diretório`,'error-message');
+      }break;
+      case 'cat':{
+        const r=resolve(args[0]||''); if(r&&r.node.type==='file') p(r.node.content.replace(/</g,'&lt;'));
+        else p(`cat: ${args[0]}: não encontrado`,'error-message');
+      }break;
+      case 'whoami': p(user); break;
+      case 'su':{
+        const tgt=args[0]; if(!tgt){p('su: especifique usuário','error-message');break;}
+        if(!pw[tgt]){p(`su: usuário ${tgt} inexistente`,'error-message');break;}
+        pwPrompt=true; inp.type='password'; p(`Senha para ${tgt}:`);
+        const passH=ev=>{
+          if(ev.key==='Enter'){
+            ev.preventDefault();
+            const ok = inp.value===pw[tgt]; inp.value=''; inp.type='text'; pwPrompt=false;
+            if(ok){ user=tgt; cwd=`/home/${user}`; p('Login bem-sucedido!','success-message'); }
+            else   p('su: falha na autenticação','error-message');
+            inp.removeEventListener('keydown',passH); inp.addEventListener('keydown',keyH);
+            updPrompt();
           }
-        }
-      };
+        };
+        inp.removeEventListener('keydown',keyH); inp.addEventListener('keydown',passH);
+      }break;
 
-      // --- FUNÇÕES AUXILIARES ---
-      const printToTerminal = (text, className = '') => {
-        const line = document.createElement('div');
-        if (className) {
-            line.classList.add(className);
-        }
-        line.innerHTML = text;
-        terminalOutput.appendChild(line);
-        terminalOutput.scrollTop = terminalOutput.scrollHeight;
-      };
-      
-      // FUNÇÃO DE RESOLUÇÃO DE CAMINHO UNIFICADA E CORRIGIDA
-      const resolveNodeFromPath = (path) => {
-        const pathParts = path.split('/').filter(p => p && p !== '.');
-        let startingNode = fileSystem['/'];
-        let resolvedParts = [];
+      /* ferramentas do CTF -------------------------------------------- */
+      case 'nmap':
+        if(cmd.includes('10.10.10.10')){
+          p(`PORT STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2
+80/tcp open  http    Apache 2.4.41`);
+          p('<span class="info-message">Tente gobuster em http://10.10.10.10</span>');
+        }else if(cmd.includes('10.10.10.30')){
+          p('PORT STATE SERVICE\n445/tcp open microsoft-ds');
+          p('<span class="info-message">Talvez haja vulnerabilidade SMB…</span>');
+        }else p('Uso: nmap -sV <IP>');
+        break;
+      case 'gobuster':
+        if(cmd.includes('http://10.10.10.10')){
+          p('/backup (Status:301)\n/secret.txt (Status:200)');
+          fileSystem['\/'].children.home.children.dev.children['FLAG1.txt'] =
+            {type:'file',content:'flag{g0bu5t3r_rocks}'};
+          shared.awardFlag(1,'g0bu5t3r_rocks',p);
+        }else p('Exemplo: gobuster dir -u http://10.10.10.10 -w …');
+        break;
+      case 'wireshark':
+        p('Abrindo http_leak.pcap… pacote 37: analyst / Passw0rd!');
+        shared.awardFlag(2,'p4ck3t_sn1ff3r',p);
+        break;
+      case 'hydra':
+        if(cmd.includes('analyst') && cmd.includes('Passw0rd')){
+          p('[22][ssh] host:10.10.10.10 login: analyst password: Passw0rd!');
+          p('<span class="info-message">Use su analyst</span>');
+        }else p('Ex.: hydra -l analyst -p Passw0rd! ssh://10.10.10.10');
+        break;
+      case 'metasploit':
+      case 'msfconsole':
+        if(cmd.includes('ms17_010')){
+          p('Exploit executado – SYSTEM shell em 10.10.10.30');
+          shared.awardFlag(3,'4dm1n_r00t_pwn3d',p);
+        }else p('Dica: use exploit/windows/smb/ms17_010_eternalblue …');
+        break;
+      case 'clear': out.innerHTML=''; break;
+      case 'exit' : window.location='/'; break;
+      default     : p(`bash: ${c}: comando não encontrado`,'error-message');
+    }
+    updPrompt();
+  };
 
-        if (!path.startsWith('/')) {
-            resolvedParts = currentDirectory.split('/').filter(p => p);
-        }
+  /* teclado / histórico */
+  const keyH = e=>{
+    if(e.key==='Enter'){e.preventDefault(); run(inp.value); inp.value='';}
+    else if(e.key==='ArrowUp'){e.preventDefault();
+      if(hIdx<hist.length-1) inp.value=hist[++hIdx];
+    }else if(e.key==='ArrowDown'){e.preventDefault();
+      if(hIdx>0) inp.value=hist[--hIdx]; else{hIdx=-1; inp.value='';}
+    }
+  };
+  inp.addEventListener('keydown', keyH);
+  if(close) close.addEventListener('click', ()=>rootEl.remove());
 
-        for (const part of pathParts) {
-            if (part === '..') {
-                resolvedParts.pop();
-            } else {
-                resolvedParts.push(part);
-            }
-        }
-        
-        let currentNode = startingNode;
-        for (const part of resolvedParts) {
-            if (currentNode && currentNode.type === 'directory' && currentNode.children && currentNode.children[part]) {
-                currentNode = currentNode.children[part];
-            } else {
-                return null;
-            }
-        }
-        
-        const finalPath = '/' + resolvedParts.join('/');
-        return { node: currentNode, path: finalPath };
-      };
-
-      const updatePrompt = () => {
-        const pathForPrompt = currentDirectory.replace(`/home/${currentUser}`, '~').replace('/root', '~');
-        const userColor = currentUser === 'root' ? '#ff5555' : '#50fa7b';
-        terminalPrompt.innerHTML = `<span style="color:${userColor};">${currentUser}@kali</span><span class="prompt-host">:</span><span class="prompt-path">${pathForPrompt}</span><span class="prompt-symbol"># </span>`;
-        currentPathHeader.textContent = `${currentUser}:${pathForPrompt}`;
-      };
-
-      // --- PROCESSADOR DE COMANDOS ---
-      const processCommand = (command) => {
-        if (isPasswordPrompt) return;
-
-        printToTerminal(`${terminalPrompt.innerHTML}${command}`);
-        if (command.trim() === '') return;
-        commandHistory.unshift(command);
-        historyIndex = -1;
-
-        const parts = command.trim().split(' ');
-        const cmd = parts[0];
-        const args = parts.slice(1);
-
-        switch (cmd) {
-          case 'help':
-            printToTerminal('Comandos disponíveis:');
-            printToTerminal(`  <span class="info-message">ls</span>         - Lista o conteúdo do diretório.`);
-            printToTerminal(`  <span class="info-message">cd &lt;dir&gt;</span>   - Muda para o diretório <dir>.`);
-            printToTerminal(`  <span class="info-message">cat &lt;file&gt;</span> - Exibe o conteúdo do arquivo <file>.`);
-            printToTerminal(`  <span class="info-message">whoami</span>     - Mostra o usuário atual.`);
-            printToTerminal(`  <span class="info-message">su &lt;user&gt;</span>  - Troca para o usuário <user>.`);
-            printToTerminal(`  <span class="info-message">clear</span>      - Limpa a tela do terminal.`);
-            printToTerminal(`  <span class="info-message">exit</span>       - Sai do modo Cybersecurity.`);
-            break;
-            
-          case 'ls':
-            const dirToListResult = resolveNodeFromPath(args[0] || currentDirectory);
-            if (dirToListResult && dirToListResult.node.type === 'directory') {
-                let output = Object.keys(dirToListResult.node.children).map(key => {
-                    const item = dirToListResult.node.children[key];
-                    return `<span class="${item.type === 'directory' ? 'command-output-dir' : 'command-output-file'}">${key}</span>`;
-                }).join('  ');
-                printToTerminal(output);
-            } else {
-                 printToTerminal(`ls: não foi possível acessar '${args[0] || '.'}': Arquivo ou diretório não encontrado`, 'error-message');
-            }
-            break;
-          
-          case 'cd':
-            const targetPath = args[0];
-            if (!targetPath) break;
-            const dirResult = resolveNodeFromPath(targetPath);
-            if (dirResult && dirResult.node.type === 'directory') {
-                currentDirectory = dirResult.path;
-            } else {
-                printToTerminal(`bash: cd: ${targetPath}: Não é um diretório ou não foi encontrado`, 'error-message');
-            }
-            break;
-
-          case 'cat':
-            const pathToFile = args[0];
-            if(!pathToFile) break;
-            const fileResult = resolveNodeFromPath(pathToFile);
-            if(fileResult && fileResult.node.type === 'file'){
-                printToTerminal(fileResult.node.content.replace(/</g, "&lt;").replace(/>/g, "&gt;") || '');
-            } else {
-                printToTerminal(`cat: ${pathToFile}: Arquivo ou diretório não encontrado`, 'error-message');
-            }
-            break;
-
-          case 'whoami':
-            printToTerminal(currentUser);
-            break;
-
-          case 'su':
-            const targetUser = args[0];
-            if (!targetUser) {
-                printToTerminal("su: usuário não especificado", "error-message");
-                break;
-            }
-            if (targetUser === currentUser) {
-                printToTerminal("Você já é este usuário.");
-                break;
-            }
-            if (userPasswords[targetUser]) {
-                isPasswordPrompt = true;
-                terminalInput.type = 'password';
-                printToTerminal(`Senha para ${targetUser}:`);
-                
-                const passwordHandler = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const password = terminalInput.value;
-                        terminalInput.value = '';
-                        terminalInput.type = 'text';
-                        isPasswordPrompt = false;
-
-                        if (password === userPasswords[targetUser]) {
-                            currentUser = targetUser;
-                            currentDirectory = `/home/${currentUser}`;
-                            printToTerminal("Login bem-sucedido!", "success-message");
-                        } else {
-                            printToTerminal("su: Falha na autenticação", "error-message");
-                        }
-                        terminalInput.removeEventListener('keydown', passwordHandler);
-                        terminalInput.addEventListener('keydown', commandHandler);
-                        updatePrompt();
-                    }
-                };
-                terminalInput.removeEventListener('keydown', commandHandler);
-                terminalInput.addEventListener('keydown', passwordHandler);
-            } else {
-                printToTerminal(`su: Usuário '${targetUser}' não encontrado.`, "error-message");
-            }
-            break;
-
-          case 'clear':
-            terminalOutput.innerHTML = '';
-            break;
-
-          case 'exit':
-            window.location.href = '/';
-            break;
-
-          default:
-            printToTerminal(`bash: ${cmd}: comando não encontrado`, 'error-message');
-        }
-        if (!isPasswordPrompt) updatePrompt();
-      };
-
-      // --- INICIALIZAÇÃO E EVENTOS ---
-      const commandHandler = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            processCommand(terminalInput.value);
-            terminalInput.value = '';
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (historyIndex < commandHistory.length - 1) {
-                historyIndex++;
-                terminalInput.value = commandHistory[historyIndex];
-            }
-        } else if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (historyIndex > 0) {
-                historyIndex--;
-                terminalInput.value = commandHistory[historyIndex];
-            } else {
-                historyIndex = -1;
-                terminalInput.value = '';
-            }
-        }
-      };
-
-      const printWelcomeMessage = () => {
-        const asciiBlue = `<span class="ascii-blue">
+  /* mensagem inicial + prompt */
+    /* ─── mensagem inicial ─── */
+  const asciiBlue = `<span class="ascii-blue">
                     ..:^~!77777777!!!~^^:..                 
               .:^!77?77!~^:..:7????????????77!~^..          
             ~??7!^:.          7???????????????????7.        
@@ -446,41 +401,61 @@
               ...          .~7^ 
 </span>`;
 
-        const asciiPurple = `      <span class="ascii-purple">        
+  const asciiPurple = `<span class="ascii-purple">        
  █████╗  █████╗ ██████╗  █████╗██  ╔═██ ██████╗  █████╗
 ██   ██ ██   ██ ██╔══██╗██   ██ ██ ║██║██    ██ ██╔═══╝  
 ██╔══██╗██╔══██╗██████╔╝██╔══██╗██ ║██║██    ██ ██████╗    
 ███████║███████║██╔══██╗███████║██ ║██║██╔═══██╗ ╔══██║      
 ██╔══██║██╔══██║██║  ██║██╔══██║ ████╔╝ ██████╔╝█████╔╝
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═══╝  ╚═════╝ ╚════╝
-</span> `;
+</span>`;
 
-        const motd = `
-<pre>${asciiBlue}${asciiPurple}
-                                                By: Caio Duque - v2025.3
+  p(`<pre>${asciiBlue}${asciiPurple}
+                                                By: Caio Duque – v2025.3
+
 <span class="success-message">Iniciando Desafio CTF (Capture The Flag).</span>
-Bem-vindo, Agente. Sua missão, caso decida aceitá-la, é encontrar a flag secreta escondida neste sistema.
+Bem-vindo, Agente. Sua missão é encontrar as três flags escondidas.
 
-<span class="warning-message">PRIMEIRA PISTA:</span> Um novo servidor web foi configurado às pressas. Verifique os logs em <span class="prompt-path">/var/log</span> para qualquer atividade suspeita.
+Use <span class="info-message">help</span> para ver os comandos disponíveis.
+Boa sorte!
+</pre>`);
 
-Use '<span class="info-message">help</span>' para ver os comandos disponíveis. Boa sorte.
-</pre>`;
-        terminalOutput.innerHTML = motd;
-      };
+  /* prompt + foco */
+  updPrompt(); inp.focus();
+}
 
-      terminalInput.addEventListener('keydown', commandHandler);
-      closeTerminalBtn.addEventListener('click', () => window.location.href = '/');
-      
-      document.querySelector('.terminal-window').addEventListener('click', (e) => {
-        if (e.target.id !== 'terminalInput') {
-          terminalInput.focus();
-        }
-      });
+/* ──────────────────────────────────────────────────────────────
+   3 ▪ GERENCIADOR QUE CLONA NOVAS JANELAS PELO “botão +”
+   ────────────────────────────────────────────────────────────── */
+class TerminalManager{
+  constructor(){
+    this.tpl   = document.getElementById('terminalTemplate');
+    this.cont  = document.getElementById('kaliTerminalScreen');
+    this.count = 1;
+    document.addEventListener('click', e=>{
+    if (e.target.classList.contains('plus')) this.spawn();
+   });
+  }
+  spawn(){
+    const clone = this.tpl.content.firstElementChild.cloneNode(true);
+    /* garante IDs únicos quando houver */
+    clone.querySelectorAll('[id]').forEach(el=>{
+  if(!el.classList.contains('plus')) el.id += '_'+this.count;
+});
+    this.cont.appendChild(clone);
+    initSingleTerminal(clone, this.count++);
+  }
+}
 
-      printWelcomeMessage();
-      updatePrompt();
-      terminalInput.focus();
-    });
-  </script>
+/* ──────────────────────────────────────────────────────────────
+   4 ▪ QUANDO A PÁGINA CARREGAR…
+   ────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const tm = new TerminalManager();                         // gerenciador de clones
+  initSingleTerminal(document.querySelector('.terminal-window'), 0); // terminal inicial
+});
+</script>
+
+
 </body>
 </html>
