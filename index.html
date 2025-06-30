@@ -77,7 +77,7 @@ body.has-fixed-header{
     /* --- título da seção habilidades: gradiente + animação de onda ----------- */
 .skills-title{
   position:relative;
-  display:inline-block;
+  display:block;
   background:linear-gradient(90deg,#5A4BFF 0%,#7B46FF 50%,#8E5CFF 100%);
   background-size:200% 100%;
   background-position:0% 50%;
@@ -455,7 +455,7 @@ header.nav-hidden{
 
   <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
   <section id="skills" class="container mx-auto px-4 py-16">
-    <h3 id="skillsTitle" class="skills-title text-center text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
+    <h3 id="skillsTitle" class="skills-title block mx-auto text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
         <div class="skills-bg" aria-hidden="true"></div>
 
@@ -678,7 +678,7 @@ window.addEventListener('scroll', () => {
   /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
   if (curY > lastY + 16) {
     clearTimeout(hideTO);
-    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 2500); // 2.5 s
+    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 1500); // 2.5 s
     lastY = curY;
   } else if (curY < lastY - 16) {
     nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
@@ -686,22 +686,26 @@ window.addEventListener('scroll', () => {
   }
 });
       // …já dentro do addEventListener('DOMContentLoaded', ()=>{ … });
-(async ()=>{
-  if (!window.matchMedia('(pointer:fine)').matches) return;  // evita mobile
-  const {particlesCursor} = await import(
-    'https://unpkg.com/threejs-toys@4.0.4/dist/threejs-toys.module.min.js'
-  );
-  particlesCursor({
-    el: document.body,
-    gpgpuSize: 256,
-    colors: [0x5A4BFF,0x7B46FF,0x8E5CFF],
-    size: .35,
-    radius:.45,
-    depth:40,
-    velocityTaper:.8,
-    easing:.15
-  });
-})();
+/* ——————————— efeito cursor de partículas ——————————— */
+if (window.matchMedia('(pointer:fine)').matches) {
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/threejs-toys@4.0.4/dist/threejs-toys.umd.js';
+  s.onload = () => {
+    const { particlesCursor } = window.threeToys;
+    particlesCursor({
+      el: document.body,
+      gpgpuSize: 256,
+      colors: [0x5A4BFF, 0x7B46FF, 0x8E5CFF],
+      size: 0.35,
+      radius: 0.45,
+      depth: 40,
+      velocityTaper: 0.8,
+      easing: 0.15
+    });
+  };
+  document.head.appendChild(s);
+}
+
 
 
       // Lógica do Carrossel (mantida integralmente)
