@@ -230,6 +230,41 @@ body.has-fixed-header{
   transform: scale(1.15);
   transition: filter .3s ease, transform .3s ease;
 }
+/* ---------- fundo "nebula.png" + fade radial ---------- */
+.skills-bg{
+  position:absolute;
+  inset:0;
+  background:url('assets/nebula.png') center / cover no-repeat;
+  opacity:.9;                         /* 90 % no ponto mais forte      */
+  z-index:0;                          /* atrás das nuvens, à frente da página */
+  pointer-events:none;
+
+  /* máscara: invisível nas bordas, 90 % no centro            */
+  mask-image: radial-gradient(circle at center,
+                rgba(0,0,0,1) 0%,
+                rgba(0,0,0,.9) 35%,
+                rgba(0,0,0,0) 80%);
+  -webkit-mask-image: radial-gradient(circle at center,
+                rgba(0,0,0,1) 0%,
+                rgba(0,0,0,.9) 35%,
+                rgba(0,0,0,0) 80%);
+}
+
+/* ---------- nuvens roxo-azul quase imperceptíveis ---------- */
+.skills-clouds{
+  position:absolute;
+  inset:-15%;                    /* transborda um pouco para não aparecer borda */
+  z-index:1;                      /* acima da nebulosa, abaixo do SVG            */
+  pointer-events:none;
+  filter:blur(60px) saturate(160%);
+  opacity:.25;                   /* MUITO sutil                                  */
+
+  /* três manchas grandes em degradês radiais */
+  background:
+    radial-gradient(circle at 30% 40%, rgba(115,0,255,.8) 0%, transparent 60%),
+    radial-gradient(circle at 75% 65%, rgba(0,120,255,.7) 0%, transparent 55%),
+    radial-gradient(circle at 50% 85%, rgba(140,60,255,.6) 0%, transparent 65%);
+}
 
 
 
@@ -381,6 +416,10 @@ header.nav-hidden{
   <section id="skills" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
+        <div class="skills-bg" aria-hidden="true"></div>
+
+        <!--  CAMADA 1 → “nuvens” roxo-azul bem sutis      -->
+        <div class="skills-clouds" aria-hidden="true"></div>
         <!-- O SVG para o grafo D3 será inserido aqui pelo JavaScript -->
     </div>
   </section>
