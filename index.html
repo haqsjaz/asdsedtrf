@@ -337,7 +337,8 @@ header.nav-hidden{
     /* ---------- underline “raio” que se move de item para item -------------- */
 .nav-underline{
   position:absolute;
-  bottom:-4px;                   /* gruda na borda inferior do <nav> */
+  top:100%;                 /* gruda na borda inferior do <nav> */
+  left:0;
   height:4px;
   width:0;                       /* será ajustado via JS             */
   background:linear-gradient(90deg,rgba(162,0,255,0) 0%,
@@ -363,26 +364,6 @@ header.nav-hidden{
     </script>
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
-<script type="module">
-import {particlesCursor} from
-  'https://unpkg.com/threejs-toys@4.0.4/dist/threejs-toys.module.min.js';
-
-   /* desabilita em telas touch para poupar bateria */
-if (window.matchMedia('(pointer:fine)').matches){
-  particlesCursor({
-    el: document.body,          // canvas de partículas cobre a página
-    gpgpuSize: 256,
-    colors: [0x5A4BFF,0x7B46FF,0x8E5CFF],
-    color: 0x5A4BFF,
-    size: 0.35,
-    radius: 0.45,
-    depth: 40,
-    velocityTaper: 0.8,
-    easing: 0.15
-  });
-}
-</script>
-
 
   <!-- NAVBAR -->
   <!-- header fixo + vidro ultra-transparente -->
@@ -473,8 +454,8 @@ if (window.matchMedia('(pointer:fine)').matches){
   </section>
 
   <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
-  <section id="skillsTitle" class="container mx-auto px-4 py-16">
-    <h3 class="skills-title text-center text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
+  <section id="skills" class="container mx-auto px-4 py-16">
+    <h3 id="skillsTitle" class="skills-title text-center text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
         <div class="skills-bg" aria-hidden="true"></div>
 
@@ -661,6 +642,7 @@ if (window.matchMedia('(pointer:fine)').matches){
       /* === esconder navbar ao rolar para baixo, mostrar ao rolar para cima === */
 const nav = document.querySelector('header');
 let lastY  = window.scrollY;
+let hideTO = null;
 
       // ---------- underline dinâmico da navbar ---------------------------------
 const navList   = document.querySelector('header nav ul');
@@ -687,7 +669,7 @@ function moveUnderline(link){
    const rectList = navList.getBoundingClientRect();
    underline.style.width = rectLink.width + 'px';
    underline.style.transform =
-        `translateX(${rectLink.left - rectList.left}px)`;
+        `translateX(${link.offsetLeft}px)`;
 }
 
 window.addEventListener('scroll', () => {
@@ -695,13 +677,32 @@ window.addEventListener('scroll', () => {
 
   /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
   if (curY > lastY + 16) {
-    nav.classList.add('nav-hidden');      // desce → esconde suavemente
+    clearTimeout(hideTO);
+    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 2500); // 2.5 s
     lastY = curY;
   } else if (curY < lastY - 16) {
     nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
     lastY = curY;
   }
 });
+      // …já dentro do addEventListener('DOMContentLoaded', ()=>{ … });
+(async ()=>{
+  if (!window.matchMedia('(pointer:fine)').matches) return;  // evita mobile
+  const {particlesCursor} = await import(
+    'https://unpkg.com/threejs-toys@4.0.4/dist/threejs-toys.module.min.js'
+  );
+  particlesCursor({
+    el: document.body,
+    gpgpuSize: 256,
+    colors: [0x5A4BFF,0x7B46FF,0x8E5CFF],
+    size: .35,
+    radius:.45,
+    depth:40,
+    velocityTaper:.8,
+    easing:.15
+  });
+})();
+
 
       // Lógica do Carrossel (mantida integralmente)
       const carouselContainer = document.querySelector('.carousel-container');
@@ -1149,7 +1150,7 @@ window.addEventListener('scroll', () => {
 }
 
         // -------------- glow no título -------------------------------------------
-const skillsTitle = document.getElementById('skillsTitle');
+const skillsTitle = document.querySelector('#skillsTitle');
 function triggerTitleWave(){
   skillsTitle.classList.remove('wave');   // força re-start
   void skillsTitle.offsetWidth;           // 🔥 reflow
