@@ -74,6 +74,29 @@ body.has-fixed-header{
     }
     .dynamic-gradient.radial::after { opacity: 1; }
 
+    /* --- título da seção habilidades: gradiente + animação de onda ----------- */
+.skills-title{
+  position:relative;
+  display:inline-block;
+  background:linear-gradient(90deg,#5A4BFF 0%,#7B46FF 50%,#8E5CFF 100%);
+  background-size:200% 100%;
+  background-position:0% 50%;
+  -webkit-background-clip:text;
+          background-clip:text;
+  color:transparent;
+}
+
+@keyframes titleWave{
+  0%  {background-position:0%   50%; filter:drop-shadow(0 0 0 rgba(140,60,255,0));}
+  60% {filter:drop-shadow(0 0 14px rgba(140,60,255,.85));}
+  100%{background-position:100% 50%; filter:drop-shadow(0 0 0 rgba(0,0,0,0));}
+}
+
+.skills-title.wave{             /* classe acionada via JS */
+  animation:titleWave 1.1s cubic-bezier(.4,0,.2,1);
+}
+
+
     .card {
       position: relative;
       z-index: 2;
@@ -311,6 +334,23 @@ header.nav-hidden{
   transition: transform .35s ease;/* só existe quando a classe está ativa*/
 }
 
+    /* ---------- underline “raio” que se move de item para item -------------- */
+.nav-underline{
+  position:absolute;
+  bottom:-4px;                   /* gruda na borda inferior do <nav> */
+  height:4px;
+  width:0;                       /* será ajustado via JS             */
+  background:linear-gradient(90deg,rgba(162,0,255,0) 0%,
+                                        rgba(162,0,255,.9) 50%,
+                                        rgba(162,0,255,0) 100%);
+  border-radius:9999px;
+  box-shadow:0 0 16px 6px rgba(162,0,255,.6);
+  pointer-events:none;
+  transition:transform .55s cubic-bezier(.25,.8,.25,1),
+             width     .55s cubic-bezier(.25,.8,.25,1);
+}
+
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -323,6 +363,26 @@ header.nav-hidden{
     </script>
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
+<script type="module">
+import {particlesCursor} from
+  'https://unpkg.com/threejs-toys@4.0.4/dist/threejs-toys.module.min.js';
+
+   /* desabilita em telas touch para poupar bateria */
+if (window.matchMedia('(pointer:fine)').matches){
+  particlesCursor({
+    el: document.body,          // canvas de partículas cobre a página
+    gpgpuSize: 256,
+    colors: [0x5A4BFF,0x7B46FF,0x8E5CFF],
+    color: 0x5A4BFF,
+    size: 0.35,
+    radius: 0.45,
+    depth: 40,
+    velocityTaper: 0.8,
+    easing: 0.15
+  });
+}
+</script>
+
 
   <!-- NAVBAR -->
   <!-- header fixo + vidro ultra-transparente -->
@@ -413,8 +473,8 @@ header.nav-hidden{
   </section>
 
   <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
-  <section id="skills" class="container mx-auto px-4 py-16">
-    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-12">Constelação de Habilidades</h3>
+  <section id="skillsTitle" class="container mx-auto px-4 py-16">
+    <h3 class="skills-title text-center text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
         <div class="skills-bg" aria-hidden="true"></div>
 
@@ -601,6 +661,34 @@ header.nav-hidden{
       /* === esconder navbar ao rolar para baixo, mostrar ao rolar para cima === */
 const nav = document.querySelector('header');
 let lastY  = window.scrollY;
+
+      // ---------- underline dinâmico da navbar ---------------------------------
+const navList   = document.querySelector('header nav ul');
+const underline = document.createElement('span');
+underline.className = 'nav-underline';
+navList.style.position = 'relative';
+navList.appendChild(underline);
+
+// define posição inicial (1º item)
+moveUnderline(navList.querySelector('a'));
+
+navList.addEventListener('click', e=>{
+   const link = e.target.closest('a');
+   if(!link) return;
+   moveUnderline(link);
+});
+// se quiser que o “raio” siga também no hover, habilite a linha abaixo
+//navList.addEventListener('mouseover', e=>{
+//   const link = e.target.closest('a'); if(link) moveUnderline(link);
+//});
+
+function moveUnderline(link){
+   const rectLink = link.getBoundingClientRect();
+   const rectList = navList.getBoundingClientRect();
+   underline.style.width = rectLink.width + 'px';
+   underline.style.transform =
+        `translateX(${rectLink.left - rectList.left}px)`;
+}
 
 window.addEventListener('scroll', () => {
   const curY = window.scrollY;
@@ -1060,6 +1148,15 @@ window.addEventListener('scroll', () => {
   requestAnimationFrame(()=>infoCard.classList.add("visible"));
 }
 
+        // -------------- glow no título -------------------------------------------
+const skillsTitle = document.getElementById('skillsTitle');
+function triggerTitleWave(){
+  skillsTitle.classList.remove('wave');   // força re-start
+  void skillsTitle.offsetWidth;           // 🔥 reflow
+  skillsTitle.classList.add('wave');
+}
+
+
 function moveCard(evt){
   // margem mínima para não “vazar” da tela
   const pad = 12;
@@ -1077,7 +1174,7 @@ function hideCard(){
 }
 
 node
-  .on("mouseenter", (evt,d)=>showCard(d, evt))
+  .on("mouseenter", (evt,d)=>{ showCard(d,evt); triggerTitleWave(); })
   .on("mousemove",  (evt)=>{ if (!isMobile) moveCard(evt); })
   .on("mouseleave", hideCard)
   // suporto toque: um tap mostra, segundo tap fora some
@@ -1133,5 +1230,6 @@ node
       })();
     });
   </script>
+
 </body>
 </html>
