@@ -235,19 +235,19 @@ body.has-fixed-header{
   position:absolute;
   inset:0;
   background:url('assets/images/nebula.png') center / cover no-repeat;
-  opacity:.9;                         /* 90 % no ponto mais forte      */
+  opacity:.4;                         /* 90 % no ponto mais forte      */
   z-index:0;                          /* atrás das nuvens, à frente da página */
   pointer-events:none;
 
   /* máscara: invisível nas bordas, 90 % no centro            */
   mask-image: radial-gradient(circle at center,
                 rgba(0,0,0,1) 0%,
-                rgba(0,0,0,.9) 35%,
-                rgba(0,0,0,0) 80%);
+                rgba(0,0,0,.4) 15%,
+                rgba(0,0,0,0) 40%);
   -webkit-mask-image: radial-gradient(circle at center,
                 rgba(0,0,0,1) 0%,
-                rgba(0,0,0,.9) 35%,
-                rgba(0,0,0,0) 80%);
+                rgba(0,0,0,.4) 15%,
+                rgba(0,0,0,0) 40%);
 }
 
 /* ---------- nuvens roxo-azul quase imperceptíveis ---------- */
