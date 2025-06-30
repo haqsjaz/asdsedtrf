@@ -637,7 +637,7 @@ window.addEventListener('scroll', () => {
   /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
   if (curY > lastY + 16) {
     clearTimeout(hideTO);
-    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 500); // 2.5 s
+    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 250); // 2.5 s
     lastY = curY;
   } else if (curY < lastY - 16) {
     nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
