@@ -74,29 +74,6 @@ body.has-fixed-header{
     }
     .dynamic-gradient.radial::after { opacity: 1; }
 
-    /* --- título da seção habilidades: gradiente + animação de onda ----------- */
-.skills-title{
-  position:relative;
-  display:inline-block;
-  background:linear-gradient(90deg,#5A4BFF 0%,#7B46FF 50%,#8E5CFF 100%);
-  background-size:200% 100%;
-  background-position:0% 50%;
-  -webkit-background-clip:text;
-          background-clip:text;
-  color:transparent;
-}
-
-@keyframes titleWave{
-  0%  {background-position:0%   50%; filter:drop-shadow(0 0 0 rgba(140,60,255,0));}
-  60% {filter:drop-shadow(0 0 14px rgba(140,60,255,.85));}
-  100%{background-position:100% 50%; filter:drop-shadow(0 0 0 rgba(0,0,0,0));}
-}
-
-.skills-title.wave{             /* classe acionada via JS */
-  animation:titleWave 1.1s cubic-bezier(.4,0,.2,1);
-}
-
-
     .card {
       position: relative;
       z-index: 2;
@@ -437,7 +414,7 @@ header.nav-hidden{
 
   <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
   <section id="skills" class="container mx-auto px-4 py-16">
-    <h3 id="skillsTitle" class="skills-title mx-auto w-max text-center text-3xl font-bold text-transparent mb-12">Constelação de Habilidades</h3>
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
         <div class="skills-bg" aria-hidden="true"></div>
 
@@ -660,7 +637,7 @@ window.addEventListener('scroll', () => {
   /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
   if (curY > lastY + 16) {
     clearTimeout(hideTO);
-    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 1000); // 2.5 s
+    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 500); // 2.5 s
     lastY = curY;
   } else if (curY < lastY - 16) {
     nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
@@ -1113,13 +1090,6 @@ window.addEventListener('scroll', () => {
   requestAnimationFrame(()=>infoCard.classList.add("visible"));
 }
 
-        // -------------- glow no título -------------------------------------------
-const skillsTitle = document.querySelector('#skillsTitle');
-function triggerTitleWave(){
-  skillsTitle.classList.remove('wave');   // força re-start
-  void skillsTitle.offsetWidth;           // 🔥 reflow
-  skillsTitle.classList.add('wave');
-}
 
 
 function moveCard(evt){
@@ -1139,7 +1109,7 @@ function hideCard(){
 }
 
 node
-  .on("mouseenter", (evt,d)=>{ showCard(d,evt); triggerTitleWave(); })
+  .on("mouseenter", (evt,d)=> showCard(d,evt))
   .on("mousemove",  (evt)=>{ if (!isMobile) moveCard(evt); })
   .on("mouseleave", hideCard)
   // suporto toque: um tap mostra, segundo tap fora some
