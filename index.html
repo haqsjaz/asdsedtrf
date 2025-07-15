@@ -291,10 +291,10 @@ body.has-fixed-header{
 .scroller-container{
   position:relative;
   overflow:hidden;
-  mask-image:linear-gradient(to right, transparent 0%, black 12%,
-                                           black 88%, transparent 100%);
-  -webkit-mask-image:linear-gradient(to right, transparent 0%, black 12%,
-                                                black 88%, transparent 100%);
+  mask-image:linear-gradient(to right, transparent 0%, black 5%,
+                                           black 95%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, black 5%,
+                                                black 95%, transparent 100%);
 }
 
 .scroller{
@@ -309,12 +309,22 @@ body.has-fixed-header{
 
 /* usamos a mesma .server-card que já existe; só reduzimos opacity */
 .server-card{ opacity:1!important; transform:none!important; }
+    /* limitar largura e deixar alguma folga entre eles */
+.server-card{
+  width:clamp(240px,26vw,320px);   /* ≈ 240–320 px */
+  margin:0 0.75rem;                /* respiro lateral */
+}
+
 
 /* =========  MODAL  ========= */
 #serverModal.hidden{ display:none; }
 @keyframes scaleIn{
   0%{ opacity:0; transform:scale(.85); }
   100%{ opacity:1; transform:scale(1); }
+}
+#cardPreview.show{            /* classe que o JS liga/desliga */
+  opacity:1;
+  transform:translateY(0);
 }
 
 
@@ -832,11 +842,59 @@ function closeModal(){
   document.body.style.overflow = '';
 }
 closeBtn.onclick = closeModal;
+/* ---------- Tooltip em hover ---------- */
+const preview      = document.getElementById('cardPreview');
+const PREVIEW_PAD  = 14;  // margem mínima da borda
+
+function showPreview(id, evt){
+  const s = servers[id];
+  if(!s) return;
+
+  preview.innerHTML = `
+     <div class="flex items-center mb-2">
+       <img src="${s.logo}" class="w-10 h-10 rounded-full object-cover">
+       <div class="ml-3">
+         <h5 class="font-semibold">${s.name}</h5>
+         <p class="text-xs text-gray-400">${s.members} membros</p>
+       </div>
+     </div>
+     <p class="text-sm text-gray-300">${s.desc}</p>
+  `;
+
+  placePreview(evt);            // posiciona
+  preview.classList.add('show');
+}
+
+function hidePreview(){ preview.classList.remove('show'); }
+
+/* acompanha o mouse — mantém dentro da viewport */
+function placePreview(evt){
+  const {clientX:x, clientY:y} = evt;
+  let left = x + 18, top = y + 18;
+
+  if(left + preview.offsetWidth  > innerWidth  - PREVIEW_PAD)
+      left = x - preview.offsetWidth  - 18;
+  if(top  + preview.offsetHeight > innerHeight - PREVIEW_PAD)
+      top  = y - preview.offsetHeight - 18;
+
+  preview.style.left = left + 'px';
+  preview.style.top  = top  + 'px';
+}
 
 /* clique no card abre modal */
-cards.forEach(c=>{
-  c.addEventListener('click', ()=>openModal(c.dataset.server));
+/* clique abre modal – hover mostra tooltip */
+cards.forEach(card=>{
+  const id = card.dataset.server;
+
+  // clique
+  card.addEventListener('click', ()=> openModal(id));
+
+  // hover
+  card.addEventListener('mouseenter', e=> showPreview(id,e));
+  card.addEventListener('mousemove',  placePreview);
+  card.addEventListener('mouseleave', hidePreview);
 });
+
 
 
 
@@ -1316,6 +1374,17 @@ node
     </a>
   </div>
 </div>
+  <!-- Preview em hover (é só um tooltip, não bloqueia nada) -->
+<div id="cardPreview"
+     class="fixed z-50 pointer-events-none
+            opacity-0 translate-y-2 transition
+            max-w-xs w-[90vw]
+            rounded-xl p-4 bg-gray-800/80
+            backdrop-blur-md border border-indigo-400/30
+            shadow-lg">
+  <!-- conteúdo será preenchido via JS -->
+</div>
+
 
 </body>
 </html>
