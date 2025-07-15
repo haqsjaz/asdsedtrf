@@ -287,15 +287,46 @@ body.has-fixed-header{
 
     /* -- Mantendo outros estilos -- */
     .icon-svg { width: 24px; height: 24px; fill: currentColor; }
-    .carousel-container { position: relative; overflow: hidden; margin: 0 auto; max-width: 960px; padding: 0 2rem; }
-    .carousel-track { display: flex; align-items: center; transition: transform 0.5s ease-in-out; }
-    .server-card { flex-shrink: 0; width: 380px; max-width: 90%; margin: 0 1rem; opacity: 0; transform: scale(0.7); pointer-events: none; transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease; }
-    .server-card.is-center { opacity: 1; transform: scale(1); box-shadow: 0 0 30px rgba(114, 137, 218, .5); pointer-events: auto; }
-    .server-card.is-left, .server-card.is-right { opacity: 0.3; transform: scale(0.7); pointer-events: auto; }
-    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(114, 137, 218, 0.4); color: white; padding: 0.75rem 0.5rem; border-radius: 9999px; cursor: pointer; z-index: 10; opacity: 0.7; transition: background-color 0.3s ease, opacity 0.3s ease; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
-    .carousel-arrow:hover { background-color: rgba(114, 137, 218, 0.8); opacity: 1; }
-    .carousel-arrow.left { left: 0; }
-    .carousel-arrow.right { right: 0; }
+/* =========  SCROLLER INFINITO  ========= */
+.scroller-container{
+  position:relative;
+  overflow:hidden;
+  mask-image:linear-gradient(to right, transparent 0%, black 12%,
+                                           black 88%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, black 12%,
+                                                black 88%, transparent 100%);
+}
+
+.scroller{
+  display:flex;
+  width:max-content;
+  animation:scrollX 30s linear infinite;
+}
+.scroller:hover{ animation-play-state:paused; }
+
+@keyframes scrollX{
+  from{ transform:translateX(0); }
+  to  { transform:translateX(-50%); } /* ajustado via JS */
+}
+    
+.scroller{
+  animation-name:scrollX;
+  animation-duration:30s;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  animation-fill-mode:both;
+}
+
+/* usamos a mesma .server-card que já existe; só reduzimos opacity */
+.server-card{ opacity:1!important; transform:none!important; }
+
+/* =========  MODAL  ========= */
+#serverModal.hidden{ display:none; }
+@keyframes scaleIn{
+  0%{ opacity:0; transform:scale(.85); }
+  100%{ opacity:1; transform:scale(1); }
+}
+
 
     #cybersecurityModeBtn { background-color: #000; color: #fff; border: 1px solid #000; transition: all 0.3s ease; box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
     #cybersecurityModeBtn:hover { background-color: #fff; color: #000; border-color: #000; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
@@ -465,62 +496,152 @@ header.nav-hidden{
   </section>
 
   <!-- SERVIDORES DISCORD (CAROUSEL) -->
-  <section class="py-16">
-    <div class="container mx-auto px-4 py-12">
-      <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
-      <div class="carousel-container">
-        <div class="carousel-track" id="serverCarouselTrack">
-          <!-- VIGGLE -->
-          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
-            <div class="flex items-center mb-4">
-              <img src="assets/images/viggle_logo.png" loading="lazy" alt="Viggle Logo" class="w-20 h-20 rounded-full object-cover" />
-              <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">Viggle <img src="assets/images/verified_server.png" loading="lazy" alt="Verificado" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
-            <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/moderator_role.png" loading="lazy" alt="Ex-Moderador" class="w-4 h-4 mr-1" /> Ex-Moderador</span>
-              <button onclick="window.open('https://discord.gg/viggle','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
-            </div>
-          </div>
-          <!-- OLD DUQUE’S -->
-          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
-            <div class="flex items-center mb-4">
-              <img src="assets/images/old_duques_logo.png" loading="lazy" alt="Old Duque's Logo" class="w-20 h-20 rounded-full object-cover" />
-              <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">Old Duque's <img src="assets/images/server_booster_badge.png" loading="lazy" alt="Booster" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 220</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, edição de vídeo, moderação e muito mais.</p>
-            <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/emperor.png" loading="lazy" alt="Proprietário" class="w-4 h-4 mr-1" /> Proprietário</span>
-              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
-            </div>
-          </div>
-          <!-- FORMULA 1 -->
-          <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
-            <div class="flex items-center mb-4">
-              <img src="assets/images/f1.png" loading="lazy" alt="Formula 1 Logo" class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
-              <div class="ml-4 text-left">
-                <h4 class="text-xl font-semibold flex items-center">Formula One <img src="assets/images/partner.png" loading="lazy" alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 100.000+</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
-            <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/motorsport.png" loading="lazy" alt="Motorsport Affiliated" class="w-4 h-4 mr-1" onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" /> Motorsport Affiliated</span>
-              <button onclick="window.open('https://discord.gg/f1','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
+<!-- SERVIDORES DISCORD (SCROLLER NOVO) -->
+<section id="discord" class="py-16">
+  <div class="container mx-auto px-4 py-12">
+    <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">
+      Comunidades e Servidores
+    </h3>
+
+    <!-- wrapper com fade/máscara nas bordas -->
+    <div class="scroller-container">
+      <div class="scroller" id="discordScroller">
+
+        <!-- ========== FORMULA ONE ========== -->
+        <article class="server-card card p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition"
+                 data-server="formula1">
+          <div class="flex items-center mb-4">
+            <img src="assets/images/f1.png"
+                 alt="Formula 1 Logo"
+                 class="w-20 h-20 rounded-full object-cover"
+                 onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
+            <div class="ml-4 text-left">
+              <h4 class="text-xl font-semibold flex items-center">
+                Formula One
+                <img src="assets/images/partner.png"
+                     alt="Partner"
+                     class="w-5 h-5 ml-1"
+                     onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" />
+              </h4>
+              <p class="text-sm text-gray-400 flex items-center">
+                <img src="assets/images/number_members.png"
+                     alt="Membros"
+                     class="w-4 h-4 mr-1" />
+                100.000+
+              </p>
             </div>
           </div>
-        </div>
-        <button class="carousel-arrow left" id="carouselPrev"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-        <button class="carousel-arrow right" id="carouselNext"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+
+          <p class="mt-4 text-gray-300 flex-1 text-center">
+            Servidor original de Fórmula 1 no Discord – junte-se para
+            discutir o melhor esporte do mundo e conhecer outros fãs!
+          </p>
+
+          <div class="mt-6 flex items-center w-full justify-between">
+            <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+              <img src="assets/images/motorsport.png"
+                   alt="Motorsport Affiliated"
+                   class="w-4 h-4 mr-1"
+                   onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" />
+              Motorsport Affiliated
+            </span>
+            <button onclick="window.open('https://discord.gg/f1','_blank')"
+                    class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">
+              Entrar
+            </button>
+          </div>
+        </article>
+
+        <!-- ========== VIGGLE ========== -->
+        <article class="server-card card p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition"
+                 data-server="viggle">
+          <div class="flex items-center mb-4">
+            <img src="assets/images/viggle_logo.png"
+                 alt="Viggle Logo"
+                 class="w-20 h-20 rounded-full object-cover" />
+            <div class="ml-4 text-left">
+              <h4 class="text-xl font-semibold flex items-center">
+                Viggle
+                <img src="assets/images/verified_server.png"
+                     alt="Verificado"
+                     class="w-5 h-5 ml-1" />
+              </h4>
+              <p class="text-sm text-gray-400 flex items-center">
+                <img src="assets/images/number_members.png"
+                     alt="Membros"
+                     class="w-4 h-4 mr-1" />
+                4.300.000+
+              </p>
+            </div>
+          </div>
+
+          <p class="mt-4 text-gray-300 flex-1 text-center">
+            Servidor oficial da IA Viggle, líder mundial em mixagem de
+            animações e vídeos gerados por IA. Participe e experimente
+            gratuitamente!
+          </p>
+
+          <div class="mt-6 flex items-center w-full justify-between">
+            <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+              <img src="assets/images/moderator_role.png"
+                   alt="Ex-Moderador"
+                   class="w-4 h-4 mr-1" />
+              Ex-Moderador
+            </span>
+            <button onclick="window.open('https://discord.gg/viggle','_blank')"
+                    class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">
+              Entrar
+            </button>
+          </div>
+        </article>
+
+        <!-- ========== OLD DUQUE’S ========== -->
+        <article class="server-card card p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition"
+                 data-server="oldduques">
+          <div class="flex items-center mb-4">
+            <img src="assets/images/old_duques_logo.png"
+                 alt="Old Duque's Logo"
+                 class="w-20 h-20 rounded-full object-cover" />
+            <div class="ml-4 text-left">
+              <h4 class="text-xl font-semibold flex items-center">
+                Old Duque's
+                <img src="assets/images/server_booster_badge.png"
+                     alt="Booster"
+                     class="w-5 h-5 ml-1" />
+              </h4>
+              <p class="text-sm text-gray-400 flex items-center">
+                <img src="assets/images/number_members.png"
+                     alt="Membros"
+                     class="w-4 h-4 mr-1" />
+                220
+              </p>
+            </div>
+          </div>
+
+          <p class="mt-4 text-gray-300 flex-1 text-center">
+            Clã Old Duque's: central de materiais e conteúdos de
+            qualidade sobre programação, design, edição de vídeo,
+            moderação e muito mais.
+          </p>
+
+          <div class="mt-6 flex items-center w-full justify-between">
+            <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm">
+              <img src="assets/images/emperor.png"
+                   alt="Proprietário"
+                   class="w-4 h-4 mr-1" />
+              Proprietário
+            </span>
+            <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')"
+                    class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">
+              Entrar
+            </button>
+          </div>
+        </article>
+
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- CONTATOS -->
   <section id="contatos" class="container mx-auto px-4 py-16">
@@ -662,88 +783,71 @@ window.addEventListener('scroll', () => {
   }
 });
 
-      // Lógica do Carrossel (mantida integralmente)
-      const carouselContainer = document.querySelector('.carousel-container');
-      const carouselTrack = document.getElementById('serverCarouselTrack');
-      const prevButton = document.getElementById('carouselPrev');
-      const nextButton = document.getElementById('carouselNext');
-      if(carouselTrack) { // Adicionando verificação para garantir que os elementos existem
-        let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
-        let serverCards = [];
-        let currentIndex = 0;
-        let isTransitioning = false;
-        let autoScrollInterval;
-        let preClones = 1;
-        let postClones = 1;
+     /* ========   SCROLLER INFINITO + MODAL ======== */
+const scroller     = document.getElementById('discordScroller');
+const cards        = Array.from(scroller.children);
 
-        function setupInfiniteCarousel() {
-            if (originalServerCards.length === 0) return;
-            const preClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
-            const postClone = originalServerCards[0].cloneNode(true);
-            carouselTrack.innerHTML = '';
-            carouselTrack.appendChild(preClone);
-            originalServerCards.forEach(c => carouselTrack.appendChild(c.cloneNode(true)));
-            carouselTrack.appendChild(postClone);
-            serverCards = Array.from(carouselTrack.children);
-            currentIndex = preClones;
-            updateCarousel(true);
-        }
+/* clone os cards uma vez para formar 200 % de largura */
+scroller.innerHTML += scroller.innerHTML;
 
-        function updateCarousel(instant = false) {
-            if (isTransitioning && !instant) return;
-            if (instant) {
-                carouselTrack.style.transition = 'none';
-            } else {
-                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-                isTransitioning = true;
-            }
-            serverCards.forEach((card, index) => {
-                card.classList.remove('is-center', 'is-left', 'is-right');
-                if (index === currentIndex) card.classList.add('is-center');
-                else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
-                else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
-            });
-            const containerCenter = carouselContainer.offsetWidth / 2;
-            const currentCentralCard = serverCards[currentIndex];
-            const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
-            const translateXValue = containerCenter - currentCardCenter;
-            carouselTrack.style.transform = `translateX(${translateXValue}px)`;
-            if (!instant) {
-              setTimeout(() => { isTransitioning = false; }, 500);
-            }
-        }
+/* calcula o deslocamento total (metade da largura) para @keyframes */
+requestAnimationFrame(()=>{
+  const full = scroller.scrollWidth / 2;
+  scroller.style.setProperty('--full-width', full + 'px');
+});
 
-        carouselTrack.addEventListener('transitionend', e => {
-            if (e.propertyName !== 'transform') return;
-            isTransitioning = false;
-            let needSnap = false;
-            if (currentIndex >= serverCards.length - postClones) {
-                currentIndex = preClones;
-                needSnap = true;
-            } else if (currentIndex < preClones) {
-                currentIndex = serverCards.length - postClones - preClones;
-                needSnap = true;
-            }
-            if (needSnap) {
-                carouselTrack.style.transition = 'none';
-                updateCarousel(true);
-                void carouselTrack.offsetWidth;
-                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-            }
-        });
-        
-        nextButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex++; updateCarousel(); } });
-        prevButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex--; updateCarousel(); } });
-        
-        const startAutoScroll = () => { stopAutoScroll(); autoScrollInterval = setInterval(() => nextButton.click(), 6000); };
-        const stopAutoScroll = () => clearInterval(autoScrollInterval);
+/* ---------  banco de dados dos servidores  --------- */
+const servers = {
+  viggle:{
+    banner : 'assets/images/banner_viggle.png',
+    logo   : 'assets/images/viggle_logo.png',
+    name   : 'Viggle',
+    members: '4.300.000+',
+    desc   : 'Servidor oficial da IA Viggle, líder mundial em mixagem…',
+    tag    : ['Ex-Moderador','assets/images/moderator_role.png'],
+    link   : 'https://discord.gg/viggle'
+  },
+  oldduques:{ /* … */ },
+  formula1 : { /* … */ }
+};
 
-        carouselContainer.addEventListener('mouseenter', stopAutoScroll);
-        carouselContainer.addEventListener('mouseleave', startAutoScroll);
-        window.addEventListener('resize', setupInfiniteCarousel);
-        setupInfiniteCarousel();
-        startAutoScroll();
-      }
+/* ---------  modal helpers  --------- */
+const modal        = document.getElementById('serverModal');
+const backdrop     = document.getElementById('modalBackdrop');
+const closeBtn     = document.getElementById('modalClose');
+const modalBanner  = document.getElementById('modalBanner');
+const modalLogo    = document.getElementById('modalLogo');
+const modalName    = document.getElementById('modalName');
+const modalMembers = document.getElementById('modalMembers');
+const modalDesc    = document.getElementById('modalDesc');
+const modalTag     = document.getElementById('modalTag');
+const modalBtn     = document.getElementById('modalBtn');
+
+function openModal(id){
+  const s = servers[id];
+  if(!s) return;
+  modalBanner.src  = s.banner;
+  modalLogo.src    = s.logo;
+  modalName.textContent    = s.name;
+  modalMembers.textContent = s.members;
+  modalDesc.textContent    = s.desc;
+  modalTag.textContent     = s.tag[0];
+  modalBtn.href            = s.link;
+
+  document.body.style.overflow = 'hidden';
+  modal.classList.remove('hidden');
+}
+function closeModal(){
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+closeBtn .onclick = backdrop.onclick = closeModal;
+
+/* clique no card abre modal */
+cards.forEach(c=>{
+  c.addEventListener('click', ()=>openModal(c.dataset.server));
+});
+
 
 
       // --- FEATURE 1: BACKGROUND 3D INTERATIVO COM THREE.JS ---
@@ -1182,6 +1286,46 @@ node
       })();
     });
   </script>
+<!-- Modal de detalhes -->
+<div id="serverModal"
+     class="fixed inset-0 hidden items-center justify-center z-[60]">
+  <!-- backdrop -->
+  <div id="modalBackdrop"
+       class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+  <!-- card -->
+  <div class="modal-content relative max-w-lg w-[90%] rounded-xl p-6
+              bg-gray-800 border border-indigo-400/30 shadow-xl
+              animate-scaleIn">
+    <button id="modalClose"
+            class="absolute -right-3 -top-3 bg-red-600 text-white
+                   rounded-full w-7 h-7 flex items-center justify-center">
+      ✕
+    </button>
+
+    <img id="modalBanner" class="w-full h-40 object-cover rounded-lg mb-4"
+         src="" alt="">
+    <div class="flex items-center mb-4">
+      <img id="modalLogo" class="w-16 h-16 rounded-full object-cover" src=""
+           alt="">
+      <div class="ml-4">
+        <h4 id="modalName" class="text-xl font-semibold"></h4>
+        <p id="modalMembers" class="text-sm text-gray-400 flex items-center"></p>
+      </div>
+    </div>
+
+    <p id="modalDesc" class="text-gray-300 mb-6"></p>
+
+    <span id="modalTag"
+          class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm mb-4"></span>
+
+    <a id="modalBtn" target="_blank"
+       class="block w-full text-center bg-emerald-500 hover:bg-emerald-400
+              text-white py-3 rounded-full font-semibold shadow">
+      Entrar no Servidor
+    </a>
+  </div>
+</div>
 
 </body>
 </html>
