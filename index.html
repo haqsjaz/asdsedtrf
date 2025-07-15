@@ -311,7 +311,7 @@ body.has-fixed-header{
 .server-card{ opacity:1!important; transform:none!important; }
     /* limitar largura e deixar alguma folga entre eles */
 .server-card{
-  width:clamp(240px,26vw,320px);   /* ≈ 240–320 px */
+  width:clamp(200px,70vw,260px);   /* ≈ 240–320 px */
   margin:0 0.75rem;                /* respiro lateral */
 }
 
@@ -344,12 +344,10 @@ body.has-fixed-header{
         #cybersecurityModeBtn { order: 3; width: 100%; justify-content: center; }
         nav ul { flex-wrap: wrap; justify-content: center; gap: 0.75rem 1rem; }
         nav a { font-size: 0.875rem; }
-        .server-card { width: 280px; margin: 0 0.5rem; }
         .carousel-arrow { width: 30px; height: 30px; padding: 0.5rem 0.25rem; }
         #skills-constellation-container { height: 450px; }
     }
     @media (max-width: 640px) {
-        .server-card { width: 90%; }
          #skills-constellation-container { height: 400px; }
     }
 
@@ -807,8 +805,24 @@ const servers = {
     tag    : ['Ex-Moderador','assets/images/moderator_role.png'],
     link   : 'https://discord.gg/viggle'
   },
-  oldduques:{ /* … */ },
-  formula1 : { /* … */ }
+  oldduques:{
+    banner : 'assets/images/banner_oldduques.png',
+    logo   : 'assets/images/old_duques_logo.png',
+    name   : "Old Duque's",
+    members: '220',
+    desc   : 'Central de materiais sobre programação, design, moderação e mais.',
+    tag    : ['Proprietário','assets/images/emperor.png'],
+    link   : 'https://discord.gg/bwHGH75Txb'
+  },
+  formula1 : {
+    banner : 'assets/images/banner_formula1.png',
+    logo   : 'assets/images/f1.png',
+    name   : 'Formula One',
+    members: '100 000+',
+    desc   : 'Servidor oficial de Fórmula 1 para debates, memes e telemetry.',
+    tag    : ['Motorsport Affiliated','assets/images/motorsport.png'],
+    link   : 'https://discord.gg/f1'    
+  }
 };
 
 /* ---------  modal helpers  --------- */
