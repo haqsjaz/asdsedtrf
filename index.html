@@ -304,18 +304,8 @@ body.has-fixed-header{
 }
 .scroller:hover{ animation-play-state:paused; }
 
-@keyframes scrollX{
-  from{ transform:translateX(0); }
-  to  { transform:translateX(-50%); } /* ajustado via JS */
-}
+@keyframes scrollX{ from{transform:translateX(0);} to{transform:translateX(calc(-1 * var(--full-width)));} }
     
-.scroller{
-  animation-name:scrollX;
-  animation-duration:30s;
-  animation-timing-function:linear;
-  animation-iteration-count:infinite;
-  animation-fill-mode:both;
-}
 
 /* usamos a mesma .server-card que já existe; só reduzimos opacity */
 .server-card{ opacity:1!important; transform:none!important; }
@@ -841,7 +831,7 @@ function closeModal(){
   modal.classList.add('hidden');
   document.body.style.overflow = '';
 }
-closeBtn .onclick = backdrop.onclick = closeModal;
+closeBtn.onclick = closeModal;
 
 /* clique no card abre modal */
 cards.forEach(c=>{
