@@ -307,12 +307,16 @@ body.has-fixed-header{
 @keyframes scrollX{ from{transform:translateX(0);} to{transform:translateX(calc(-1 * var(--full-width)));} }
     
 
-/* usamos a mesma .server-card que já existe; só reduzimos opacity */
-.server-card{ opacity:1!important; transform:none!important; }
-    /* limitar largura e deixar alguma folga entre eles */
-.server-card{
-  width:clamp(200px,70vw,260px);   /* ≈ 240–320 px */
-  margin:0 0.75rem;                /* respiro lateral */
+/* ---------- largura dos cards ---------- */
+@media (min-width:1024px){          /* notebooks e desktop  */
+  .server-card{
+    width:clamp(260px,24vw,320px);  /* nunca <260 px nem >320 px   */
+  }
+}
+@media (max-width:1023px){          /* tablets e celular    */
+  .server-card{
+    width:clamp(230px,80vw,290px);  /* 230 – 290 px, ocupa ~80 %   */
+  }
 }
 
 
@@ -783,10 +787,12 @@ window.addEventListener('scroll', () => {
 
      /* ========   SCROLLER INFINITO + MODAL ======== */
 const scroller     = document.getElementById('discordScroller');
-const cards        = Array.from(scroller.children);
+/* === DUPLICAÇÃO SEM PERDER NÓS E EVENTOS === */
+[...scroller.children].forEach(card => {
+  scroller.append(card.cloneNode(true));             // clona e anexa
+});
+const cards = scroller.querySelectorAll('.server-card');  // captura todos
 
-/* clone os cards uma vez para formar 200 % de largura */
-scroller.innerHTML += scroller.innerHTML;
 
 /* calcula o deslocamento total (metade da largura) para @keyframes */
 requestAnimationFrame(()=>{
