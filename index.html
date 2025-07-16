@@ -365,21 +365,64 @@ body.has-fixed-header{
 
     .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
 
-    /* Responsividade */
-    @media (max-width:768px) {
-        header .container { flex-wrap: wrap; gap: 0.5rem 1rem; }
-        header h1 { font-size: 1.75rem; flex: 1 0 100%; text-align: center; }
-        #cybersecurityModeBtn { order: 3; width: 100%; justify-content: center; }
-        nav ul { flex-wrap: wrap; justify-content: center; gap: 0.75rem 1rem; }
-        nav a { font-size: 0.875rem; }
-        .server-card { width: 280px; margin: 0 0.5rem; }
-        .carousel-arrow { width: 30px; height: 30px; padding: 0.5rem 0.25rem; }
-        #skills-constellation-container { height: 450px; }
-    }
-    @media (max-width: 640px) {
-        .server-card { width: 90%; }
-         #skills-constellation-container { height: 400px; }
-    }
+/* Responsividade */
+@media (max-width:768px){
+
+  /* ----------- header geral ----------- */
+  header .container{
+    flex-wrap:wrap;
+    gap:0.5rem 1rem;
+  }
+
+  header h1{
+    font-size:1.75rem;
+    flex:1 0 100%;
+    text-align:center;
+  }
+
+  #cybersecurityModeBtn{
+    order:3;                        /* fica na linha de baixo */
+    width:100%;
+    justify-content:center;
+  }
+
+  /* ----------- navegação em 2 colunas ----------- */
+  header nav ul{
+    display:flex;                   /* continua flex          */
+    flex-wrap:wrap;                 /* permite quebrar linha  */
+    justify-content:center;         /* centraliza bloco       */
+    gap:.65rem 1.25rem;             /* linha / coluna         */
+  }
+
+  /* remove o margin‑left do utilitário space‑x‑6   */
+  header nav li:not(:first-child){
+    margin-left:0!important;
+  }
+
+  /* cada item ocupa 50 % – gera duas colunas        */
+  header nav li{
+    flex:0 0 calc(50% - 1.25rem);   /* 1.25rem = gap col.     */
+    text-align:center;
+  }
+
+  /* evita quebrar “Sobre Mim”, “Modo X” etc.        */
+  header nav a{
+    white-space:nowrap;
+    font-size:.875rem;
+  }
+
+  /* ----------- ajustes já existentes ----------- */
+  .server-card{ width:280px; margin:0 0.5rem; }
+  .carousel-arrow{ width:30px; height:30px; padding:0.5rem 0.25rem; }
+  #skills-constellation-container{ height:450px; }
+}
+
+/* corte extra p/ telas < 640 px (mantido) */
+@media (max-width:640px){
+  .server-card{ width:90%; }
+  #skills-constellation-container{ height:400px; }
+}
+
 
     /* navbar desliza para cima suavemente; o "voltar" é instantâneo         */
 header.nav-hidden{
