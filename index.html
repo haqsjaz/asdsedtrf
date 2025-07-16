@@ -387,30 +387,23 @@ body.has-fixed-header{
   }
 
   /* ----------- navegação em 2 colunas ----------- */
-  header nav ul{
-    display:flex;                   /* continua flex          */
-    flex-wrap:wrap;                 /* permite quebrar linha  */
-    justify-content:center;         /* centraliza bloco       */
-    gap:.65rem 1.25rem;             /* linha / coluna         */
-  }
+header nav ul{
+  display:grid;                               /* grid > flex        */
+  grid-template-columns:repeat(3,auto);       /* 3 colunas iguais   */
+  justify-content:center;                     /* bloco centralizado */
+  column-gap:1.25rem;                         /* espaço lateral     */
+  row-gap:.65rem;                             /* espaço vertical    */
+}
 
-  /* remove o margin‑left do utilitário space‑x‑6   */
-  header nav li:not(:first-child){
-    margin-left:0!important;
-  }
+header nav li{ 
+  margin:0!important;
+  text-align:center;
+}
 
-  /* cada item ocupa 50 % – gera duas colunas        */
-  header nav li{
-    flex:0 0 calc(50% - 1.25rem);   /* 1.25rem = gap col.     */
-    text-align:center;
-  }
-
-  /* evita quebrar “Sobre Mim”, “Modo X” etc.        */
-  header nav a{
-    white-space:nowrap;
-    font-size:.875rem;
-  }
-
+header nav a{
+  white-space:nowrap;
+  font-size:.875rem;
+}
   /* ----------- ajustes já existentes ----------- */
   .server-card{ width:280px; margin:0 0.5rem; }
   .carousel-arrow{ width:30px; height:30px; padding:0.5rem 0.25rem; }
