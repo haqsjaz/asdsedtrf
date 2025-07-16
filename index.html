@@ -703,10 +703,27 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            const containerCenter = carouselContainer.offsetWidth / 2;
-            const currentCentralCard = serverCards[currentIndex];
-            const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
-            const translateXValue = containerCenter - currentCardCenter;
+            /* ⇢ novo cálculo – usa retângulos reais + matriz de transform -------- */
+const currentCentralCard = serverCards[currentIndex];          // mantido
+
+const containerRect  = carouselContainer.getBoundingClientRect();
+const cardRect       = currentCentralCard.getBoundingClientRect();
+
+/* diferença entre o centro do container (já com padding)              */
+/*            e o centro do cartão (já com o transform atual)          */
+const delta = (containerRect.left + containerRect.width / 2) -
+              (cardRect.left     + cardRect.width     / 2);
+
+/* translateX que já existe (0 se ainda não há transform)              */
+const m            = new (window.DOMMatrixReadOnly || window.WebKitCSSMatrix)(
+                       getComputedStyle(carouselTrack).transform
+                     );
+const curTranslate = m.m41;          // componente X da matriz (px)
+
+/* novo valor absoluto ------------------------------------------------ */
+const translateXValue = curTranslate + delta;
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+
             carouselTrack.style.transform = `translateX(${translateXValue}px)`;
             if (!instant) {
               setTimeout(() => { isTransitioning = false; }, 500);
