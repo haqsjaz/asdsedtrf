@@ -312,6 +312,47 @@ body.has-fixed-header{
 .badge-mod  {        background-image:linear-gradient(135deg,#7069c5,#35325b);}
 .badge-affil{        background-image:linear-gradient(135deg,#83e2bd,#4a7c69);}
 
+/* ---------- BOTÕES “UNIVERSE” ------------------------------------ */
+.btn{                                 /* base padrão                 */
+  position:relative;overflow:hidden;display:inline-flex;
+  align-items:center;justify-content:center;gap:.45rem;
+  padding:.25rem 1.25rem;             /* mesma altura das badges     */
+  font-size:.875rem;font-weight:600;
+  color:#fff;text-shadow:0 0 6px #000;
+  border-radius:.5rem;                /* ↙ mais retangular           */
+  background-image:linear-gradient(180deg,#000 0%,#101010 100%);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 10px rgba(0,0,0,.35);
+  transition:background .4s ease,color .4s ease;
+}
+
+/* camada de partículas – fica por baixo do texto */
+.btn::before{
+  content:"";pointer-events:none;position:absolute;inset:0;
+  background-image:
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px);
+  background-size:120px 120px,180px 180px;   /* densidades diferentes */
+  background-position:0 0,60px 30px;
+  opacity:.45;animation:moveStars 35s linear infinite;
+}
+
+/* animação lenta do “céu estrelado” */
+@keyframes moveStars{
+  from{background-position:0 0,60px 30px;}
+  to  {background-position:-600px 300px,-300px 150px;}
+}
+
+/* HOVER – cores invertidas, partículas somem e recebem 1 impulso   */
+.btn:hover{
+  background-image:linear-gradient(135deg,#fff 0%,#e8e1ff 40%,#a68bff 100%);
+  color:#000;text-shadow:none;
+}
+.btn:hover::before{
+  opacity:0;animation-duration:6s;        /* impulso rápido           */
+}
+
 
     #cybersecurityModeBtn { background-color: #000; color: #fff; border: 1px solid #000; transition: all 0.3s ease; box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
     #cybersecurityModeBtn:hover { background-color: #fff; color: #000; border-color: #000; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
@@ -438,7 +479,7 @@ header.nav-hidden{
       <p class="text-gray-300 text-lg mb-4">Minha jornada inclui experiências significativas como Moderador no servidor Viggle, onde aprimorei minhas habilidades de comunicação e gestão de comunidades, e como criador do "Old Duque's", um espaço dedicado ao compartilhamento de conhecimento em diversas áreas tech.</p>
       <p class="text-300 text-lg">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
       <div class="mt-8">
-        <a href="assets/CaioDuque_CV.pdf" download class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-6 py-3 rounded-full shadow-lg font-semibold">
+        <a href="assets/CaioDuque_CV.pdf" download class="btn">
             Baixar CV
         </a>
       </div>
@@ -465,7 +506,7 @@ header.nav-hidden{
         <img src="assets/images/learnconnect_logo.png" loading="lazy" alt="LearnConnect Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
         <h4 class="text-xl font-semibold mb-2">LearnConnect</h4>
         <p class="text-gray-300 text-center mb-4">Plataforma de aprendizado colaborativo que integra servidor Discord e website Next.js, oferecendo material e networking em tecnologia.</p>
-        <a href="http://168.75.74.153:3001/" target="_blank" class="inline-block bg-indigo-600 hover:bg-indigo-500 transition text-white px-5 py-2 rounded-full shadow">Visitar Site</a>
+        <a href="http://168.75.74.153:3001/" target="_blank" class="btn">Visitar Site</a>
       </div>
       <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
         <img src="assets/images/amadeusAI.png" loading="lazy" alt="Amadeus AI Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
@@ -473,7 +514,7 @@ header.nav-hidden{
         <p class="text-gray-300 text-center mb-4">
           Amadeus é uma solução inovadora para atendimento especial no projeto LearnConnect e Old Duque’s. Uma IA avançada que funciona via Discord Bot e API.
         </p>
-        <a href="https://github.com/cai0duque/Discord-Bot-IA" target="_blank" class="inline-block bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">
+        <a href="https://github.com/cai0duque/Discord-Bot-IA" target="_blank" class="btn">
           Acessar repositório
         </a>
       </div>
@@ -498,7 +539,7 @@ header.nav-hidden{
             <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Ex-Moderador</span>
-              <button onclick="window.open('https://discord.gg/viggle','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
+              <button onclick="window.open('https://discord.gg/viggle','_blank')" class="btn">Entrar</button>
             </div>
           </div>
           <!-- OLD DUQUE’S -->
@@ -513,7 +554,7 @@ header.nav-hidden{
             <p class="mt-4 text-gray-300 flex-1 text-center">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, cybersec, e mais.</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-owner"><img src="assets/images/emperor.png" alt="Proprietário" class="w-4 h-4"> Proprietário</span>
-              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
+              <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="btn">Entrar</button>
             </div>
           </div>
           <!-- FORMULA 1 -->
@@ -528,7 +569,7 @@ header.nav-hidden{
             <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-affil"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4"> Affiliated</span>
-              <button onclick="window.open('https://discord.gg/f1','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
+              <button onclick="window.open('https://discord.gg/f1','_blank')" class="btn">Entrar</button>
             </div>
           </div>
         </div>
