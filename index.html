@@ -296,6 +296,22 @@ body.has-fixed-header{
     .carousel-arrow:hover { background-color: rgba(114, 137, 218, 0.8); opacity: 1; }
     .carousel-arrow.left { left: 0; }
     .carousel-arrow.right { right: 0; }
+/* ---------- BADGES PERSONALIZADAS --------------------------------- */
+.badge{                       /* base comum a todas                 */
+  display:inline-flex;align-items:center;gap:0.25rem;
+  padding:0.25rem 0.75rem;            /* px-3 py-1 equivalente        */
+  font-size:0.875rem;font-weight:500; /* text-sm                      */
+  color:#fff;                           /* texto branco                */
+  border-radius:0.5rem;                 /* ↙ menos arredondado          */
+  backdrop-filter:blur(8px);            /* efeito‑vidro                */
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 0 8px rgba(0,0,0,.25);
+}
+
+.badge-owner{        background-image:linear-gradient(135deg,#5c64f4,#2c2e72);}
+.badge-mod  {        background-image:linear-gradient(135deg,#7069c5,#35325b);}
+.badge-affil{        background-image:linear-gradient(135deg,#83e2bd,#4a7c69);}
+
 
     #cybersecurityModeBtn { background-color: #000; color: #fff; border: 1px solid #000; transition: all 0.3s ease; box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
     #cybersecurityModeBtn:hover { background-color: #fff; color: #000; border-color: #000; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
@@ -481,7 +497,7 @@ header.nav-hidden{
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/moderator_role.png" loading="lazy" alt="Ex-Moderador" class="w-4 h-4 mr-1" /> Ex-Moderador</span>
+              <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Ex-Moderador</span>
               <button onclick="window.open('https://discord.gg/viggle','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
@@ -496,7 +512,7 @@ header.nav-hidden{
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, cybersec, e mais.</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/emperor.png" loading="lazy" alt="Proprietário" class="w-4 h-4 mr-1" /> Proprietário</span>
+              <span class="badge badge-owner"><img src="assets/images/emperor.png" alt="Proprietário" class="w-4 h-4"> Proprietário</span>
               <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
@@ -511,7 +527,7 @@ header.nav-hidden{
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="inline-flex items-center bg-indigo-600 px-3 py-1 rounded-full text-sm"><img src="assets/images/motorsport.png" loading="lazy" alt="Affiliated" class="w-4 h-4 mr-1" onerror="this.src='https://placehold.co/16x16/E10600/FFFFFF?text=Moto';" /> Affiliated</span>
+              <span class="badge badge-affil"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4"> Affiliated</span>
               <button onclick="window.open('https://discord.gg/f1','_blank')" class="bg-emerald-500 hover:bg-emerald-400 transition text-white px-5 py-2 rounded-full shadow">Entrar</button>
             </div>
           </div>
