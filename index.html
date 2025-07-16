@@ -332,10 +332,12 @@ body.has-fixed-header{
   content:"";pointer-events:none;position:absolute;inset:0;
   background-image:
      radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
      radial-gradient(#fff 0 1px,transparent 1px 4px);
-  background-size:120px 120px,180px 180px;   /* densidades diferentes */
-  background-position:0 0,60px 30px;
-  opacity:.45;animation:moveStars 35s linear infinite;
+  background-size:90px 90px,140px 140px, 60px 60px, 180px 180px;   /* densidades diferentes */
+  background-position:0 0,60px 30px, 30px 15px, 45px 20px;
+  opacity:.45; animation:moveStars 25s linear infinite;
 }
 
 /* animação lenta do “céu estrelado” */
