@@ -703,8 +703,17 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            const containerCenter = carouselContainer.offsetWidth / 2;
-            const currentCentralCard = serverCards[currentIndex];
+            /* ➜ NOVO BLOCO – compensa o padding lateral do .carousel-container  */
+const styles       = getComputedStyle(carouselContainer);
+const paddingLeft  = parseFloat(styles.paddingLeft)  || 0;
+const paddingRight = parseFloat(styles.paddingRight) || 0;
+/* centro real da área útil (depois do padding)                       */
+const containerCenter =
+  (carouselContainer.offsetWidth - paddingLeft - paddingRight) / 2
+  + paddingLeft;
+
+const currentCentralCard = serverCards[currentIndex];
+
             const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
             const translateXValue = containerCenter - currentCardCenter;
             carouselTrack.style.transform = `translateX(${translateXValue}px)`;
