@@ -365,21 +365,55 @@ body.has-fixed-header{
 
     .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
 
-    /* Responsividade */
-    @media (max-width:768px) {
-        header .container { flex-wrap: wrap; gap: 0.5rem 1rem; }
-        header h1 { font-size: 1.75rem; flex: 1 0 100%; text-align: center; }
-        #cybersecurityModeBtn { order: 3; width: 100%; justify-content: center; }
-        nav ul { flex-wrap: wrap; justify-content: center; gap: 0.75rem 1rem; }
-        nav a { font-size: 0.875rem; }
-        .server-card { width: 280px; margin: 0 0.5rem; }
-        .carousel-arrow { width: 30px; height: 30px; padding: 0.5rem 0.25rem; }
-        #skills-constellation-container { height: 450px; }
-    }
-    @media (max-width: 640px) {
-        .server-card { width: 90%; }
-         #skills-constellation-container { height: 400px; }
-    }
+/* Responsividade */
+@media (max-width:768px){
+
+  /* container do header */
+  header .container{
+    flex-wrap:wrap;
+    gap:0.5rem 1rem;
+  }
+
+  /* título */
+  header h1{
+    font-size:1.75rem;
+    flex:1 0 100%;
+    text-align:center;
+  }
+
+  /* botão “Modo Cybersecurity” */
+  #cybersecurityModeBtn{
+    order:3;                     /* desce para a linha de baixo */
+    width:100%;
+    justify-content:center;
+  }
+
+  /* ------------ navegação: 2 colunas centralizadas ------------ */
+  header nav ul{
+    display:grid;                        /* em vez de flex          */
+    grid-template-columns:repeat(2,auto);/* 2 colunas automáticas   */
+    justify-content:center;              /* bloco central           */
+    column-gap:1.25rem;                  /* espaço horizontal       */
+    row-gap:.65rem;                      /* espaço vertical         */
+  }
+  header nav li{
+    text-align:center;                   /* texto centrado em cada li */
+  }
+
+  nav a{ font-size:0.875rem; }
+
+  /* demais ajustes */
+  .server-card{ width:280px; margin:0 0.5rem; }
+  .carousel-arrow{ width:30px; height:30px; padding:0.5rem 0.25rem; }
+  #skills-constellation-container{ height:450px; }
+}
+
+/* corte extra para telefones menores */
+@media (max-width:640px){
+  .server-card{ width:90%; }
+  #skills-constellation-container{ height:400px; }
+}
+
 
     /* navbar desliza para cima suavemente; o "voltar" é instantâneo         */
 header.nav-hidden{
