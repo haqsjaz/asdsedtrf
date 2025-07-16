@@ -703,20 +703,21 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            /* ➜ NOVO BLOCO – compensa o padding lateral do .carousel-container  */
-const styles       = getComputedStyle(carouselContainer);
-const paddingLeft  = parseFloat(styles.paddingLeft)  || 0;
-const paddingRight = parseFloat(styles.paddingRight) || 0;
-/* centro real da área útil (depois do padding)                       */
-const containerCenter =
-  (carouselContainer.offsetWidth - paddingLeft - paddingRight) / 2
-  + paddingLeft;
+  /* ⇢ BLOCO REVISTO – alinhamento absoluto -------------------------- */
+const containerRect  = carouselContainer.getBoundingClientRect();
+const containerCenter = containerRect.left + containerRect.width / 2;
 
-const currentCentralCard = serverCards[currentIndex];
+const cardRect   = currentCentralCard.getBoundingClientRect();
+const cardCenter = cardRect.left + cardRect.width / 2;
 
-            const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
-            const translateXValue = containerCenter - currentCardCenter;
-            carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+/* translateX que já existe (ou 0 se for a primeira vez) */
+const prevTranslate = parseFloat(
+  carouselTrack.style.transform.match(/-?\d+(\.\d+)?/)?.[0] || 0
+);
+
+const translateXValue = prevTranslate + (containerCenter - cardCenter);
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+
             if (!instant) {
               setTimeout(() => { isTransitioning = false; }, 500);
             }
