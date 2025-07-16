@@ -703,8 +703,21 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            const containerCenter = carouselContainer.offsetWidth / 2;
-            const currentCentralCard = serverCards[currentIndex];
+            /* ⇢ BLOCO REVISTO – alinhamento absoluto -------------------------- */
+const containerRect  = carouselContainer.getBoundingClientRect();
+const containerCenter = containerRect.left + containerRect.width / 2;
+
+const cardRect   = currentCentralCard.getBoundingClientRect();
+const cardCenter = cardRect.left + cardRect.width / 2;
+
+/* translateX que já existe (ou 0 se for a primeira vez) */
+const prevTranslate = parseFloat(
+  carouselTrack.style.transform.match(/-?\d+(\.\d+)?/)?.[0] || 0
+);
+
+const translateXValue = prevTranslate + (containerCenter - cardCenter);
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+
             const currentCardCenter = currentCentralCard.offsetLeft + currentCentralCard.offsetWidth / 2;
             const translateXValue = containerCenter - currentCardCenter;
             carouselTrack.style.transform = `translateX(${translateXValue}px)`;
