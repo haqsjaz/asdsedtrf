@@ -774,7 +774,7 @@ carouselTrack.innerHTML = '';
 carouselTrack.append(...clonesLeft, ...originals, ...clonesRight);
 
 /* 2. variáveis de estado */
-let current = 0;               // 0‥len‑1  (sempre dentro de “originais”)
+let current = len - 1;              // 0‥len‑1  (sempre dentro de “originais”)
 let cardW   = 0;
 let center  = 0;
 let autoId  = null;
@@ -785,7 +785,11 @@ function recalc () {
   const cs      = getComputedStyle(anyCard);
   const gap     = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
   cardW  = anyCard.offsetWidth + gap;
-  center = (carouselContainer.clientWidth - cardW) / 2;
+  const contCSS = getComputedStyle(carouselContainer);
+const padL    = parseFloat(contCSS.paddingLeft);
+const padR    = parseFloat(contCSS.paddingRight);
+center = (carouselContainer.clientWidth - padL - padR - cardW) / 2 + padL;
+
 }
 
 /* 4. helpers */
@@ -815,8 +819,11 @@ function snap (instant = false) {
 function go (dir) {                // dir = +1 (next) ou -1 (prev)
   current += dir;
   snap();
-  if (current === len)     { current = 0;       snap(true); } // saiu à direita
-  if (current === -1)      { current = len-1;   snap(true); } // saiu à esquerda
+carouselTrack.addEventListener('transitionend', () => {
+  if (current === len)  { current = 0;       snap(true); }
+  if (current === -1)   { current = len-1;   snap(true); }
+});
+
 }
 nextButton.addEventListener('click', () => go(1));
 prevButton.addEventListener('click', () => go(-1));
