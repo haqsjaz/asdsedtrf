@@ -768,21 +768,37 @@ window.addEventListener('scroll', () => {
         let currentIndex = 0;
         let isTransitioning = false;
         let autoScrollInterval;
-        let preClones = 1;
-        let postClones = 1;
+        // queremos um clone de CADA card real em cada extremidade
+        let preClones  = originalServerCards.length;
+        let postClones = originalServerCards.length;
+
 
         function setupInfiniteCarousel() {
-            if (originalServerCards.length === 0) return;
-            const preClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
-            const postClone = originalServerCards[0].cloneNode(true);
-            carouselTrack.innerHTML = '';
-            carouselTrack.appendChild(preClone);
-            originalServerCards.forEach(c => carouselTrack.appendChild(c.cloneNode(true)));
-            carouselTrack.appendChild(postClone);
-            serverCards = Array.from(carouselTrack.children);
-            currentIndex = preClones;
-            updateCarousel(true);
-        }
+  if (originalServerCards.length === 0) return;
+
+  /* limpa trilha */
+  carouselTrack.innerHTML = '';
+
+  /* --- clones antes --- */
+  originalServerCards.forEach(card =>
+    carouselTrack.appendChild(card.cloneNode(true))
+  );
+
+  /* --- originais (precisam ser CLONADOS para não perder handlers) --- */
+  originalServerCards.forEach(card =>
+    carouselTrack.appendChild(card.cloneNode(true))
+  );
+
+  /* --- clones depois --- */
+  originalServerCards.forEach(card =>
+    carouselTrack.appendChild(card.cloneNode(true))
+  );
+
+  serverCards  = Array.from(carouselTrack.children);
+  currentIndex = preClones;              // 1.º card real no centro
+  updateCarousel(true);                  // posiciona sem animação
+}
+
 
         function updateCarousel(instant = false) {
             if (isTransitioning && !instant) return;
@@ -798,28 +814,18 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            /* ⇢ novo cálculo – usa retângulos reais + matriz de transform -------- */
-const currentCentralCard = serverCards[currentIndex];          // mantido
+/* ⇢ novo cálculo – usa largura fixa do card ------------------------- */
+// largura total de um card (inclui margens horizontais)
+const cardWidth =
+  serverCards[0].offsetWidth +
+  parseFloat(getComputedStyle(serverCards[0]).marginLeft) * 2;
 
-const containerRect  = carouselContainer.getBoundingClientRect();
-const cardRect       = currentCentralCard.getBoundingClientRect();
+/* queremos que o card central fique no meio do container */
+const centerOffset = (carouselContainer.offsetWidth - cardWidth) / 2;
 
-/* diferença entre o centro do container (já com padding)              */
-/*            e o centro do cartão (já com o transform atual)          */
-const delta = (containerRect.left + containerRect.width / 2) -
-              (cardRect.left     + cardRect.width     / 2);
+carouselTrack.style.transform =
+  `translateX(${centerOffset - currentIndex * cardWidth}px)`;
 
-/* translateX que já existe (0 se ainda não há transform)              */
-const m            = new (window.DOMMatrixReadOnly || window.WebKitCSSMatrix)(
-                       getComputedStyle(carouselTrack).transform
-                     );
-const curTranslate = m.m41;          // componente X da matriz (px)
-
-/* novo valor absoluto ------------------------------------------------ */
-const translateXValue = curTranslate + delta;
-carouselTrack.style.transform = `translateX(${translateXValue}px)`;
-
-            carouselTrack.style.transform = `translateX(${translateXValue}px)`;
             if (!instant) {
               setTimeout(() => { isTransitioning = false; }, 500);
             }
