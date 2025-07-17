@@ -815,40 +815,61 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
 /* ⇢ novo cálculo – usa largura fixa do card ------------------------- */
-// largura total de um card (inclui margens horizontais)
-const cardWidth =
+// 1. largura do cartão (conteúdo + margens horizontais)
+const styleCard  = getComputedStyle(serverCards[0]);
+const cardWidth  =
   serverCards[0].offsetWidth +
-  parseFloat(getComputedStyle(serverCards[0]).marginLeft) * 2;
+  parseFloat(styleCard.marginLeft) +
+  parseFloat(styleCard.marginRight);
 
-/* queremos que o card central fique no meio do container */
-const centerOffset = (carouselContainer.offsetWidth - cardWidth) / 2;
+// 2. quanto de padding o container tem dos dois lados
+const styleCont  = getComputedStyle(carouselContainer);
+const padLeft    = parseFloat(styleCont.paddingLeft);
+const padRight   = parseFloat(styleCont.paddingRight);
 
+// 3. largura útil (sem padding) e centro real
+const innerWidth   = carouselContainer.clientWidth - padLeft - padRight;
+const centerOffset = padLeft + (innerWidth - cardWidth) / 2;
+
+// 4. aplica a translação
 carouselTrack.style.transform =
   `translateX(${centerOffset - currentIndex * cardWidth}px)`;
-
             if (!instant) {
               setTimeout(() => { isTransitioning = false; }, 500);
             }
         }
 
         carouselTrack.addEventListener('transitionend', e => {
-            if (e.propertyName !== 'transform') return;
-            isTransitioning = false;
-            let needSnap = false;
-            if (currentIndex >= serverCards.length - postClones) {
-                currentIndex = preClones;
-                needSnap = true;
-            } else if (currentIndex < preClones) {
-                currentIndex = serverCards.length - postClones - preClones;
-                needSnap = true;
-            }
-            if (needSnap) {
-                carouselTrack.style.transition = 'none';
-                updateCarousel(true);
-                void carouselTrack.offsetWidth;
-                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-            }
-        });
+  if (e.propertyName !== 'transform') return;
+  isTransitioning = false;
+
+  /* precisamos saber se cruzamos o limite à direita ou à esquerda */
+  const crossedRight = currentIndex >= serverCards.length - postClones;
+  const crossedLeft  = currentIndex <  preClones;
+
+  if (!crossedRight && !crossedLeft) return;   // nada a fazer
+
+  /* 1. guarda a posição final exata da animação que acabou */
+  const lastMatrix   = new DOMMatrixReadOnly(
+                         getComputedStyle(carouselTrack).transform
+                       );
+  const lastTranslate = lastMatrix.m41;
+
+  /* 2. desliga a transição e corrige o índice */
+  carouselTrack.style.transition = 'none';
+  currentIndex = crossedRight
+                 ? preClones                       // voltamos p/ card 1
+                 : serverCards.length - postClones - preClones; // card 3
+  updateCarousel(true);            // só re‑aplica classes (sem mexer X)
+
+  /* 3. mantém a posição X intocada — nada se move na tela */
+  carouselTrack.style.transform = `translateX(${lastTranslate}px)`;
+
+  /* 4. força reflow e re‑liga a transição p/ os próximos cliques */
+  void carouselTrack.offsetWidth;  // trigger reflow
+  carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+});
+
         
         nextButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex++; updateCarousel(); } });
         prevButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex--; updateCarousel(); } });
