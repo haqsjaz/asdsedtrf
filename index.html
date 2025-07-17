@@ -758,87 +758,104 @@ window.addEventListener('scroll', () => {
 });
 
       // Lógica do Carrossel (mantida integralmente)
- // ===== NOVA LÓGICA DO CAROUSEL DISCORD =====
-const carouselContainer = document.querySelector('.carousel-container');
-const carouselTrack     = document.getElementById('serverCarouselTrack');
-const prevButton        = document.getElementById('carouselPrev');
-const nextButton        = document.getElementById('carouselNext');
-if (!carouselTrack) return;          // segurança
+      const carouselContainer = document.querySelector('.carousel-container');
+      const carouselTrack = document.getElementById('serverCarouselTrack');
+      const prevButton = document.getElementById('carouselPrev');
+      const nextButton = document.getElementById('carouselNext');
+      if(carouselTrack) { // Adicionando verificação para garantir que os elementos existem
+        let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
+        let serverCards = [];
+        let currentIndex = 0;
+        let isTransitioning = false;
+        let autoScrollInterval;
+        let preClones = 1;
+        let postClones = 1;
 
-/* 1. clona os cartões: [clones‑esq|originais|clones‑dir] */
-const originals   = Array.from(carouselTrack.children);   // 3 originais
-const len         = originals.length;
-const clonesLeft  = originals.map(c => c.cloneNode(true));
-const clonesRight = originals.map(c => c.cloneNode(true));
-carouselTrack.innerHTML = '';
-carouselTrack.append(...clonesLeft, ...originals, ...clonesRight);
+        function setupInfiniteCarousel() {
+            if (originalServerCards.length === 0) return;
+            const preClone = originalServerCards[originalServerCards.length - 1].cloneNode(true);
+            const postClone = originalServerCards[0].cloneNode(true);
+            carouselTrack.innerHTML = '';
+            carouselTrack.appendChild(preClone);
+            originalServerCards.forEach(c => carouselTrack.appendChild(c.cloneNode(true)));
+            carouselTrack.appendChild(postClone);
+            serverCards = Array.from(carouselTrack.children);
+            currentIndex = preClones;
+            updateCarousel(true);
+        }
 
-/* 2. variáveis de estado */
-let current = len - 1;              // 0‥len‑1  (sempre dentro de “originais”)
-let cardW   = 0;
-let center  = 0;
-let autoId  = null;
+        function updateCarousel(instant = false) {
+            if (isTransitioning && !instant) return;
+            if (instant) {
+                carouselTrack.style.transition = 'none';
+            } else {
+                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+                isTransitioning = true;
+            }
+            serverCards.forEach((card, index) => {
+                card.classList.remove('is-center', 'is-left', 'is-right');
+                if (index === currentIndex) card.classList.add('is-center');
+                else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
+                else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
+            });
+            /* ⇢ novo cálculo – usa retângulos reais + matriz de transform -------- */
+const currentCentralCard = serverCards[currentIndex];          // mantido
 
-/* 3. recálculo das métricas de centralização */
-function recalc () {
-  const anyCard = carouselTrack.children[len];            // 1º original
-  const cs      = getComputedStyle(anyCard);
-  const gap     = parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
-  cardW  = anyCard.offsetWidth + gap;
-  center = (carouselContainer.clientWidth - cardW) / 2;
-}
+const containerRect  = carouselContainer.getBoundingClientRect();
+const cardRect       = currentCentralCard.getBoundingClientRect();
 
-/* 4. helpers */
-const pos = i => `translateX(${-i * cardW + center}px)`;  // i = índice global
+/* diferença entre o centro do container (já com padding)              */
+/*            e o centro do cartão (já com o transform atual)          */
+const delta = (containerRect.left + containerRect.width / 2) -
+              (cardRect.left     + cardRect.width     / 2);
 
-function paint () {
-  const kids = carouselTrack.children;
-  for (let i = 0; i < kids.length; i++) {
-    kids[i].classList.remove('is-center', 'is-left', 'is-right');
-    const rel = (i - (current + len)) % len;              // -1,0,1,...
-    if (rel === 0)                       kids[i].classList.add('is-center');
-    else if (rel === -1 || rel === len-1) kids[i].classList.add('is-left');
-    else if (rel === 1  || rel === 1-len) kids[i].classList.add('is-right');
-  }
-}
+/* translateX que já existe (0 se ainda não há transform)              */
+const m            = new (window.DOMMatrixReadOnly || window.WebKitCSSMatrix)(
+                       getComputedStyle(carouselTrack).transform
+                     );
+const curTranslate = m.m41;          // componente X da matriz (px)
 
-function snap (instant = false) {
-  carouselTrack.style.transition = instant ? 'none' : 'transform .5s ease';
-  carouselTrack.style.transform  = pos(current + len);    // deslocado pelo clone‑esq
-  paint();
-  if (instant) requestAnimationFrame(() => {
-    carouselTrack.style.transition = 'transform .5s ease';
-  });
-}
+/* novo valor absoluto ------------------------------------------------ */
+const translateXValue = curTranslate + delta;
+carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
-/* 5. navegação */
-function go (dir) {                // dir = +1 (next) ou -1 (prev)
-  current += dir;
-  snap();
-}
-  carouselTrack.addEventListener('transitionend', () => {
-  if (current >= len)  {           // saiu pelos clones‑direita
-    current -= len;  snap(true);   // volta p/ bloco original
-  } else if (current < 0) {        // saiu pelos clones‑esquerda
-    current += len;  snap(true);
-  }
-});
+            carouselTrack.style.transform = `translateX(${translateXValue}px)`;
+            if (!instant) {
+              setTimeout(() => { isTransitioning = false; }, 500);
+            }
+        }
 
-nextButton.addEventListener('click', () => go(1));
-prevButton.addEventListener('click', () => go(-1));
+        carouselTrack.addEventListener('transitionend', e => {
+            if (e.propertyName !== 'transform') return;
+            isTransitioning = false;
+            let needSnap = false;
+            if (currentIndex >= serverCards.length - postClones) {
+                currentIndex = preClones;
+                needSnap = true;
+            } else if (currentIndex < preClones) {
+                currentIndex = serverCards.length - postClones - preClones;
+                needSnap = true;
+            }
+            if (needSnap) {
+                carouselTrack.style.transition = 'none';
+                updateCarousel(true);
+                void carouselTrack.offsetWidth;
+                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+            }
+        });
+        
+        nextButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex++; updateCarousel(); } });
+        prevButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex--; updateCarousel(); } });
+        
+        const startAutoScroll = () => { stopAutoScroll(); autoScrollInterval = setInterval(() => nextButton.click(), 6000); };
+        const stopAutoScroll = () => clearInterval(autoScrollInterval);
 
-/* 6. auto‑scroll */
-function startAuto () { stopAuto(); autoId = setInterval(() => go(1), 6000); }
-function stopAuto  () { clearInterval(autoId); }
-carouselContainer.addEventListener('mouseenter', stopAuto);
-carouselContainer.addEventListener('mouseleave', startAuto);
-
-/* 7. resize + boot */
-window.addEventListener('resize', () => { recalc(); snap(true); });
-recalc();
-snap(true);
-startAuto();
-
+        carouselContainer.addEventListener('mouseenter', stopAutoScroll);
+        carouselContainer.addEventListener('mouseleave', startAutoScroll);
+        window.addEventListener('resize', setupInfiniteCarousel);
+        setupInfiniteCarousel();
+        startAutoScroll();
+      }
 
 
       // --- FEATURE 1: BACKGROUND 3D INTERATIVO COM THREE.JS ---
