@@ -763,112 +763,111 @@ window.addEventListener('scroll', () => {
       const prevButton = document.getElementById('carouselPrev');
       const nextButton = document.getElementById('carouselNext');
       if(carouselTrack) { // Adicionando verificação para garantir que os elementos existem
-        let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
-        let serverCards = [];
-        let currentIndex = 0;
-        let isTransitioning = false;
-        let autoScrollInterval;
-        // queremos um clone de CADA card real em cada extremidade
-        let preClones  = originalServerCards.length;
-        let postClones = originalServerCards.length;
+       /* ---------- CARROSSEL INFINITO ---------------------------------- */
+const carouselContainer = document.querySelector('.carousel-container');
+const carouselTrack     = document.getElementById('serverCarouselTrack');
+const prevButton        = document.getElementById('carouselPrev');
+const nextButton        = document.getElementById('carouselNext');
 
+if (carouselTrack){
 
-        function setupInfiniteCarousel() {
-  if (originalServerCards.length === 0) return;
-
-  /* limpa trilha */
+  /* --- 1. montar trilha com clones ------------------------------ */
+  const originals   = Array.from(carouselTrack.children);
+  const totalCards  = originals.length;       // 3 no seu caso
   carouselTrack.innerHTML = '';
 
-  /* --- clones antes --- */
-  originalServerCards.forEach(card =>
-    carouselTrack.appendChild(card.cloneNode(true))
-  );
+  // clones à esquerda
+  originals.forEach(c=> carouselTrack.appendChild(c.cloneNode(true)));
+  // originais
+  originals.forEach(c=> carouselTrack.appendChild(c.cloneNode(true)));
+  // clones à direita
+  originals.forEach(c=> carouselTrack.appendChild(c.cloneNode(true)));
 
-  /* --- originais (precisam ser CLONADOS para não perder handlers) --- */
-  originalServerCards.forEach(card =>
-    carouselTrack.appendChild(card.cloneNode(true))
-  );
+  const cards         = Array.from(carouselTrack.children);
+  const preClones     = totalCards;           // índices 0..(total‑1)
+  let   currentIndex  = preClones;            // começa no 1.º original
+  let   isMoving      = false;
 
-  /* --- clones depois --- */
-  originalServerCards.forEach(card =>
-    carouselTrack.appendChild(card.cloneNode(true))
-  );
+  /* --- 2. métricas ---------------------------------------------- */
+  let cardWidth   = 0;
+  let centerOff   = 0;
+  computeMetrics();
 
-  serverCards  = Array.from(carouselTrack.children);
-  currentIndex = preClones;              // 1.º card real no centro
-  updateCarousel(true);                  // posiciona sem animação
+  /* --- 3. funções principais ------------------------------------ */
+  function computeMetrics(){
+    const styleCard = getComputedStyle(cards[preClones]); // 1.º real
+    cardWidth = cards[preClones].offsetWidth +
+                parseFloat(styleCard.marginLeft) +
+                parseFloat(styleCard.marginRight);
+
+    const styleCont = getComputedStyle(carouselContainer);
+    const padLeft   = parseFloat(styleCont.paddingLeft);
+    const padRight  = parseFloat(styleCont.paddingRight);
+    const innerW    = carouselContainer.clientWidth - padLeft - padRight;
+
+    centerOff = padLeft + (innerW - cardWidth)/2;
+  }
+
+  const translateFor = idx =>
+    `translateX(${centerOff - idx*cardWidth}px)`;
+
+  function markClasses(){
+    cards.forEach((c,i)=>{
+      c.classList.toggle('is-center', i===currentIndex);
+      c.classList.toggle('is-left' , i===(currentIndex-1+cards.length)%cards.length);
+      c.classList.toggle('is-right', i===(currentIndex+1)%cards.length);
+    });
+  }
+
+  function go(delta){
+    if(isMoving) return;
+    isMoving = true;
+    currentIndex += delta;
+    carouselTrack.style.transition = 'transform .5s ease';
+    carouselTrack.style.transform  = translateFor(currentIndex);
+    markClasses();
+  }
+
+  /* --- 4. após cada animação, corrija se entrou em clones ------- */
+  carouselTrack.addEventListener('transitionend', e=>{
+    if(e.propertyName!=='transform') return;
+    carouselTrack.style.transition = 'none';
+
+    if (currentIndex >= preClones + totalCards)   // passou p/ clones‑direita
+        currentIndex -= totalCards;
+    else if (currentIndex < preClones)            // clones‑esquerda
+        currentIndex += totalCards;
+
+    carouselTrack.style.transform = translateFor(currentIndex);
+    markClasses();
+    /* força reflow antes de reabilitar transição */
+    void carouselTrack.offsetWidth;
+    carouselTrack.style.transition = 'transform .5s ease';
+    isMoving = false;
+  });
+
+  /* --- 5. botões e auto‑scroll ---------------------------------- */
+  nextButton.addEventListener('click', ()=> go(+1));
+  prevButton.addEventListener('click', ()=> go(-1));
+
+  let auto = setInterval(()=> go(+1), 6000);
+  carouselContainer.addEventListener('mouseenter', ()=> clearInterval(auto));
+  carouselContainer.addEventListener('mouseleave', ()=>{
+    auto = setInterval(()=> go(+1), 6000);
+  });
+
+  /* --- 6. resize ------------------------------------------------- */
+  window.addEventListener('resize', ()=>{
+    computeMetrics();
+    carouselTrack.style.transition = 'none';
+    carouselTrack.style.transform  = translateFor(currentIndex);
+  });
+
+  /* --- 7. estado inicial ---------------------------------------- */
+  carouselTrack.style.transform = translateFor(currentIndex);
+  markClasses();
 }
 
-
-        function updateCarousel(instant = false) {
-            if (isTransitioning && !instant) return;
-            if (instant) {
-                carouselTrack.style.transition = 'none';
-            } else {
-                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-                isTransitioning = true;
-            }
-            serverCards.forEach((card, index) => {
-                card.classList.remove('is-center', 'is-left', 'is-right');
-                if (index === currentIndex) card.classList.add('is-center');
-                else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
-                else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
-            });
-/* ⇢ novo cálculo – usa largura fixa do card ------------------------- */
-// 1. largura do cartão (conteúdo + margens horizontais)
-const styleCard  = getComputedStyle(serverCards[0]);
-const cardWidth  =
-  serverCards[0].offsetWidth +
-  parseFloat(styleCard.marginLeft) +
-  parseFloat(styleCard.marginRight);
-
-// 2. quanto de padding o container tem dos dois lados
-const styleCont  = getComputedStyle(carouselContainer);
-const padLeft    = parseFloat(styleCont.paddingLeft);
-const padRight   = parseFloat(styleCont.paddingRight);
-
-// 3. largura útil (sem padding) e centro real
-const innerWidth   = carouselContainer.clientWidth - padLeft - padRight;
-const centerOffset = padLeft + (innerWidth - cardWidth) / 2;
-
-// 4. aplica a translação
-carouselTrack.style.transform =
-  `translateX(${centerOffset - currentIndex * cardWidth}px)`;
-            if (!instant) {
-              setTimeout(() => { isTransitioning = false; }, 500);
-            }
-        }
-
-        carouselTrack.addEventListener('transitionend', e => {
-  if (e.propertyName !== 'transform') return;
-  isTransitioning = false;
-
-  /* precisamos saber se cruzamos o limite à direita ou à esquerda */
-  const crossedRight = currentIndex >= serverCards.length - postClones;
-  const crossedLeft  = currentIndex <  preClones;
-
-  if (!crossedRight && !crossedLeft) return;   // nada a fazer
-
-  /* 1. guarda a posição final exata da animação que acabou */
-  const lastMatrix   = new DOMMatrixReadOnly(
-                         getComputedStyle(carouselTrack).transform
-                       );
-  const lastTranslate = lastMatrix.m41;
-
-  /* 2. desliga a transição e corrige o índice */
-  carouselTrack.style.transition = 'none';
-  currentIndex = crossedRight
-                 ? preClones                       // voltamos p/ card 1
-                 : serverCards.length - postClones - preClones; // card 3
-  updateCarousel(true);            // só re‑aplica classes (sem mexer X)
-
-  /* 3. mantém a posição X intocada — nada se move na tela */
-  carouselTrack.style.transform = `translateX(${lastTranslate}px)`;
-
-  /* 4. força reflow e re‑liga a transição p/ os próximos cliques */
-  void carouselTrack.offsetWidth;  // trigger reflow
-  carouselTrack.style.transition = 'transform 0.5s ease-in-out';
-});
 
         
         nextButton.addEventListener('click', () => { if (!isTransitioning) { currentIndex++; updateCarousel(); } });
