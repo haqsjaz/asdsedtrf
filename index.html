@@ -446,6 +446,24 @@ header.nav-hidden{
   background: rgba(114, 137, 218, 0.5);  /* destaque ao passar o mouse */
 }
 
+
+footer {
+  backdrop-filter: blur(10px);
+  background: rgba(28, 28, 40, 0.25); /* vidro escuro translúcido */
+  border-top: 1px solid rgba(114, 137, 218, 0.2);
+  box-shadow: 0 0 20px rgba(114, 137, 218, 0.15);
+}
+
+footer p {
+  color: #8ab4ff; /* azul-claro neon */
+  text-shadow:
+    0 0 4px #5c64f4,
+    0 0 8px #5c64f4,
+    0 0 12px #5c64f4;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  font-weight: 500;
+}
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -660,8 +678,8 @@ header.nav-hidden{
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-gray-800 py-6">
-    <p class="text-center text-sm text-gray-500">© 2025 Caio Duque. Todos os direitos reservados.</p>
+  <footer class="py-6">
+    <p class="text-center text-sm">© 2025 Caio Duque. Todos os direitos reservados.</p>
   </footer>
 
   <script>
