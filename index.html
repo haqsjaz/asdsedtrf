@@ -423,6 +423,29 @@ header.nav-hidden{
   transition: transform .35s ease;/* só existe quando a classe está ativa*/
 }
 
+/* Scroll personalizado estilo vidro */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(44, 47, 51, 0.2);  /* vidro escuro */
+  backdrop-filter: blur(8px);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 255, 0.25);  /* thumb claro translúcido */
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.1);  /* leve contorno */
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(114, 137, 218, 0.5);  /* destaque ao passar o mouse */
+}
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
