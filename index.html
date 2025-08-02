@@ -311,6 +311,7 @@ body.has-fixed-header{
 .badge-owner{        background-image:linear-gradient(135deg,#5c64f4,#2c2e72);}
 .badge-mod  {        background-image:linear-gradient(135deg,#7069c5,#35325b);}
 .badge-affil{        background-image:linear-gradient(135deg,#83e2bd,#4a7c69);}
+.badge-manager{      background-image:linear-gradient(135deg,#f8c46a,#8b5f24);}    
 
 /* ---------- BOTÕES “UNIVERSE” ------------------------------------ */
 .btn{                                 /* base padrão                 */
@@ -613,7 +614,7 @@ h1, h2, h3, h4,                                /* section titles     */
   <!-- SERVIDORES DISCORD (CAROUSEL) -->
   <section class="py-16">
     <div class="container mx-auto px-4 py-12">
-      <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Servidores Discord</h3>
+      <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Jornada no Discord</h3>
       <div class="carousel-container">
         <div class="carousel-track" id="serverCarouselTrack">
           <!-- VIGGLE -->
@@ -625,9 +626,9 @@ h1, h2, h3, h4,                                /* section titles     */
                 <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA. Participe e experimente gratuitamente!</p>
+            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA.</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Ex-Moderador</span>
+              <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Moderador</span>
               <button onclick="window.open('https://discord.gg/viggle','_blank')" class="btn">Entrar</button>
             </div>
           </div>
@@ -657,10 +658,132 @@ h1, h2, h3, h4,                                /* section titles     */
             </div>
             <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
             <div class="mt-6 flex items-center w-full justify-between">
-              <span class="badge badge-affil"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4"> Affiliated</span>
+              <span class="badge badge-affil"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4"> Afiliado</span>
               <button onclick="window.open('https://discord.gg/f1','_blank')" class="btn">Entrar</button>
             </div>
           </div>
+          <!-- SERVIDOR DO GOULARTE -->
+<div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center mb-4">
+    <img src="assets/images/goularte_logo.png" loading="lazy"
+         alt="Goularte Logo" class="w-20 h-20 rounded-full object-cover"
+         onerror="this.src='https://placehold.co/80x80/5865F2/FFFFFF?text=G';" />
+    <div class="ml-4 text-left">
+      <h4 class="text-xl font-semibold flex items-center">
+        Servidor do Goularte
+        <img src="assets/images/verified_server.png" alt="Verificado"
+             class="w-5 h-5 ml-1" />
+      </h4>
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png" alt="Membros"
+             class="w-4 h-4 mr-1" /> 500.000+
+      </p>
+    </div>
+  </div>
+  <p class="mt-4 text-gray-300 flex-1 text-center">
+    Comunidade oficial do streamer Goularte. Desativado em 2024. Aqui, fui Moderador por 1 mês e 15 dias, em 2021.
+  </p>
+  <div class="mt-6 flex items-center w-full justify-between">
+    <span class="badge badge-mod">
+      <img src="assets/images/moderator_role.png" alt="Moderador" class="w-4 h-4">
+      Moderador
+    </span>
+    <button onclick="window.open('https://discord.gg/gou','_blank')" class="btn">Entrar</button>
+  </div>
+</div>
+
+<!-- SERVIDOR DO SAN -->
+<div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center mb-4">
+    <img src="assets/images/san_logo.png" loading="lazy"
+         alt="Servidor do San Logo" class="w-20 h-20 rounded-full object-cover"
+         onerror="this.src='https://placehold.co/80x80/6A44F8/FFFFFF?text=S';" />
+    <div class="ml-4 text-left">
+      <h4 class="text-xl font-semibold flex items-center">
+        Servidor do San
+        <img src="assets/images/verified_server.png" alt="Verificado"
+             class="w-5 h-5 ml-1" />
+      </h4>
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png" alt="Membros"
+             class="w-4 h-4 mr-1" /> 70.000+
+      </p>
+    </div>
+  </div>
+  <p class="mt-4 text-gray-300 flex-1 text-center">
+    Servidor oficial do Youtuber Tio San. Desativado em 2022. Lá, fui Moderador por 4 meses e Gerente por 8 meses.
+  </p>
+  <div class="mt-6 flex items-center w-full justify-between">
+    <span class="badge badge-manager">
+      <img src="assets/images/manager_role.png" alt="Gerente" class="w-4 h-4"
+           onerror="this.src='https://placehold.co/16x16/FFC86A/000?text=G';">
+      Gerente
+    </span>
+    <button onclick="window.open('https://discord.gg/desativado_','_blank')" class="btn">Entrar</button>
+  </div>
+</div>
+
+<!-- STEVEZTV -->
+<div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center mb-4">
+    <img src="assets/images/steveztv_logo.png" loading="lazy"
+         alt="StevezTV Logo" class="w-20 h-20 rounded-full object-cover"
+         onerror="this.src='https://placehold.co/80x80/5CF4B1/000?text=ST';" />
+    <div class="ml-4 text-left">
+      <h4 class="text-xl font-semibold flex items-center">
+        StevezTV
+        <img src="assets/images/server_booster_badge.png" alt="Booster"
+             class="w-5 h-5 ml-1" />
+      </h4>
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png" alt="Membros"
+             class="w-4 h-4 mr-1" /> 45.000+
+      </p>
+    </div>
+  </div>
+  <p class="mt-4 text-gray-300 flex-1 text-center">
+    Comunidade do Youtuber StevezTV. Participei da equipe de moderação em 2022. 
+  </p>
+  <div class="mt-6 flex items-center w-full justify-between">
+    <span class="badge badge-mod">
+      <img src="assets/images/moderator_role.png" alt="Moderador" class="w-4 h-4">
+      Moderador
+    </span>
+    <button onclick="window.open('https://discord.gg/2PBaeutwDc','_blank')" class="btn">Entrar</button>
+  </div>
+</div>
+
+<!-- ITS A TRAP -->
+<div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
+  <div class="flex items-center mb-4">
+    <img src="assets/images/itsatrap_logo.png" loading="lazy"
+         alt="Its a Trap Logo" class="w-20 h-20 rounded-full object-cover"
+         onerror="this.src='https://placehold.co/80x80/F85C5C/FFFFFF?text=IT';" />
+    <div class="ml-4 text-left">
+      <h4 class="text-xl font-semibold flex items-center">
+        Its a Trap
+        <img src="assets/images/verified_server.png" alt="Verificado"
+             class="w-5 h-5 ml-1" />
+      </h4>
+      <p class="text-sm text-gray-400 flex items-center">
+        <img src="assets/images/number_members.png" alt="Membros"
+             class="w-4 h-4 mr-1" /> 200.000+
+      </p>
+    </div>
+  </div>
+  <p class="mt-4 text-gray-300 flex-1 text-center">
+    Maior servidor brasileiro de Roblox no Discord. Fui Gerente por recomendação, em 2024. Divirta-se encontrando amigos para jogar Roblox!
+  </p>
+  <div class="mt-6 flex items-center w-full justify-between">
+    <span class="badge badge-manager">
+      <img src="assets/images/manager_role.png" alt="Gerente" class="w-4 h-4"
+           onerror="this.src='https://placehold.co/16x16/FFC86A/000?text=G';">
+      Gerente
+    </span>
+    <button onclick="window.open('https://discord.gg/itsatrap','_blank')" class="btn">Entrar</button>
+  </div>
+</div>
+
         </div>
         <button class="carousel-arrow left" id="carouselPrev"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
         <button class="carousel-arrow right" id="carouselNext"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
@@ -1348,3 +1471,4 @@ node
 
 </body>
 </html>
+
