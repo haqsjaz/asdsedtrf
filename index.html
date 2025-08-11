@@ -475,6 +475,27 @@ h1, h2, h3, h4,                                /* section titles     */
   user-select: none;         /* modern browsers        */
 }
 
+    /* —— Tipografia global —— */
+html { hanging-punctuation: first allow-end; }
+p, li { hyphens: auto; }
+.text-balance { text-wrap: balance; }   /* fallback caso Tailwind não inclua */
+.text-pretty  { text-wrap: pretty;  }   /* idem */
+
+/* “prose” minimalista (sem plugin) para blocos textuais */
+.prose-like :where(h1,h2,h3){line-height:1.2;margin:0 0 .6em}
+.prose-like :where(p){line-height:1.75;margin:.85em 0;color:#e5e7eb}
+.prose-like :where(ul){list-style:disc;padding-left:1.25rem;margin:.75em 0}
+.prose-like :where(ol){list-style:decimal;padding-left:1.25rem;margin:.75em 0}
+.prose-like :where(blockquote){
+  margin:1rem 0;padding:.75rem 1rem;border-left:3px solid #7B46FF;
+  background:rgba(44,47,51,.45);border-radius:.5rem;color:#e5e7eb
+}
+.prose-like :where(code){font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  background:rgba(148,163,184,.15);padding:.15rem .4rem;border-radius:.35rem}
+.prose-like :where(a){color:#8ab4ff;text-underline-offset:3px}
+.prose-like :where(hr){border:none;height:1px;background:linear-gradient(90deg,transparent,#5c64f4,transparent);margin:1.25rem 0}
+
+
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
@@ -532,7 +553,7 @@ h1, h2, h3, h4,                                /* section titles     */
                 data-glow="Caio Duque">
               Caio Duque
             </h2>
-            <p class="mt-2 text-gray-300">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Atualmente, sou Data Analyst na Federação Paranaense do Automobilismo e Estagiário na Hanke Digital Solutions.</p>
+            <p class="mt-2 text-gray-200/90 leading-relaxed md:text-lg text-pretty text-balance max-w-prose">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Atualmente, sou Data Analyst na Federação Paranaense do Automobilismo e Estagiário na Hanke Digital Solutions.</p>
           </div>
         </div>
         <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
@@ -564,10 +585,11 @@ h1, h2, h3, h4,                                /* section titles     */
   <!-- SOBRE MIM -->
   <section id="about" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Sobre Mim</h3>
-    <div class="card rounded-xl p-8 max-w-3xl mx-auto text-center">
-      <p class="text-gray-300 text-lg mb-4">Olá! Eu sou o Caio Duque, um entusiasta da tecnologia com uma paixão inesgotável por desvendar os segredos da programação e do design. Atualmente, estou imerso nos estudos de Ciência da Computação, buscando não apenas conhecimento, mas a capacidade de criar soluções inovadoras que impactem positivamente o mundo.</p>
-      <p class="text-gray-300 text-lg mb-4">Minha jornada inclui experiências significativas como Moderador no servidor Viggle, onde aprimorei minhas habilidades de comunicação e gestão de comunidades, e como criador do "Old Duque's", um espaço dedicado ao compartilhamento de conhecimento em diversas áreas tech.</p>
-      <p class="text-300 text-lg">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
+    <div class="card rounded-xl p-8 max-w-3xl mx-auto text-center prose-like">
+      <p class="mb-4 text-pretty text-balance">Olá! Eu sou o Caio Duque, um entusiasta da tecnologia com uma paixão inesgotável por desvendar os segredos da programação e do design. Atualmente, estou imerso nos estudos de Ciência da Computação, buscando não apenas conhecimento, mas a capacidade de criar soluções inovadoras que impactem positivamente o mundo.</p>
+      <p class="mb-4 text-pretty text-balance">Minha jornada inclui experiências significativas como Moderador no servidor Viggle, onde aprimorei minhas habilidades de comunicação e gestão de comunidades, e como criador do "Old Duque's", um espaço dedicado ao compartilhamento de conhecimento em diversas áreas tech.</p>
+      <p class="mb-2 text-pretty text-balance">Sou movido pela curiosidade, sempre em busca de novos desafios em cibersegurança e no desenvolvimento full-stack. Acredito que a tecnologia é uma ferramenta poderosa para a transformação, e estou sempre pronto para colaborar em projetos que busquem fazer a diferença.</p>
+      <blockquote>“Tecnologia é uma ferramenta para transformar — estética, ética e impacto.”</blockquote>
       <div class="mt-8">
         <a href="assets/CaioDuque_CV.pdf" download class="btn">
             Baixar CV
@@ -595,13 +617,13 @@ h1, h2, h3, h4,                                /* section titles     */
       <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
         <img src="assets/images/learnconnect_logo.png" loading="lazy" alt="LearnConnect Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
         <h4 class="text-xl font-semibold mb-2">LearnConnect</h4>
-        <p class="text-gray-300 text-center mb-4">Plataforma de aprendizado colaborativo que integra servidor Discord e website Next.js, oferecendo material e networking em tecnologia.</p>
+        <p class="text-gray-200/90 text-center mb-4 leading-relaxed text-pretty max-w-prose">Plataforma de aprendizado colaborativo que integra servidor Discord e website Next.js, oferecendo material e networking em tecnologia.</p>
         <a href="http://168.75.74.153:3001/" target="_blank" class="btn">Visitar Site</a>
       </div>
       <div class="card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
         <img src="assets/images/amadeusAI.png" loading="lazy" alt="Amadeus AI Logo" class="w-24 h-24 object-contain rounded-lg mb-4" />
         <h4 class="text-xl font-semibold mb-2">Amadeus AI</h4>
-        <p class="text-gray-300 text-center mb-4">
+        <p class="text-gray-200/90 text-center mb-4 leading-relaxed text-pretty max-w-prose">
           Amadeus é uma solução inovadora para atendimento especial no projeto LearnConnect e Old Duque’s. Uma IA avançada que funciona via Discord Bot e API.
         </p>
         <a href="https://github.com/cai0duque/Discord-Bot-IA" target="_blank" class="btn">
@@ -623,10 +645,10 @@ h1, h2, h3, h4,                                /* section titles     */
               <img src="assets/images/viggle_logo.png" loading="lazy" alt="Viggle Logo" class="w-20 h-20 rounded-full object-cover" />
               <div class="ml-4 text-left">
                 <h4 class="text-xl font-semibold flex items-center">Viggle <img src="assets/images/verified_server.png" loading="lazy" alt="Verificado" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
+                <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA.</p>
+            <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto"">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA.</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Moderador</span>
               <button onclick="window.open('https://discord.gg/viggle','_blank')" class="btn">Entrar</button>
@@ -638,10 +660,10 @@ h1, h2, h3, h4,                                /* section titles     */
               <img src="assets/images/old_duques_logo.png" loading="lazy" alt="Old Duque's Logo" class="w-20 h-20 rounded-full object-cover" />
               <div class="ml-4 text-left">
                 <h4 class="text-xl font-semibold flex items-center">Old Duque's <img src="assets/images/server_booster_badge.png" loading="lazy" alt="Booster" class="w-5 h-5 ml-1" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 220</p>
+                <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 220</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, cybersec, e mais.</p>
+            <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">Clã Old Duque's: central de materiais e conteúdos de qualidade sobre programação, design, cybersec, e mais.</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-owner"><img src="assets/images/emperor.png" alt="Proprietário" class="w-4 h-4"> Proprietário</span>
               <button onclick="window.open('https://discord.gg/bwHGH75Txb','_blank')" class="btn">Entrar</button>
@@ -653,10 +675,10 @@ h1, h2, h3, h4,                                /* section titles     */
               <img src="assets/images/f1.png" loading="lazy" alt="Formula 1 Logo" class="w-20 h-20 rounded-full object-cover" onerror="this.src='https://placehold.co/80x80/E10600/FFFFFF?text=F1';" />
               <div class="ml-4 text-left">
                 <h4 class="text-xl font-semibold flex items-center">Formula One <img src="assets/images/partner.png" loading="lazy" alt="Partner" class="w-5 h-5 ml-1" onerror="this.src='https://placehold.co/20x20/F05F40/FFFFFF?text=P';" /></h4>
-                <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 100.000+</p>
+                <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 100.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-300 flex-1 text-center">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
+            <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">Servidor original de Fórmula 1 no Discord - junte-se para discutir o melhor esporte do mundo e conhecer outros fãs!</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-affil"><img src="assets/images/motorsport.png" alt="Motorsport Affiliated" class="w-4 h-4"> Afiliado</span>
               <button onclick="window.open('https://discord.gg/f1','_blank')" class="btn">Entrar</button>
@@ -674,13 +696,13 @@ h1, h2, h3, h4,                                /* section titles     */
         <img src="assets/images/verified_server.png" alt="Verificado"
              class="w-5 h-5 ml-1" />
       </h4>
-      <p class="text-sm text-gray-400 flex items-center">
+      <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
         <img src="assets/images/number_members.png" alt="Membros"
              class="w-4 h-4 mr-1" /> 500.000+
       </p>
     </div>
   </div>
-  <p class="mt-4 text-gray-300 flex-1 text-center">
+  <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
     Comunidade oficial do youtuber & streamer Goularte. Desativado em 2024. Aqui, participei da equipe de Moderação em 2021.
   </p>
   <div class="mt-6 flex items-center w-full justify-between">
@@ -704,13 +726,13 @@ h1, h2, h3, h4,                                /* section titles     */
         <img src="assets/images/verified_server.png" alt="Verificado"
              class="w-5 h-5 ml-1" />
       </h4>
-      <p class="text-sm text-gray-400 flex items-center">
+      <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
         <img src="assets/images/number_members.png" alt="Membros"
              class="w-4 h-4 mr-1" /> 70.000+
       </p>
     </div>
   </div>
-  <p class="mt-4 text-gray-300 flex-1 text-center">
+  <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
     Servidor oficial do Youtuber Tio San. Desativado em 2022. Permaneci na Gerência de Comunidade por um longo período.
   </p>
   <div class="mt-6 flex items-center w-full justify-between">
@@ -735,13 +757,13 @@ h1, h2, h3, h4,                                /* section titles     */
         <img src="assets/images/server_booster_badge.png" alt="Booster"
              class="w-5 h-5 ml-1" />
       </h4>
-      <p class="text-sm text-gray-400 flex items-center">
+      <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
         <img src="assets/images/number_members.png" alt="Membros"
              class="w-4 h-4 mr-1" /> 45.000+
       </p>
     </div>
   </div>
-  <p class="mt-4 text-gray-300 flex-1 text-center">
+  <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
     Comunidade oficial do Youtuber e TikToker StevezTV! Participei da equipe de moderação em 2022. 
   </p>
   <div class="mt-6 flex items-center w-full justify-between">
@@ -765,13 +787,13 @@ h1, h2, h3, h4,                                /* section titles     */
         <img src="assets/images/verified_server.png" alt="Verificado"
              class="w-5 h-5 ml-1" />
       </h4>
-      <p class="text-sm text-gray-400 flex items-center">
+      <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
         <img src="assets/images/number_members.png" alt="Membros"
              class="w-4 h-4 mr-1" /> 200.000+
       </p>
     </div>
   </div>
-  <p class="mt-4 text-gray-300 flex-1 text-center">
+  <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">
     Maior servidor brasileiro de Roblox no Discord. Fui Gerente por recomendação, em 2024. Divirta-se!
   </p>
   <div class="mt-6 flex items-center w-full justify-between">
@@ -812,7 +834,7 @@ h1, h2, h3, h4,                                /* section titles     */
 
   <!-- FOOTER -->
   <footer class="py-6">
-    <p class="text-center text-sm">© 2025 Caio Duque. Todos os direitos reservados.</p>
+    <p class="text-center text-sm text-balance">© 2025 Caio Duque. Todos os direitos reservados.</p>
   </footer>
 
   <script>
@@ -1471,6 +1493,7 @@ node
 
 </body>
 </html>
+
 
 
 
