@@ -26,6 +26,9 @@
   <!-- Bibliotecas para a nova versão -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
   <style>
     /* Estilos Gerais e Antigos (mantidos para consistência) */
     .tooltip span {
@@ -553,7 +556,15 @@ p, li { hyphens: auto; }
                 data-glow="Caio Duque">
               Caio Duque
             </h2>
-            <p class="mt-2 text-gray-200/90 leading-relaxed md:text-lg text-pretty text-balance max-w-prose">Estudante de Ciência da Computação apaixonado por programação, design e cibersegurança. Atualmente, sou Data Analyst na Federação Paranaense do Automobilismo e Estagiário na Hanke Digital Solutions.</p>
+            <article id="profile-md-target"
+            class="prose-like mt-2 text-gray-200/90 leading-relaxed md:text-lg text-pretty text-balance max-w-prose">
+            </article>
+
+            <script type="text/markdown" id="profile-md-src">
+            Estudante de Ciência da Computação apaixonado por **programação**, **design** e **cibersegurança**.  
+            Atualmente, sou *Data Analyst* na [Federação Paranaense do Automobilismo](<https://fpra.com.br/site/>) e *Dev-Estagiário* na [Hanke Digital Solutions](<https://www.hankeds.com.br/>).
+            </script>
+
           </div>
         </div>
         <div class="mt-6 md:mt-0 md:ml-auto flex space-x-2 flex-wrap justify-center md:justify-end">
@@ -648,7 +659,7 @@ p, li { hyphens: auto; }
                 <p class="text-sm text-gray-400 flex items-center"><img src="assets/images/number_members.png" loading="lazy" alt="Membros" class="w-4 h-4 mr-1" /> 4.300.000+</p>
               </div>
             </div>
-            <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto"">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA.</p>
+            <p class="mt-4 text-gray-200/90 flex-1 text-center leading-relaxed text-pretty max-w-prose mx-auto">Servidor oficial da IA Viggle, líder mundial em mixagem de animações e vídeos gerados por IA.</p>
             <div class="mt-6 flex items-center w-full justify-between">
               <span class="badge badge-mod"><img src="assets/images/moderator_role.png" alt="Ex‑Moderador" class="w-4 h-4"> Moderador</span>
               <button onclick="window.open('https://discord.gg/viggle','_blank')" class="btn">Entrar</button>
@@ -844,6 +855,27 @@ p, li { hyphens: auto; }
       // Esta parte do seu código original foi mantida, pois é excelente e funciona bem.
       // Apenas a lógica do canvas 2D foi removida.
       const nameEl = document.getElementById('nome');
+      /* —— Renderizar Markdown só no bloco de perfil —— */
+      (function renderProfileMarkdown() {
+      const src = document.getElementById('profile-md-src');
+      const target = document.getElementById('profile-md-target');
+      if (!src || !target || !window.marked || !window.DOMPurify) return;
+
+      // Converte MD → HTML e sanitiza
+      const raw = src.textContent || "";
+      const html = DOMPurify.sanitize(marked.parse(raw), {
+        ALLOWED_ATTR: ['href','title','target','rel'],
+      });
+
+      target.innerHTML = html;
+
+      // Força links a abrirem em nova aba, com segurança
+      target.querySelectorAll('a').forEach(a => {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      });
+    })();
+
       const dynamicGradientAnimations = new Map();
 
       function startDynamicGradientAnimation(element) {
@@ -1493,6 +1525,7 @@ node
 
 </body>
 </html>
+
 
 
 
