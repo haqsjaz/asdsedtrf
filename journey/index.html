@@ -1515,6 +1515,10 @@ function openTimelineModal(d){
     function closeTimelineModal(){
   document.getElementById('tlModalBackdrop').style.display='none';
   document.body.style.overflow = '';            // <<< libera novamente
+        // <<< remove #t=... da URL para não reabrir no refresh
+  if (location.hash.startsWith('#t=')) {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
 }
 
 document.getElementById('tlModalClose').addEventListener('click', closeTimelineModal);
@@ -1552,17 +1556,26 @@ const lg = defs.append('linearGradient')
   const years = d3.extent(timelineData, d=> d.year + ((d.month||1)-1)/12 );
   const x = d3.scaleLinear().domain([years[0]-0.2, years[1]+0.2]).range([0,w]);
   let currentX = x;
+  
+// linha base (fallback visível + gradiente com glow)
+const base = svg.append('g').attr('class','base-line');
 
- // linha base — um pouco mais visível + glow
-svg.append('line')
+base.append('line') // fallback sólido (garante visibilidade)
+  .attr('x1', 0).attr('x2', w)
+  .attr('y1', CENTER_Y).attr('y2', CENTER_Y)
+  .attr('stroke', '#9fb3ff')
+  .attr('stroke-width', 1.25)
+  .attr('opacity', 0.35);
+
+base.append('line') // camada principal com gradiente e glow
   .attr('x1', 0).attr('x2', w)
   .attr('y1', CENTER_Y).attr('y2', CENTER_Y)
   .attr('stroke', 'url(#tlGradInline)')
   .attr('stroke-width', 2.5)
   .attr('stroke-linecap', 'round')
-  .attr('opacity', 0.55)
-  .attr('filter', 'url(#glow-inline)');
-
+  .attr('opacity', 0.6)
+  .attr('filter', 'url(#glow-inline)')
+  .style('pointer-events','none');
 
 const todayVal = new Date().getFullYear() + new Date().getMonth()/12;
 const todayX   = x(todayVal);
@@ -1852,12 +1865,17 @@ function renderOverlayTimeline(filterSet){
       }); });
     })();
 
-    window.addEventListener('load', ()=>{
+window.addEventListener('load', () => {
+  const nav = performance.getEntriesByType('navigation')[0];
+  const isReload = nav && nav.type === 'reload';
+
   const m = location.hash.match(/^#t=(.+)$/);
-  if(!m) return;
-  const found = timelineData.find(d=>d.id===m[1]);
-  if(found) openTimelineModal(found);
+  if (!m || isReload) return;
+
+  const found = timelineData.find(d => d.id === m[1]);
+  if (found) openTimelineModal(found);
 });
+
 
 async function downloadTimelinePNG(){
   const svgEl = document.querySelector('#inlineTimeline svg');
@@ -1883,5 +1901,6 @@ async function downloadTimelinePNG(){
   </script>
 </body>
 </html>
+
 
 
