@@ -495,6 +495,17 @@ p, li { hyphens: auto; }
   background:rgba(148,163,184,.15);padding:.15rem .4rem;border-radius:.35rem}
 .prose-like :where(a){color:#8ab4ff;text-underline-offset:3px}
 .prose-like :where(hr){border:none;height:1px;background:linear-gradient(90deg,transparent,#5c64f4,transparent);margin:1.25rem 0}
+/* --- hotfix: banner encostado no topo --- */
+
+/* 1) mostra o TOPO da imagem e só “desaparece” no RODAPÉ do banner  */
+.fade-mask{
+  -webkit-mask-image: linear-gradient(to bottom, #fff 0%, #fff 78%, rgba(255,255,255,0) 100%);
+          mask-image: linear-gradient(to bottom, #fff 0%, #fff 78%, rgba(255,255,255,0) 100%);
+}
+
+/* 2) mantém o padding do body (para o resto da página),
+      mas puxa só a seção #home para cima */
+#home{ margin-top: -4rem; } /* 4rem = mesmo valor do padding do body */
 
 
   </style>
@@ -1494,6 +1505,7 @@ node
 
 </body>
 </html>
+
 
 
 
