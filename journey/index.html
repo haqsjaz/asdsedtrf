@@ -42,15 +42,53 @@
     }
     .card:hover { transform: translateY(-3px); background-color: rgba(44,47,51,.30); box-shadow: 0 0 20px rgba(114,137,218,.35); z-index: 3; }
 
-    .btn{
-      position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
-      padding:.5rem 1.1rem;font-size:.9rem;font-weight:600;color:#fff;text-shadow:0 0 6px #000;border-radius:.5rem;
-      background-image:linear-gradient(180deg,#000 0%,#101010 100%);
-      border:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); box-shadow:0 0 10px rgba(0,0,0,.35);
-      transition:background .4s ease,color .4s ease; cursor: pointer;
-    }
-    .btn:hover{ background-image:linear-gradient(135deg,#fff 0%,#e8e1ff 40%,#a68bff 100%); color:#000; text-shadow:none; }
-    .btn:disabled{ opacity:.7; cursor:not-allowed; }
+    /* BOTÕES “UNIVERSE” — MESMA BASE DA HOME */
+.btn{
+  position:relative;overflow:hidden;display:inline-flex;
+  align-items:center;justify-content:center;gap:.45rem;
+  padding:.25rem 1.25rem;
+  font-size:.875rem;font-weight:600;
+  color:#fff;text-shadow:0 0 6px #000;
+  border-radius:.5rem;
+  background-image:linear-gradient(180deg,#000 0%,#101010 100%);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 10px rgba(0,0,0,.35);
+  transition:background .4s ease,color .4s ease;
+}
+.btn::before{
+  content:"";pointer-events:none;position:absolute;inset:0;
+  background-image:
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px),
+     radial-gradient(#fff 0 1px,transparent 1px 4px);
+  background-size:90px 90px,140px 140px,60px 60px,180px 180px;
+  background-position:0 0,60px 30px,30px 15px,45px 20px;
+  opacity:.45; animation:moveStars 25s linear infinite;
+}
+@keyframes moveStars{
+  from{background-position:0 0,60px 30px}
+  to  {background-position:-600px 300px,-300px 150px}
+}
+.btn:hover{
+  background-image:linear-gradient(135deg,#fff 0%,#e8e1ff 40%,#a68bff 100%);
+  color:#000;text-shadow:none;
+}
+.btn:hover::before{
+  opacity:0;animation-duration:6s;
+}
+
+/* Estilo específico do botão de Cybersegurança — IGUAL AO INDEX */
+#cybersecurityModeBtn {
+  background-color:#000; color:#fff; border:1px solid #000;
+  transition:all .3s ease; box-shadow:0 0 0 rgba(139,92,246,0);
+}
+#cybersecurityModeBtn:hover {
+  background-color:#fff; color:#000; border-color:#000;
+  box-shadow:0 0 20px rgba(139,92,246,.5);
+}
+#cybersecurityModeBtn:hover img { filter: invert(1); }
 
     .dynamic-gradient{ position:relative; display:inline-block; background-image:linear-gradient(90deg,#5A4BFF 0%,#7B46FF 50%,#8E5CFF 100%);
       background-size:150% 150%; background-position:0% 50%; -webkit-background-clip:text; background-clip:text; color:transparent; }
@@ -131,23 +169,24 @@
     border-b border-white/10
     shadow-md shadow-black/20
     transition-colors
-    will-change[transform]
+    will-change-transform
   ">
   <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
     <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
     <nav>
       <ul class="flex space-x-6 font-semibold">
-          <li><a href="/" class="hover:text-indigo-200 transition">Início</a></li>
-          <li><a href="https://github.com/cai0duque" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-200 transition">GitHub</a></li>
-          <li><a href="/#contatos" class="hover:text-indigo-200 transition">Contatos</a></li>
-          <li><a href="/#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
-          <li><a aria-current="page" href="/journey" class="text-indigo-300">Jornada</a></li>
+        <li><a href="/" class="hover:text-indigo-200 transition">Início</a></li>
+        <li><a href="https://github.com/cai0duque" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-200 transition">GitHub</a></li>
+        <li><a href="/#contatos" class="hover:text-indigo-200 transition">Contatos</a></li>
+        <li><a href="/#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
+        <li><a aria-current="page" href="/journey" class="text-indigo-300">Jornada</a></li>
       </ul>
     </nav>
     <a href="/kali" id="cybersecurityModeBtn" class="btn">
       <img src="/assets/images/kali.png"
            onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';"
-           alt="Kali Icon" class="w-6 h-6 mr-2 transition duration-300" />
+           alt="Kali Icon"
+           class="w-6 h-6 mr-2 transition-filter duration-300" />
       Modo Cybersecurity
     </a>
   </div>
@@ -915,6 +954,7 @@
   </script>
 </body>
 </html>
+
 
 
 
