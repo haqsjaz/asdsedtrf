@@ -371,40 +371,25 @@ body.has-fixed-header{
 @media (max-width:768px){
 
   /* ----------- header geral ----------- */
-  header .container{
-    flex-wrap:wrap;
-    gap:0.5rem 1rem;
+  header .container {
+    grid-template-columns: 1fr; /* mantém Grid e empilha */
+    gap: .5rem 1rem;
   }
-
-  header h1{
-    font-size:1.75rem;
-    flex:1 0 100%;
-    text-align:center;
+  header h1 { justify-self: center; }
+  nav { justify-self: center; }
+  #cybersecurityModeBtn {
+    justify-self: stretch;
+    grid-column: 1 / -1; /* garante linha própria */
   }
-
-  #cybersecurityModeBtn{
-    order:3;                        /* fica na linha de baixo */
-    width:100%;
-    justify-self:stretch;
+  header nav ul {
+    display: grid;
+    grid-template-columns: repeat(3,auto);
+    justify-content: center;
+    column-gap: 1.25rem;
+    row-gap: .65rem;
   }
-
-  /* ----------- navegação em 2 colunas ----------- */
-header nav ul{
-  display:grid;                               /* grid > flex        */
-  grid-template-columns:repeat(3,auto);       /* 3 colunas iguais   */
-  justify-content:center;                     /* bloco centralizado */
-  column-gap:1.25rem;                         /* espaço lateral     */
-  row-gap:.65rem;                             /* espaço vertical    */
-}
-
-header nav li{ 
-  margin:0!important;
-  text-align:center;
-}
-
-header nav a{
-  white-space:nowrap;
-  font-size:.875rem;
+  header nav li { margin: 0!important; text-align: center; }
+  header nav a { white-space: nowrap; font-size: .875rem; }
 }
   
 header nav a[aria-current="page"]{
@@ -1509,6 +1494,7 @@ node
 
 </body>
 </html>
+
 
 
 
