@@ -136,7 +136,7 @@
     .neon-panel{ position:relative; border-radius:1rem; padding:1.25rem; background:linear-gradient(180deg, rgba(16,16,24,.6), rgba(16,16,24,.35));
       border:1px solid rgba(138,180,255,.25); box-shadow: 0 0 24px rgba(90,100,244,.25) inset; }
     .neon-line{ stroke:#7B46FF; stroke-width:3; filter:url(#glow); }
-    .neon-dot{ fill:#8ab4ff; filter:url(#glow); }
+    .neon-dot{ filter:url(#glow); }
 
     /* Toolbox grid */
     .tool-card{ display:flex; flex-direction:column; gap:.6rem; height:100%; }
@@ -1003,6 +1003,8 @@ function renderInlineTimeline(){
       .attr('clip-path',`url(#clipInline${i})`);
   });
 
+  const oldTip = document.getElementById('inlineTip');
+  if (oldTip) oldTip.remove();
   // tooltip (mesmo esquema de antes)
   const tip = d3.select('body').append('div')
     .attr('id','inlineTip')
@@ -1132,3 +1134,4 @@ function renderOverlayTimeline(filterSet){
   </script>
 </body>
 </html>
+
