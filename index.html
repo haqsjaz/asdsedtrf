@@ -389,6 +389,7 @@ body.has-fixed-header{
     rgba(255,255,255,0)           100%
   );
 }
+    
 
 
 /* Responsividade */
@@ -522,15 +523,6 @@ p, li { hyphens: auto; }
 /* --- hotfix: banner encostado no topo --- */
 
 /* 1) mostra o TOPO da imagem e só “desaparece” no RODAPÉ do banner  */
-.fade-mask{
-  -webkit-mask-image: linear-gradient(to bottom, #fff 0%, #fff 78%, rgba(255,255,255,0) 100%);
-          mask-image: linear-gradient(to bottom, #fff 0%, #fff 78%, rgba(255,255,255,0) 100%);
-}
-
-/* 2) mantém o padding do body (para o resto da página),
-      mas puxa só a seção #home para cima */
-#home{ margin-top: -4rem; } /* 4rem = mesmo valor do padding do body */
-
 
   </style>
 </head>
@@ -881,6 +873,17 @@ p, li { hyphens: auto; }
       // Apenas a lógica do canvas 2D foi removida.
       const nameEl = document.getElementById('nome');
       const dynamicGradientAnimations = new Map();
+      const header = document.querySelector('header');
+      const home   = document.getElementById('home');
+
+    function fixHomeOffset(){
+      const h = header.offsetHeight || 0;
+      home.style.marginTop = `-${h}px`;   // cola o banner no teto
+    }
+
+    fixHomeOffset();
+    window.addEventListener('resize', fixHomeOffset);
+  });
 
       function startDynamicGradientAnimation(element) {
         let animState = dynamicGradientAnimations.get(element);
@@ -1529,6 +1532,7 @@ node
 
 </body>
 </html>
+
 
 
 
