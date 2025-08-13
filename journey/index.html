@@ -620,6 +620,7 @@ img { -webkit-user-drag: none; user-drag: none; }
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-2xl md:text-3xl font-bold text-indigo-400">Timeline Neon</h3>
     <button id="openTimelineBtn2" class="btn">Abrir em Overlay</button>
+    <button class="btn" onclick="downloadTimelinePNG()">Salvar PNG</button>
   </div>
   <div class="neon-panel">
     <!-- ⬇️ era overlayTimeline, volta a ser inlineTimeline -->
@@ -1385,6 +1386,12 @@ npm run dev` },
   }
 ];
 
+    timelineData.forEach(d=>{
+  d.id = (d.tech+'-'+d.year+'-'+(d.month||1)+'-'+(d.title||''))
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-');
+});
+
+
       const techIcon = {
     'Python':        '/assets/images/python.png',
     'JavaScript':    '/assets/images/javascript.png',
@@ -1510,9 +1517,6 @@ function openTimelineModal(d){
   document.body.style.overflow = '';            // <<< libera novamente
 }
 
-function closeTimelineModal(){
-  document.getElementById('tlModalBackdrop').style.display='none';
-}
 document.getElementById('tlModalClose').addEventListener('click', closeTimelineModal);
 document.getElementById('tlModalBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='tlModalBackdrop') closeTimelineModal(); });
 addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeTimelineModal(); });
@@ -1534,6 +1538,12 @@ function renderInlineTimeline(){
   // glow local para a inline
   const defs = svg.append('defs');
   const glow = defs.append('filter').attr('id','glow-inline');
+  // Gradiente para a linha base
+const lg = defs.append('linearGradient')
+  .attr('id','tlGradInline').attr('x1','0%').attr('x2','100%');
+   lg.append('stop').attr('offset','0%').attr('stop-color','#5c64f4');
+   lg.append('stop').attr('offset','50%').attr('stop-color','#8e5cff');
+   lg.append('stop').attr('offset','100%').attr('stop-color','#5a4bff');
   glow.append('feGaussianBlur').attr('stdDeviation','3.5').attr('result','blur');
   const merge = glow.append('feMerge');
   merge.append('feMergeNode').attr('in','blur');
@@ -1541,11 +1551,20 @@ function renderInlineTimeline(){
 
   const years = d3.extent(timelineData, d=> d.year + ((d.month||1)-1)/12 );
   const x = d3.scaleLinear().domain([years[0]-0.2, years[1]+0.2]).range([0,w]);
+  let currentX = x;
 
   // linha base
   svg.append('line')
     .attr('x1',0).attr('x2',w).attr('y1',CENTER_Y).attr('y2',CENTER_Y)
-    .attr('stroke','#7B46FF').attr('stroke-width',2).attr('opacity',.35);
+    .attr('stroke','url(#tlGradInline)').attr('stroke-width',2).attr('opacity',.35);
+
+const todayVal = new Date().getFullYear() + new Date().getMonth()/12;
+const todayX   = x(todayVal);
+svg.append('line')
+  .attr('class','today')
+  .attr('x1',todayX).attr('x2',todayX)
+  .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
+  .attr('stroke','#b3c7ff').attr('stroke-dasharray','4 4').attr('opacity',.35);
 
   // rótulos de ano
   const ticks = d3.range(Math.floor(years[0]), Math.ceil(years[1])+1);
@@ -1567,10 +1586,11 @@ function renderInlineTimeline(){
   const LANE_GAP = isSmall ? 26 : 20;              // distância vertical entre faixas
 
   // (1) posição horizontal de cada item
-  const withX = timelineData.map(d => ({
-    ...d,
-    _x: x(d.year + ((d.month||1)-1)/12)
-  })).sort((a,b)=> a._x - b._x);
+const withX = timelineData.map(d => {
+  const raw = d.year + ((d.month||1)-1)/12;
+  return { ...d, _rawX: raw, _x: x(raw) };
+}).sort((a,b)=> a._x - b._x);
+
 
   // (2) aloca em faixas: 0, +1, -1, +2, -2, ...
   function dodge(items, minSep){
@@ -1605,7 +1625,26 @@ function renderInlineTimeline(){
       return `translate(${d._x}, ${d._y})`;
     })
     .style('cursor','pointer')
-    .on('click', (evt,d)=> openTimelineModal(d));
+    .on('click', (evt,d)=> { history.replaceState(null,'','#t='+d.id); openTimelineModal(d); });
+
+  gpts
+  .attr('tabindex', 0)
+  .attr('role', 'button')
+  .attr('aria-label', d=>`${d.tech}: ${d.title}`)
+  .on('keydown', function(ev, d){
+    const key = ev.key.toLowerCase();
+    if (key==='enter' || key===' ' || key==='spacebar') {
+    history.replaceState(null, '', '#t=' + d.id);
+    openTimelineModal(d);
+    ev.preventDefault(); // evita scroll quando apertar espaço
+   }
+    if(key==='arrowright' || key==='arrowleft'){
+      const i = withX.indexOf(d);
+      const j = Math.max(0, Math.min(withX.length-1, i + (key==='arrowright'?1:-1)));
+      const nodes = svg.selectAll('g.pt').nodes();
+      nodes[j].focus();
+    }
+  });
 
   // conector até a linha base (sutil – ajuda a leitura quando “subiu/desceu”)
   gpts.append('line')
@@ -1651,12 +1690,62 @@ function renderInlineTimeline(){
     .style('color','#F9FAFB');
 
   gpts.on('mouseenter', function(evt, d){
+    const g = d3.select(this);
+g.append('circle')
+  .attr('r', R).attr('fill','none').attr('stroke','#8e5cff').attr('opacity',.6)
+  .transition().duration(900).ease(d3.easeCubicOut)
+  .attr('r', R+16).attr('opacity',0).remove();
+
         d3.select(this).select('circle.ring').transition().attr('r', R+2);
         tip.style('display','block')
            .html(`<strong>${d.tech}</strong><br>${d.title}<br><span style="opacity:.8">${d.year}${d.month?('/'+String(d.month).padStart(2,'0')):''}</span>`);
       })
       .on('mousemove', (evt)=>{ tip.style('left',(evt.pageX+12)+'px').style('top',(evt.pageY-10)+'px'); })
       .on('mouseleave', function(){ d3.select(this).select('circle.ring').transition().attr('r',R); tip.style('display','none'); });
+
+  // Zoom em X (1x a 4x)
+const zoom = d3.zoom()
+  .scaleExtent([1,4])
+  .translateExtent([[0,0],[w,h]])
+  .on('zoom', (ev)=>{
+    const zx = ev.transform.rescaleX(x);
+    currentX = zx;
+    // reposiciona pontos pela coordenada crua
+    svg.selectAll('g.pt')
+      .attr('transform', d=>`translate(${zx(d._rawX)}, ${d._y})`);
+    // move rótulos de ano e a linha "hoje"
+    svg.selectAll('text.lbl').attr('x', d=>zx(d));
+    const tX = zx(todayVal);
+    svg.selectAll('line.today').attr('x1',tX).attr('x2',tX);
+  });
+svgRoot.call(zoom);
+
+  const brush = d3.brushX()
+  .extent([[0, CENTER_Y-36],[w, CENTER_Y+36]])
+  .on('end', ({selection})=>{
+    if(!selection){ svg.selectAll('g.pt').attr('opacity',1); return; }
+    const [x0,x1] = selection.map(v => currentX.invert(v));
+    svg.selectAll('g.pt').attr('opacity', d => (d._rawX>=x0 && d._rawX<=x1) ? 1 : .2);
+  });
+svg.append('g').attr('class','brush').call(brush);
+
+  const guide = svg.append('line')
+  .attr('class','scrubber')
+  .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
+  .attr('stroke','#94a3b8').attr('stroke-dasharray','3 4').attr('opacity',0);
+
+svg.on('mousemove', (ev)=>{
+  const [mx] = d3.pointer(ev);
+  guide.attr('x1',mx).attr('x2',mx).attr('opacity',.25);
+  let best=null, dist=1e9;
+  withX.forEach(d=>{ const dx = Math.abs(mx - currentX(d._rawX)); if(dx<dist){dist=dx; best=d;} });
+  svg.selectAll('g.pt').attr('opacity', d => d===best ? 1 : .35);
+}).on('mouseleave', ()=>{
+  guide.attr('opacity',0);
+  svg.selectAll('g.pt').attr('opacity',1);
+});
+
+
 }
 
 /* ========= Overlay Timeline (neon, filtros, ícones + modal) ========= */
@@ -1765,12 +1854,35 @@ function renderOverlayTimeline(filterSet){
         const checks=[...document.querySelectorAll('.techFilter')]; const set=new Set(checks.filter(c=>c.checked).map(c=>c.value)); renderOverlayTimeline(set);
       }); });
     })();
+
+    window.addEventListener('load', ()=>{
+  const m = location.hash.match(/^#t=(.+)$/);
+  if(!m) return;
+  const found = timelineData.find(d=>d.id===m[1]);
+  if(found) openTimelineModal(found);
+});
+
+async function downloadTimelinePNG(){
+  const svgEl = document.querySelector('#inlineTimeline svg');
+  if(!svgEl) return;
+  const svgData = new XMLSerializer().serializeToString(svgEl);
+  const blob = new Blob([svgData], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = ()=>{
+    const canvas = document.createElement('canvas');
+    canvas.width = svgEl.clientWidth;
+    canvas.height = svgEl.clientHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img,0,0);
+    const a = document.createElement('a');
+    a.download = 'timeline.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
   </script>
 </body>
 </html>
-
-
-
-
-
-
