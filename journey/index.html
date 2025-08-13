@@ -1583,7 +1583,7 @@ svg.append('line')
   .attr('class','today')
   .attr('x1',todayX).attr('x2',todayX)
   .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
-  .attr('stroke','#b3c7ff').attr('stroke-dasharray','4 4').attr('opacity',.35);
+  .attr('stroke','#b3c7ff').attr('stroke-dasharray','4 4').attr('opacity',.35)
   .style('pointer-events','none');
 
   // rótulos de ano
@@ -1707,7 +1707,7 @@ const withX = timelineData.map(d => {
     .style('backdrop-filter','blur(10px)')
     .style('background','rgba(44,47,51,.55)')
     .style('border','1px solid rgba(114,137,218,.35)')
-    .style('color','#F9FAFB');
+    .style('color','#F9FAFB')
     .style('pointer-events','none');
 
   gpts.on('mouseenter', function(evt, d){
@@ -1744,7 +1744,7 @@ svgRoot.call(zoom);
   const guide = svg.append('line')
   .attr('class','scrubber')
   .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
-  .attr('stroke','#94a3b8').attr('stroke-dasharray','3 4').attr('opacity',0);
+  .attr('stroke','#94a3b8').attr('stroke-dasharray','3 4').attr('opacity',0)
   .style('pointer-events','none');  
 
 svg.on('mousemove', (ev)=>{
@@ -1907,6 +1907,7 @@ async function downloadTimelinePNG(){
   </script>
 </body>
 </html>
+
 
 
 
