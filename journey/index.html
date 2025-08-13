@@ -183,6 +183,17 @@
   #tlModal header{ flex-wrap:wrap; }
 }
 
+    /* ==== Global: bloquear seleção de texto (com exceções úteis) ==== */
+:where(html, body, body *):not(input):not(textarea):not(select):not([contenteditable="true"]):not(.selectable) {
+  -webkit-user-select: none !important; /* Safari/Chrome iOS */
+  -moz-user-select: none !important;    /* Firefox */
+  -ms-user-select: none !important;     /* IE/Edge legado */
+  user-select: none !important;
+  -webkit-touch-callout: none;          /* desabilita menu de toque no iOS */
+}
+
+/* Se não quiser que imagens sejam “arrastáveis” */
+img { -webkit-user-drag: none; user-drag: none; }
 
     /* BG canvas */
     canvas#bg-canvas{ position:fixed; inset:0; width:100vw; height:100vh; z-index:-1; pointer-events:none; display:block; }
@@ -1134,4 +1145,5 @@ function renderOverlayTimeline(filterSet){
   </script>
 </body>
 </html>
+
 
