@@ -385,7 +385,7 @@ body.has-fixed-header{
   #cybersecurityModeBtn{
     order:3;                        /* fica na linha de baixo */
     width:100%;
-    justify-content:center;
+    justify-self:stretch;
   }
 
   /* ----------- navegação em 2 colunas ----------- */
@@ -520,7 +520,7 @@ p, li { hyphens: auto; }
     if (location.pathname.endsWith('/index.html')) {
       history.replaceState(null,'',location.pathname.replace('/index.html','/'));
     }
-      document.documentElement.classList.add('has-fixed-header');
+      document.body.classList.add('has-fixed-header');
     </script>
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
@@ -537,9 +537,9 @@ p, li { hyphens: auto; }
     transition-colors
     will-change-transform
   ">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
+    <div class="container mx-auto px-4 py-4 grid grid-cols-[auto_1fr_auto] items-center">
       <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
-      <nav>
+      <nav class="justify-self-center">
         <ul class="flex space-x-6 font-semibold">
           <li><a aria-current="page" href="/" class="hover:text-indigo-200 transition">Início</a></li>
           <li><a href="https://github.com/cai0duque" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-200 transition">GitHub</a></li>
@@ -548,7 +548,7 @@ p, li { hyphens: auto; }
           <li><a href="/journey" class="hover:text-indigo-200 transition">Jornada</a></li>
         </ul>
       </nav>
-      <a href="/kali" id="cybersecurityModeBtn" class="btn">
+      <a href="/kali" id="cybersecurityModeBtn" class="btn justify-self-end">
         <img src="assets/images/kali.png" onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';" alt="Kali Icon" class="w-6 h-6 mr-2 transition-filter duration-300" />
         Modo Cybersecurity
       </a>
@@ -1509,6 +1509,7 @@ node
 
 </body>
 </html>
+
 
 
 
