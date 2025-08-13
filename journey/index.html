@@ -1584,6 +1584,7 @@ svg.append('line')
   .attr('x1',todayX).attr('x2',todayX)
   .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
   .attr('stroke','#b3c7ff').attr('stroke-dasharray','4 4').attr('opacity',.35);
+  .style('pointer-events','none');
 
   // rótulos de ano
   const ticks = d3.range(Math.floor(years[0]), Math.ceil(years[1])+1);
@@ -1599,10 +1600,10 @@ svg.append('line')
 
   // ------- ANTI-OVERLAP (distribui em faixas) -------
   const isSmall = window.matchMedia('(max-width:640px)').matches;
-  const R = 10;                     // raio visual do ponto
-  const HIT_R = isSmall ? 22 : 18;  // área de toque invisível
-  const SEP = isSmall ? (HIT_R*2 + 6) : (R*2 + 6); // distância mínima entre pontos na mesma faixa
-  const LANE_GAP = isSmall ? 26 : 20;              // distância vertical entre faixas
+  const R = 14;                     // raio visual do ponto
+  const HIT_R = isSmall ? 28 : 24;  // área de toque invisível
+  const SEP = isSmall ? (HIT_R*2 + 8) : (R*2 + 10); // distância mínima entre pontos na mesma faixa
+  const LANE_GAP = isSmall ? 30 : 24;              // distância vertical entre faixas
 
   // (1) posição horizontal de cada item
 const withX = timelineData.map(d => {
@@ -1684,7 +1685,7 @@ const withX = timelineData.map(d => {
     .attr('r',R)
     .attr('fill','#0b0c10')
     .attr('stroke', d=>color(d.tech))
-    .attr('stroke-width',2)
+    .attr('stroke-width',2.5)
     .attr('filter','url(#glow-inline)');
 
   // clip circular + imagem (16px)
@@ -1707,6 +1708,7 @@ const withX = timelineData.map(d => {
     .style('background','rgba(44,47,51,.55)')
     .style('border','1px solid rgba(114,137,218,.35)')
     .style('color','#F9FAFB');
+    .style('pointer-events','none');
 
   gpts.on('mouseenter', function(evt, d){
     const g = d3.select(this);
@@ -1743,6 +1745,7 @@ svgRoot.call(zoom);
   .attr('class','scrubber')
   .attr('y1',CENTER_Y-28).attr('y2',CENTER_Y+28)
   .attr('stroke','#94a3b8').attr('stroke-dasharray','3 4').attr('opacity',0);
+  .style('pointer-events','none');  
 
 svg.on('mousemove', (ev)=>{
   const [mx] = d3.pointer(ev);
@@ -1773,6 +1776,9 @@ function renderOverlayTimeline(filterSet){
     .attr('height', h+margin.top+margin.bottom);
 
   const svg = svgRoot.append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+  const OR = 12; 
+  const IR = OR - 2; 
+  const IMG = IR * 2; 
 
   // glow
   const defs = svg.append('defs');
@@ -1817,7 +1823,7 @@ function renderOverlayTimeline(filterSet){
     .attr('class', 'neon-dot')
     .attr('fill', '#0b0c10')
     .attr('stroke', d=> color(d.tech))
-    .attr('stroke-width', 2);
+    .attr('stroke-width', 2.5);
 
   // imagem recortada no círculo
   pts.each(function(d,i){
@@ -1901,6 +1907,7 @@ async function downloadTimelinePNG(){
   </script>
 </body>
 </html>
+
 
 
 
