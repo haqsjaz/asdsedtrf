@@ -366,23 +366,7 @@ body.has-fixed-header{
     *, *::before, *::after { box-sizing: inherit }
 
 /* Banner com fade unidirecional: forte no topo → some embaixo */
-.fade-mask{
-  --edge: 25%;
-  --max: .95;
-
-  -webkit-mask-image: linear-gradient(
-    to top,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,var(--max)) var(--edge),
-    rgba(255,255,255,var(--max)) 85%
-  );
-          mask-image: linear-gradient(
-    to top,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,var(--max)) var(--edge),
-    rgba(255,255,255,var(--max)) 85%
-  );
-}
+.fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
 
 /* Responsividade */
 @media (max-width:768px){
@@ -1524,6 +1508,7 @@ node
 
 </body>
 </html>
+
 
 
 
