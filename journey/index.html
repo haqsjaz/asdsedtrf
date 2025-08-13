@@ -153,23 +153,38 @@
     .cmdk-item{ padding:.8rem 1.25rem; cursor:pointer; }
     .cmdk-item:hover, .cmdk-item[aria-selected="true"]{ background:rgba(90,100,244,.18); }
 
-    /* ===== Timeline Modal (glass) ===== */
+/* ===== Timeline Modal (glass) ===== */
 #tlModalBackdrop{
   position:fixed; inset:0; display:none;
   align-items:center; justify-content:center; z-index:70;
+  padding:6vh 3vw; /* margem respirável */
   background:rgba(0,0,0,.55); backdrop-filter:blur(6px);
 }
 #tlModal{
-  width:min(720px,92vw); border-radius:16px; overflow:hidden;
-  background:rgba(28,28,40,.85);
+  width:min(760px,94vw);
+  max-height:86vh;         /* <<< limita a altura */
+  border-radius:16px; overflow:hidden;
+  background:rgba(28,28,40,.88);
   border:1px solid rgba(138,180,255,.25);
   box-shadow:0 0 40px rgba(114,137,218,.35);
+  display:flex;            /* <<< permite header fixo + corpo rolável */
+  flex-direction:column;
+  overscroll-behavior:contain;
 }
 #tlModal header{
+  position:sticky; top:0; z-index:1; /* <<< gruda o header ao rolar */
   display:flex; align-items:center; gap:.75rem;
   padding:1rem 1.25rem; border-bottom:1px solid rgba(138,180,255,.2);
+  background:linear-gradient(180deg, rgba(28,28,40,.95), rgba(28,28,40,.88));
+  backdrop-filter:blur(6px);
 }
-#tlModal .content{ padding:1rem 1.25rem 1.25rem; }
+#tlModal .content{
+  padding:1rem 1.25rem 1.25rem;
+  flex:1 1 auto;          /* <<< ocupa o restante da altura */
+  min-height:0;           /* <<< habilita overflow em flex container */
+  overflow:auto;          /* <<< scroll interno */
+  -webkit-overflow-scrolling: touch;
+}
 #tlModal .close{ margin-left:auto; }
 #tlModal .badge-tech{
   display:inline-flex; align-items:center; gap:.45rem;
@@ -179,11 +194,14 @@
 }
 #tlModal img.icon{ width:40px; height:40px; border-radius:50%; }
 #tlModal .meta{ color:#bcd0ff; font-size:.9rem; }
-@media (max-width:480px){
-  #tlModal header{ flex-wrap:wrap; }
+
+@media (max-width:640px){
+  #tlModalBackdrop{ padding:0; }           /* mobile: ocupa tela toda */
+  #tlModal{ width:100vw; height:100vh; max-height:100vh; border-radius:0; }
 }
-    /* === Modal sections === */
-#tlModal .section{ margin-top: .9rem; }
+
+/* === Modal sections === */
+#tlModal .section{ margin-top:.9rem; }
 #tlModal .section h6{
   font-size:.75rem; letter-spacing:.08em; text-transform:uppercase;
   color:#c7d2fe; margin-bottom:.4rem;
@@ -239,6 +257,18 @@
   padding:.35rem .55rem; border-radius:9999px; cursor:pointer;
 }
 #tlModal .carousel .prev{ left:.5rem } .next{ right:.5rem }
+
+/* Permitir selecionar texto apenas onde faz sentido */
+#tlModal .selectable{ -webkit-user-select:text !important; user-select:text !important; }
+
+/* Scrollbar do conteúdo do modal (opcional, combina com seu tema) */
+#tlModal .content::-webkit-scrollbar{ width:10px; }
+#tlModal .content::-webkit-scrollbar-track{ background: rgba(44,47,51,.2); }
+#tlModal .content::-webkit-scrollbar-thumb{
+  background: rgba(200,200,255,.25);
+  border-radius: 6px; border:2px solid rgba(255,255,255,.1);
+}
+#tlModal .content::-webkit-scrollbar-thumb:hover{ background: rgba(114,137,218,.5); }
 
 /* Permitir selecionar texto apenas onde faz sentido */
 #tlModal .selectable{ -webkit-user-select:text !important; user-select:text !important; }
@@ -1452,7 +1482,12 @@ function openTimelineModal(d){
 
   // Abre modal
   b.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
   setTimeout(()=>document.getElementById('tlModalClose').focus(), 10);
+}
+    function closeTimelineModal(){
+  document.getElementById('tlModalBackdrop').style.display='none';
+  document.body.style.overflow = '';            // <<< libera novamente
 }
 
 function closeTimelineModal(){
@@ -1661,6 +1696,7 @@ function renderOverlayTimeline(filterSet){
   </script>
 </body>
 </html>
+
 
 
 
