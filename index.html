@@ -466,16 +466,18 @@ footer p {
   transition: color 0.3s ease, text-shadow 0.3s ease;
   font-weight: 500;
 }
-/* === Disable text selection (cross‑browser) ======================= */
-.noselect,                                     /* reusable utility   */
-h1, h2, h3, h4,                                /* section titles     */
-.badge,                                        /* Discord role tags  */
-.skill-node text {                             /* labels in the SVG  */
-  -webkit-user-select: none; /* Safari / older Chromium */
-  -moz-user-select: none;    /* Firefox                */
-  -ms-user-select: none;     /* old Edge / IE          */
-  user-select: none;         /* modern browsers        */
+/* ==== Global: bloquear seleção de texto (com exceções úteis) ==== */
+:where(html, body, body *):not(input):not(textarea):not(select):not([contenteditable="true"]):not(.selectable) {
+  -webkit-user-select: none !important; /* Safari/Chrome/iOS */
+  -moz-user-select: none !important;    /* Firefox */
+  -ms-user-select: none !important;     /* IE/Edge antigo */
+  user-select: none !important;         /* Padrão */
+  -webkit-touch-callout: none;          /* iOS: sem menu de toque */
 }
+
+/* Evita arrastar imagens acidentalmente */
+img { -webkit-user-drag: none; user-drag: none; }
+
 
     /* —— Tipografia global —— */
 html { hanging-punctuation: first allow-end; }
@@ -1508,6 +1510,7 @@ node
 
 </body>
 </html>
+
 
 
 
