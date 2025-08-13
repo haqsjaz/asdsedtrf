@@ -365,7 +365,31 @@ body.has-fixed-header{
     html, body { width: 100%; overflow-x: hidden; box-sizing: border-box; }
     *, *::before, *::after { box-sizing: inherit }
 
-    .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+    /* Banner com fade simétrico: 0% no topo e base, ~85% no centro */
+.fade-mask{
+  /* ajuste fino */
+  --edge: 20%;            /* quanto o fade invade de cima e de baixo */
+  --center-opacity: .85;  /* opacidade máxima no meio (0–1)          */
+
+  /* Safari/Chrome */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0)            0%,
+    rgba(255,255,255,var(--center-opacity)) var(--edge),
+    rgba(255,255,255,var(--center-opacity)) calc(100% - var(--edge)),
+    rgba(255,255,255,0)           100%
+  );
+
+  /* Firefox/compat */
+          mask-image: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0)            0%,
+    rgba(255,255,255,var(--center-opacity)) var(--edge),
+    rgba(255,255,255,var(--center-opacity)) calc(100% - var(--edge)),
+    rgba(255,255,255,0)           100%
+  );
+}
+
 
 /* Responsividade */
 @media (max-width:768px){
@@ -1505,6 +1529,7 @@ node
 
 </body>
 </html>
+
 
 
 
