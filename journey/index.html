@@ -119,7 +119,7 @@
   </style>
 </head>
 <body class="font-sans bg-gray-900 text-gray-100">
-  <script>document.documentElement.classList.add('has-fixed-header');</script>
+  <script>document.body.classList.add('has-fixed-header');</script>
   <canvas id="bg-canvas"></canvas>
 
   <!-- ===== HEADER (mesma pegada da home) ===== -->
@@ -131,7 +131,7 @@
     border-b border-white/10
     shadow-md shadow-black/20
     transition-colors
-    will-change-transform
+    will-change[transform]
   ">
   <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
     <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
@@ -140,7 +140,7 @@
         <li><a href="/" class="hover:text-indigo-200 transition">Início</a></li>
         <li><a href="/#about" class="hover:text-indigo-200 transition">Sobre Mim</a></li>
         <li><a href="/#skills" class="hover:text-indigo-200 transition">Habilidades</a></li>
-        <li><a href="https://github.com/cai0duque" target="_blank" class="hover:text-indigo-200 transition">GitHub</a></li>
+        <li><a href="https://github.com/cai0duque" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-200 transition">GitHub</a></li>
         <li><a href="/#contatos" class="hover:text-indigo-200 transition">Contatos</a></li>
         <li><a href="/#learnconnect" class="hover:text-indigo-200 transition">Projetos</a></li>
         <li><a aria-current="page" href="/journey/" class="text-indigo-300">Journey</a></li>
@@ -149,12 +149,11 @@
     <a href="/kali" id="cybersecurityModeBtn" class="btn">
       <img src="/assets/images/kali.png"
            onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';"
-           alt="Kali Icon" class="w-6 h-6 mr-2 transition-filter duration-300" />
+           alt="Kali Icon" class="w-6 h-6 mr-2 transition duration-300" />
       Modo Cybersecurity
     </a>
   </div>
 </header>
-
 
   <!-- ===== HERO ===== -->
   <section class="relative pt-28 md:pt-32 pb-10">
@@ -251,7 +250,7 @@
           <button class="btn" id="regexRun">Rodar</button>
           <button class="btn" id="regexClear">Limpar</button>
         </div>
-        <div id="regexResult" class="bg-black/40 rounded-lg p-3 overflow-auto min-h-[48px] whitespace-pre-wrap">—</div>
+        <div id="regexResult" class="bg-black/40 rounded-lg p-3 overflow-auto min-h-[48px] whitespace-pre-wrap break-words break-all">—</div>
       </div>
 
       <!-- HASH (SHA) -->
@@ -427,15 +426,17 @@
 
   <!-- ===== TIMELINE SECTION (ancora simples) ===== -->
   <section id="timeline" class="container mx-auto px-4 pb-28">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-2xl md:text-3xl font-bold text-indigo-400">Timeline Neon</h3>
-      <button id="openTimelineBtn2" class="btn">Abrir em Overlay</button>
-    </div>
-    <div class="neon-panel">
-      <div id="overlayTimeline" class="w-full h-[60vh] md:h-[480px] mt-4"></div>
-      <p class="text-sm text-indigo-200/80 mt-3">Dica: clique nos pontos para ver o marco. Use os filtros no Overlay para focar por tecnologia.</p>
-    </div>
-  </section>
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-2xl md:text-3xl font-bold text-indigo-400">Timeline Neon</h3>
+    <button id="openTimelineBtn2" class="btn">Abrir em Overlay</button>
+  </div>
+  <div class="neon-panel">
+    <!-- ⬇️ era overlayTimeline, volta a ser inlineTimeline -->
+    <div id="inlineTimeline" class="w-full h-[40vh] md:h-[340px]"></div>
+    <p class="text-sm text-indigo-200/80 mt-3">Dica: clique nos pontos para ver o marco. Use os filtros no Overlay para focar por tecnologia.</p>
+  </div>
+</section>
+
 
   <!-- ===== OVERLAY TIMELINE (Command-style) ===== -->
   <div id="timelineOverlay" class="fixed inset-0 hidden z-50 p-6 bg-black/60 backdrop-blur-sm">
@@ -655,10 +656,27 @@
     /* ========= Regex Tester ========= */
     (()=>{
       const pat=document.getElementById('regexPattern'); const flg=document.getElementById('regexFlags'); const txt=document.getElementById('regexText'); const res=document.getElementById('regexResult');
-      const run=()=>{ try{ const r=new RegExp(pat.value, flg.value); const input=txt.value||''; const matches=[...input.matchAll(r)]; if(!matches.length){ res.textContent='Sem correspondências.'; return; }
-        // destaca
-        let out=''; let last=0; matches.forEach(m=>{ const idx=m.index; out+=input.slice(last, idx); out+=`\u003cmark\u003e${m[0]}\u003c/mark\u003e`; last=idx+m[0].length; }); out+=input.slice(last);
-        res.innerHTML=out; }catch(e){ res.textContent='Erro: '+e.message; } };
+      const run = () => {
+  try {
+    const r = new RegExp(pat.value, flg.value);
+    const input = txt.value || '';
+    const matches = [...input.matchAll(r)];
+    if (!matches.length) { res.textContent = 'Sem correspondências.'; return; }
+
+    const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let out = '', last = 0;
+    matches.forEach(m => {
+      const idx = m.index;
+      out += esc(input.slice(last, idx));
+      out += `<mark>${esc(m[0])}</mark>`;
+      last = idx + m[0].length;
+    });
+    out += esc(input.slice(last));
+    res.innerHTML = out;
+  } catch(e) {
+    res.textContent = 'Erro: ' + e.message;
+  }
+};
       document.getElementById('regexRun').addEventListener('click', run);
       document.getElementById('regexClear').addEventListener('click', ()=>{ pat.value=''; flg.value=''; txt.value=''; res.textContent='—'; });
     })();
@@ -899,4 +917,5 @@
   </script>
 </body>
 </html>
+
 
