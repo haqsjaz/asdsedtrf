@@ -105,12 +105,13 @@
 }
 /* Responsivo do header (mesmo da home) */
 @media (max-width:768px){
-  header .container{ flex-wrap:wrap; gap:.5rem 1rem; }
-  header h1{ font-size:1.75rem; flex:1 0 100%; text-align:center; }
-  #cybersecurityModeBtn{ order:3; width:100%; justify-content:center; }
+  header .container{ grid-template-columns: 1fr; gap:.5rem 1rem; }
+  header h1{ justify-self:center; }
+  nav{ justify-self:center; }
+  #cybersecurityModeBtn{ justify-self:stretch; }
   header nav ul{
-    display:grid; grid-template-columns:repeat(3,auto);
-    justify-content:center; column-gap:1.25rem; row-gap:.65rem;
+  display:grid; grid-template-columns:repeat(3,auto);
+  justify-content:center; column-gap:1.25rem; row-gap:.65rem;
   }
   header nav li{ margin:0!important; text-align:center; }
   header nav a{ white-space:nowrap; font-size:.875rem; }
@@ -171,9 +172,9 @@
     transition-colors
     will-change-transform
   ">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center flex-wrap">
+  <div class="container mx-auto px-4 py-4 grid grid-cols-[auto_1fr_auto] items-center">
     <h1 class="text-4xl font-extrabold text-white">Caio Duque</h1>
-    <nav>
+    <nav class="justify-self-center">
       <ul class="flex space-x-6 font-semibold">
         <li><a href="/" class="hover:text-indigo-200 transition">Início</a></li>
         <li><a href="https://github.com/cai0duque" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-200 transition">GitHub</a></li>
@@ -182,7 +183,7 @@
         <li><a aria-current="page" href="/journey" class="text-indigo-300">Jornada</a></li>
       </ul>
     </nav>
-    <a href="/kali" id="cybersecurityModeBtn" class="btn">
+    <a href="/kali" id="cybersecurityModeBtn" class="btn justify-self-end">
       <img src="/assets/images/kali.png"
            onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';"
            alt="Kali Icon"
@@ -954,6 +955,7 @@
   </script>
 </body>
 </html>
+
 
 
 
