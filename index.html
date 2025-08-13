@@ -927,33 +927,33 @@ const nav = document.querySelector('header');
 let lastY  = window.scrollY;
 let hideTO = null;
 
-      // ---------- underline dinâmico da navbar ---------------------------------
-const navList   = document.querySelector('header nav ul');
-const underline = document.createElement('span');
-underline.className = 'nav-underline';
-navList.style.position = 'relative';
-navList.appendChild(underline);
+      // ---------- underline dinâmico da navbar (temporariamente desativado para manutenção) ---------------------------------
+//const navList   = document.querySelector('header nav ul');
+//const underline = document.createElement('span');
+//underline.className = 'nav-underline';
+//navList.style.position = 'relative';
+//navList.appendChild(underline);
 
 // define posição inicial (1º item)
-moveUnderline(navList.querySelector('a'));
+//moveUnderline(navList.querySelector('a'));
 
-navList.addEventListener('click', e=>{
-   const link = e.target.closest('a');
-   if(!link) return;
-   moveUnderline(link);
-});
+//navList.addEventListener('click', e=>{
+//   const link = e.target.closest('a');
+//   if(!link) return;
+//   moveUnderline(link);
+//});
 // se quiser que o “raio” siga também no hover, habilite a linha abaixo
 //navList.addEventListener('mouseover', e=>{
 //   const link = e.target.closest('a'); if(link) moveUnderline(link);
 //});
 
-function moveUnderline(link){
-   const rectLink = link.getBoundingClientRect();
-   const rectList = navList.getBoundingClientRect();
-   underline.style.width = rectLink.width + 'px';
-   underline.style.transform =
-        `translateX(${link.offsetLeft}px)`;
-}
+//function moveUnderline(link){
+//   const rectLink = link.getBoundingClientRect();
+//   const rectList = navList.getBoundingClientRect();
+//   underline.style.width = rectLink.width + 'px';
+//   underline.style.transform =
+//        `translateX(${link.offsetLeft}px)`;
+//}
 
 window.addEventListener('scroll', () => {
   const curY = window.scrollY;
@@ -1509,6 +1509,7 @@ node
 
 </body>
 </html>
+
 
 
 
