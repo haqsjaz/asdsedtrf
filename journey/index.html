@@ -1720,14 +1720,30 @@ const zoom = d3.zoom()
   });
 svgRoot.call(zoom);
 
-  const brush = d3.brushX()
+// Brush: só ativa com SHIFT. Fica atrás dos pontos e é fácil de limpar.
+const brush = d3.brushX()
+  .filter((event) => event.shiftKey) // segure SHIFT para arrastar o retângulo
   .extent([[0, CENTER_Y-36],[w, CENTER_Y+36]])
-  .on('end', ({selection})=>{
-    if(!selection){ svg.selectAll('g.pt').attr('opacity',1); return; }
-    const [x0,x1] = selection.map(v => currentX.invert(v));
-    svg.selectAll('g.pt').attr('opacity', d => (d._rawX>=x0 && d._rawX<=x1) ? 1 : .2);
+  .on('end', (ev) => {
+    const sel = ev.selection;
+    // clique/arrasto minúsculo => limpa
+    if (!sel || Math.abs(sel[1] - sel[0]) < 4) { clearBrush(); return; }
+    const [x0, x1] = sel.map(v => x.invert(v));
+    svg.selectAll('g.pt').attr('opacity', d => (d._rawX >= x0 && d._rawX <= x1) ? 1 : .2);
   });
-svg.append('g').attr('class','brush').call(brush);
+
+const gBrush = svg.append('g').attr('class','brush').call(brush);
+gBrush.lower();                                       // põe atrás (não bloqueia clique nos pontos)
+gBrush.select('.overlay').style('cursor','default');  // sem cursor de "crosshair"
+gBrush.selectAll('.handle').style('cursor','ew-resize');
+
+function clearBrush(){
+  gBrush.call(brush.move, null);
+  svg.selectAll('g.pt').attr('opacity', 1);
+}
+svg.on('dblclick', clearBrush);
+addEventListener('keydown', (e)=>{ if(e.key === 'Escape') clearBrush(); });
+
 
   const guide = svg.append('line')
   .attr('class','scrubber')
@@ -1886,3 +1902,4 @@ async function downloadTimelinePNG(){
   </script>
 </body>
 </html>
+
