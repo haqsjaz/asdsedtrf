@@ -121,6 +121,26 @@
   .btn{ padding:.35rem .9rem; font-size:.85rem; }
 }
 
+/* Hint neon (mesmo glow do footer) */
+.neon-tip{
+  color:#8ab4ff;
+  text-shadow:
+    0 0 4px #5c64f4,
+    0 0 8px #5c64f4,
+    0 0 12px #5c64f4;
+  letter-spacing:.2px;
+  display:inline-flex; align-items:center; gap:.5rem;
+}
+.neon-tip::before{
+  content:"✦"; /* pontinho de destaque */
+  font-size:1rem; line-height:1;
+  filter: drop-shadow(0 0 8px #5c64f4);
+  opacity:.9;
+}
+@keyframes neon-breathe{0%,100%{opacity:.95}50%{opacity:.7}}
+.neon-tip{ animation: neon-breathe 2.8s ease-in-out infinite; }
+
+    
     /* Scrollbar vidro */
     ::-webkit-scrollbar{ width:12px; }
     ::-webkit-scrollbar-track{ background: rgba(44,47,51,.2); backdrop-filter: blur(8px); border-left:1px solid rgba(255,255,255,.05); }
@@ -604,7 +624,7 @@ img { -webkit-user-drag: none; user-drag: none; }
   <div class="neon-panel">
     <!-- ⬇️ era overlayTimeline, volta a ser inlineTimeline -->
     <div id="inlineTimeline" class="w-full h-[40vh] md:h-[340px]"></div>
-    <p class="text-sm text-indigo-200/80 mt-3">Dica: clique nos pontos para ver o marco. Use os filtros no Overlay para focar por tecnologia.</p>
+    <p class="text-sm mt-3 neon-tip">Dica: clique nos pontos para ver o marco. Use os filtros no Overlay para focar por tecnologia.</p>
   </div>
 </section>
 
@@ -1696,6 +1716,7 @@ function renderOverlayTimeline(filterSet){
   </script>
 </body>
 </html>
+
 
 
 
