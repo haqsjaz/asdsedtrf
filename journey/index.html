@@ -337,10 +337,10 @@ img { -webkit-user-drag: none; user-drag: none; }
       </ul>
     </nav>
     <a href="/kali" id="cybersecurityModeBtn" class="btn justify-self-end">
-      <img src="/assets/images/kali.png"
-           onerror="this.src='https://placehold.co/24x24/000/FFF?text=K';"
-           alt="Kali Icon"
-           class="w-6 h-6 mr-2 transition-filter duration-300" />
+      <img id="kaliIcon"
+     src="/assets/images/cybersecurity.png"
+     alt="Kali Icon"
+     class="w-6 h-6 mr-2 transition-filter duration-300" />
       Modo Cybersecurity
     </a>
   </div>
@@ -692,6 +692,23 @@ img { -webkit-user-drag: none; user-drag: none; }
 
   <!-- ===== SCRIPTS ===== -->
   <script>
+     // Fallback seguro p/ ícone do header (sem inline handler)
+(()=>{
+  const img = document.getElementById('kaliIcon');
+  if (img) img.addEventListener('error', ()=>{
+    img.src = '/assets/images/kali_fallback.png'; // use um PNG local
+  }, { once:true });
+})();
+
+    // Garante noopener mesmo se esquecido em algum link
+(()=>{
+  const open = window.open;
+  window.open = function(...args){
+    const w = open.apply(window, args);
+    try { if (w) w.opener = null; } catch {}
+    return w;
+  };
+})();
     /* ========= Canvas de partículas (Three.js) ========= */
     (() => {
   const canvas = document.getElementById('bg-canvas');
@@ -840,15 +857,20 @@ img { -webkit-user-drag: none; user-drag: none; }
     (()=>{
       const expr = document.getElementById('exprInput'); const out = document.getElementById('exprOut');
       function safeEval(code){
-        // Sanitização simples: apenas números, operadores, parênteses, vírgulas, pontos e letras de funções Math
-        if(!/^[0-9+\-*/%().,\s^]*[A-Za-z]*[0-9+\-*/%().,\s^A-Za-z]*$/.test(code)) throw new Error('Expressão inválida.');
-        // Mapeia funções conhecidas para Math.*
-        const mapFns = ['sin','cos','tan','abs','sqrt','log','pow','min','max','floor','ceil','round','exp','random','PI','E'];
-        let expr = code.replace(/\^/g,'**');
-        mapFns.forEach(fn=>{ const re=new RegExp(`\\b${fn}\\b`,'g'); expr = expr.replace(re, `Math.${fn}`); });
-        // eslint-disable-next-line no-new-func
-        return Function(`"use strict"; return (${expr})`)();
-      }
+  const src = String(code || '').trim();
+  if (!/^[0-9+\-*/%().,\s^A-Za-z]*$/.test(src)) throw new Error('Expressão inválida.');
+
+  const allow = new Set(['sin','cos','tan','abs','sqrt','log','pow','min','max','floor','ceil','round','exp','random','PI','E']);
+
+  const idRe = /[A-Za-z_]\w*/g;
+  let m; while ((m = idRe.exec(src))) {
+    if (!allow.has(m[0])) throw new Error('Função/constante não permitida: ' + m[0]);
+  }
+
+  let expr = src.replace(/\^/g,'**');
+  for (const k of allow) expr = expr.replace(new RegExp(`\\b${k}\\b`, 'g'), `Math.${k}`);
+  return Function('"use strict"; const Math=globalThis.Math; return (' + expr + ')')();
+}
       document.getElementById('evalBtn').addEventListener('click',()=>{ try{ const v=safeEval(expr.value||''); out.textContent=String(v); }catch(e){ out.textContent='Erro: '+e.message; }});
       document.getElementById('clearExprBtn').addEventListener('click',()=>{ expr.value=''; out.textContent='—'; });
     })();
@@ -872,16 +894,18 @@ img { -webkit-user-drag: none; user-drag: none; }
     const matches = [...input.matchAll(r)];
     if (!matches.length) { res.textContent = 'Sem correspondências.'; return; }
 
-    const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let out = '', last = 0;
-    matches.forEach(m => {
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    for (const m of matches) {
       const idx = m.index;
-      out += esc(input.slice(last, idx));
-      out += `<mark>${esc(m[0])}</mark>`;
+      frag.appendChild(document.createTextNode(input.slice(last, idx)));
+      const mark = document.createElement('mark');
+      mark.textContent = m[0];          // <<< sem HTML
+      frag.appendChild(mark);
       last = idx + m[0].length;
-    });
-    out += esc(input.slice(last));
-    res.innerHTML = out;
+    }
+    frag.appendChild(document.createTextNode(input.slice(last)));
+    res.replaceChildren(frag);           // <<< sem innerHTML
   } catch(e) {
     res.textContent = 'Erro: ' + e.message;
   }
@@ -1422,6 +1446,64 @@ function openTimelineModal(d){
   // Helpers
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const aesc = s => esc(s).replace(/"/g,'&quot;');
+  function safeHref(href){
+  try{
+    const u = new URL(href, location.origin);
+    const ok = ['http:', 'https:', 'mailto:'].includes(u.protocol);
+    return ok ? u.toString() : '#';
+  }catch{
+    return '#';
+  }
+}
+// Permite apenas um subconjunto de tags/atributos seguros
+function sanitizeHTML(html){
+  const t = document.createElement('template');
+  t.innerHTML = String(html || '');
+
+  const ALLOWED_TAGS = new Set(['p','ul','ol','li','em','strong','code','pre','br','a']);
+  const ALLOWED_ATTRS = { a: new Set(['href','target','rel']) };
+
+  [...t.content.querySelectorAll('*')].forEach(el=>{
+    const tag = el.tagName.toLowerCase();
+
+    // Remove tags não permitidas
+    if (!ALLOWED_TAGS.has(tag)) {
+      el.replaceWith(document.createTextNode(el.textContent || ''));
+      return;
+    }
+
+    // Remove atributos perigosos e normaliza href
+    [...el.attributes].forEach(attr=>{
+      const n = attr.name.toLowerCase();
+      const v = attr.value;
+      // remove eventos e style inline
+      if (n.startsWith('on') || n === 'style') { el.removeAttribute(attr.name); return; }
+      // ancora: limpa href com nossa whitelist
+      if (tag === 'a' && n === 'href') { el.setAttribute('href', safeHref(v)); return; }
+      // só mantém whitelisted
+      if (!(ALLOWED_ATTRS[tag] && ALLOWED_ATTRS[tag].has(n))) el.removeAttribute(attr.name);
+    });
+
+    // reforço nos links
+    if (tag === 'a') {
+      el.setAttribute('target','_blank');
+      el.setAttribute('rel','noopener');
+    }
+  });
+
+  return t.innerHTML;
+}
+  function safeImgSrc(src){
+  try{
+    const u = new URL(src, location.origin);
+    // Somente mesma origem (ou uma whitelist sua)
+    const sameHost = u.origin === location.origin;
+    const ok = ['http:','https:'].includes(u.protocol) && sameHost;
+    return ok ? u.toString() : '/assets/images/galaxy_badge.png';
+  }catch{
+    return '/assets/images/galaxy_badge.png';
+  }
+}
 
   // Montagem do conteúdo
   const modal = d.modal || {};
@@ -1434,7 +1516,7 @@ function openTimelineModal(d){
   if (d.note) parts.push(`<p class="mt-2">${esc(d.note)}</p>`);
 
   // Details (HTML controlado)
-  if (modal.details) parts.push(`<div class="section selectable"><h6>Resumo</h6>${modal.details}</div>`);
+  if (modal.details) parts.push(`<div class="section selectable"><h6>Resumo</h6>${sanitizeHTML(modal.details)}</div>`);
 
   // Highlights
   if (Array.isArray(modal.highlights) && modal.highlights.length){
@@ -1456,7 +1538,7 @@ function openTimelineModal(d){
   // Links/CTAs
   if (Array.isArray(modal.links) && modal.links.length){
     parts.push(`<div class="section"><h6>Links</h6><div class="links">${
-      modal.links.map(l=>`<a class="btn" target="_blank" rel="noopener" href="${aesc(l.href)}">${esc(l.label)}</a>`).join('')
+      modal.links.map(l=>`<a class="btn" target="_blank" rel="noopener" href="${aesc(safeHref(l.href))}">${esc(l.label)}</a>`).join('')
     }</div></div>`);
   }
 
@@ -1471,7 +1553,7 @@ function openTimelineModal(d){
 
   // Carrossel de mídia
   if (Array.isArray(modal.media) && modal.media.length){
-    const imgs = modal.media.map((src,i)=>`<img src="${aesc(src)}" alt="${esc(tech)} ${i+1}" class="${i===0?'active':''}">`).join('');
+    const imgs = modal.media.map((src,i)=>`<img src="${aesc(safeImgSrc(src))}" alt="${esc(tech)} ${i+1}" class="${i===0?'active':''}">`).join('');
     parts.push(`<div class="section carousel">
       <h6>Mídia</h6>
       <div class="viewport">${imgs}</div>
@@ -1907,8 +1989,3 @@ async function downloadTimelinePNG(){
   </script>
 </body>
 </html>
-
-
-
-
-
