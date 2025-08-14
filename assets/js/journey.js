@@ -1,3 +1,4 @@
+document.body.classList.add('has-fixed-header');
  // Fallback seguro p/ ícone do header (sem inline handler)
 (()=>{
   const img = document.getElementById('kaliIcon');
