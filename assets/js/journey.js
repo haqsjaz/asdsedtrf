@@ -163,21 +163,151 @@
     /* ========= Calculadora de Expressões ========= */
     (()=>{
       const expr = document.getElementById('exprInput'); const out = document.getElementById('exprOut');
-      function safeEval(code){
-  const src = String(code || '').trim();
-  if (!/^[0-9+\-*/%().,\s^A-Za-z]*$/.test(src)) throw new Error('Expressão inválida.');
+      function safeEval(src){
+  src = String(src || '').trim();
+  if (!src) return 0;
 
-  const allow = new Set(['sin','cos','tan','abs','sqrt','log','pow','min','max','floor','ceil','round','exp','random','PI','E']);
+  // === Tokenizer (sem eval) ===
+  const tokens = [];
+  let i = 0;
+  const isWS   = c => /\s/.test(c);
+  const isDig  = c => /[0-9]/.test(c);
+  const isId0  = c => /[A-Za-z_]/.test(c);
+  const isId   = c => /[A-Za-z0-9_]/.test(c);
 
-  const idRe = /[A-Za-z_]\w*/g;
-  let m; while ((m = idRe.exec(src))) {
-    if (!allow.has(m[0])) throw new Error('Função/constante não permitida: ' + m[0]);
+  while (i < src.length) {
+    const c = src[i];
+    if (isWS(c)) { i++; continue; }
+
+    // expoente "**" vira token '^'
+    if (c === '*' && src[i+1] === '*') { tokens.push({type:'^'}); i += 2; continue; }
+
+    if ("+-*/%^(),".includes(c)) { tokens.push({type:c}); i++; continue; }
+    if (c === '(' || c === ')') { tokens.push({type:c}); i++; continue; }
+
+    if (isDig(c) || c === '.') {
+      let j = i;
+      while (j < src.length && (isDig(src[j]) || src[j] === '.')) j++;
+      // notação científica
+      if (j < src.length && (src[j] === 'e' || src[j] === 'E')) {
+        let k = j + 1;
+        if (src[k] === '+' || src[k] === '-') k++;
+        while (k < src.length && isDig(src[k])) k++;
+        j = k;
+      }
+      const num = Number(src.slice(i, j));
+      if (!Number.isFinite(num)) throw new Error('Número inválido');
+      tokens.push({type:'num', value:num});
+      i = j; continue;
+    }
+
+    if (isId0(c)) {
+      let j = i + 1;
+      while (j < src.length && isId(src[j])) j++;
+      tokens.push({type:'id', value:src.slice(i, j)});
+      i = j; continue;
+    }
+
+    throw new Error('Caractere inválido na posição ' + i);
   }
 
-  let expr = src.replace(/\^/g,'**');
-  for (const k of allow) expr = expr.replace(new RegExp(`\\b${k}\\b`, 'g'), `Math.${k}`);
-  return Function('"use strict"; const Math=globalThis.Math; return (' + expr + ')')();
+  // Permitidos
+  const allowFns = new Set(['sin','cos','tan','abs','sqrt','log','pow','min','max','floor','ceil','round','exp','random']);
+  const allowConst = { PI: Math.PI, E: Math.E };
+
+  let pos = 0;
+  const peek = () => tokens[pos];
+  const take = (t) => {
+    const k = tokens[pos];
+    if (!k || (t && k.type !== t)) throw new Error('Esperado "' + t + '"');
+    pos++; return k;
+  };
+
+  // === Parser (descida recursiva) ===
+  function parseExpression(){ return parseAddSub(); }
+
+  function parseAddSub(){
+    let v = parseMulDiv();
+    while (true) {
+      const tk = peek();
+      if (!tk || (tk.type !== '+' && tk.type !== '-')) break;
+      take();
+      const r = parseMulDiv();
+      v = tk.type === '+' ? v + r : v - r;
+    }
+    return v;
+  }
+
+  function parseMulDiv(){
+    let v = parsePower();
+    while (true) {
+      const tk = peek();
+      if (!tk || (tk.type !== '*' && tk.type !== '/' && tk.type !== '%')) break;
+      take();
+      const r = parsePower();
+      if (tk.type === '*') v *= r;
+      else if (tk.type === '/') v /= r;
+      else v %= r;
+    }
+    return v;
+  }
+
+  // ^ é associativo à direita
+  function parsePower(){
+    let v = parseUnary();
+    const tk = peek();
+    if (tk && tk.type === '^') { take('^'); v = Math.pow(v, parsePower()); }
+    return v;
+  }
+
+  function parseUnary(){
+    const tk = peek();
+    if (tk && (tk.type === '+' || tk.type === '-')) {
+      take();
+      const r = parseUnary();
+      return tk.type === '-' ? -r : r;
+    }
+    return parsePrimary();
+  }
+
+  function parsePrimary(){
+    const tk = peek();
+    if (!tk) throw new Error('Expressão incompleta');
+
+    if (tk.type === 'num') { take(); return tk.value; }
+
+    if (tk.type === '(') {
+      take('(');
+      const v = parseExpression();
+      take(')');
+      return v;
+    }
+
+    if (tk.type === 'id') {
+      const name = tk.value; take();
+      if (name in allowConst) return allowConst[name];
+
+      if (!allowFns.has(name)) throw new Error('Função/constante não permitida: ' + name);
+
+      take('(');
+      const args = [];
+      if (peek() && peek().type !== ')') {
+        args.push(parseExpression());
+        while (peek() && peek().type === ',') { take(','); args.push(parseExpression()); }
+      }
+      take(')');
+      const f = Math[name];
+      return f.apply(Math, args);
+    }
+
+    throw new Error('Token inesperado');
+  }
+
+  const result = parseExpression();
+  if (pos !== tokens.length) throw new Error('Conteúdo extra após o fim da expressão');
+  return result;
 }
+
       document.getElementById('evalBtn').addEventListener('click',()=>{ try{ const v=safeEval(expr.value||''); out.textContent=String(v); }catch(e){ out.textContent='Erro: '+e.message; }});
       document.getElementById('clearExprBtn').addEventListener('click',()=>{ expr.value=''; out.textContent='—'; });
     })();
