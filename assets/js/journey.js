@@ -1,3 +1,8 @@
+(function ensureDeps(){
+  function inject(src){ const s=document.createElement('script'); s.defer=true; s.src=src; document.head.appendChild(s); }
+  if (!window.THREE) inject('/assets/vendor/three.r128.min.js');
+  if (!window.d3)    inject('/assets/vendor/d3.v7.min.js');
+})();
 
      // Fallback seguro p/ ícone do header (sem inline handler)
 (()=>{
