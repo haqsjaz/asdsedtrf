@@ -12,17 +12,6 @@
       // Apenas a lógica do canvas 2D foi removida.
       const nameEl = document.getElementById('nome');
       const dynamicGradientAnimations = new Map();
-      const header = document.querySelector('header');
-      const home   = document.getElementById('home');
-
-    function fixHomeOffset(){
-      const h = header.offsetHeight || 0;
-      home.style.marginTop = `-${h}px`;   // cola o banner no teto
-    }
-
-    fixHomeOffset();
-    window.addEventListener('resize', fixHomeOffset);
-  
 
       function startDynamicGradientAnimation(element) {
         let animState = dynamicGradientAnimations.get(element);
