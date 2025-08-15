@@ -1,15 +1,11 @@
 
-    document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
      
-        document.querySelectorAll('a[target="_blank"]').forEach(a => {
-    if (!/\bnoopener\b/.test(a.rel) || !/\bnoreferrer\b/.test(a.rel)) {
-      a.rel = 'noopener noreferrer';
-    }
-  });
-    
-      // --- MANTENDO LÓGICA EXISTENTE (GRADIENTE DINÂMICO E CARROSSEL) ---
-      // Esta parte do seu código original foi mantida, pois é excelente e funciona bem.
-      // Apenas a lógica do canvas 2D foi removida.
+         document.querySelectorAll('a[target="_blank"]').forEach(a => {
+      if (!/\bnoopener\b/.test(a.rel) || !/\bnoreferrer\b/.test(a.rel)) {
+        a.rel = 'noopener noreferrer';
+      }
+    });
       const nameEl = document.getElementById('nome');
       const dynamicGradientAnimations = new Map();
 
@@ -73,12 +69,11 @@
         }
       });
 
-      /* === esconder navbar ao rolar para baixo, mostrar ao rolar para cima === */
 const nav = document.querySelector('header');
 let lastY  = window.scrollY;
 let hideTO = null;
 
-      // ---------- underline dinâmico da navbar (temporariamente desativado para manutenção) ---------------------------------
+      //underline dinâmico da navbar (temporariamente desativado para manutenção)
 //const navList   = document.querySelector('header nav ul');
 //const underline = document.createElement('span');
 //underline.className = 'nav-underline';
@@ -109,23 +104,22 @@ let hideTO = null;
 window.addEventListener('scroll', () => {
   const curY = window.scrollY;
 
-  /* tolerância de 16 px evita "tremedeira" em toques leves do mouse */
   if (curY > lastY + 16) {
     clearTimeout(hideTO);
-    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 250); // 2.5 s
+    hideTO = setTimeout(()=> nav.classList.add('nav-hidden'), 250); 
     lastY = curY;
   } else if (curY < lastY - 16) {
-    nav.classList.remove('nav-hidden');   // sobe → aparece instantâneo
+    nav.classList.remove('nav-hidden');  
     lastY = curY;
   }
 });
 
-      // Lógica do Carrossel (mantida integralmente)
+      //Lógica do Carrossel 
       const carouselContainer = document.querySelector('.carousel-container');
       const carouselTrack = document.getElementById('serverCarouselTrack');
       const prevButton = document.getElementById('carouselPrev');
       const nextButton = document.getElementById('carouselNext');
-      if(carouselTrack) { // Adicionando verificação para garantir que os elementos existem
+      if(carouselTrack) {
         let originalServerCards = Array.from(document.querySelectorAll('#serverCarouselTrack > .server-card'));
         let serverCards = [];
         let currentIndex = 0;
@@ -161,24 +155,20 @@ window.addEventListener('scroll', () => {
                 else if (index === (currentIndex - 1 + serverCards.length) % serverCards.length) card.classList.add('is-left');
                 else if (index === (currentIndex + 1) % serverCards.length) card.classList.add('is-right');
             });
-            /* ⇢ novo cálculo – usa retângulos reais + matriz de transform -------- */
-const currentCentralCard = serverCards[currentIndex];          // mantido
+            
+const currentCentralCard = serverCards[currentIndex];
 
 const containerRect  = carouselContainer.getBoundingClientRect();
 const cardRect       = currentCentralCard.getBoundingClientRect();
 
-/* diferença entre o centro do container (já com padding)              */
-/*            e o centro do cartão (já com o transform atual)          */
 const delta = (containerRect.left + containerRect.width / 2) -
               (cardRect.left     + cardRect.width     / 2);
 
-/* translateX que já existe (0 se ainda não há transform)              */
 const m            = new (window.DOMMatrixReadOnly || window.WebKitCSSMatrix)(
                        getComputedStyle(carouselTrack).transform
                      );
-const curTranslate = m.m41;          // componente X da matriz (px)
+const curTranslate = m.m41;   
 
-/* novo valor absoluto ------------------------------------------------ */
 const translateXValue = curTranslate + delta;
 carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
@@ -220,8 +210,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
         startAutoScroll();
       }
 
-
-      // --- FEATURE 1: BACKGROUND 3D INTERATIVO COM THREE.JS ---
       (() => {
         const canvas = document.getElementById('bg-canvas');
         if (!canvas) return;
@@ -290,23 +278,19 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
           particles.rotation.y = elapsedTime * 0.05;
           particles.rotation.x = elapsedTime * 0.05;
           
-          // Animate camera based on scroll
           const scrollY = window.scrollY;
           const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
           const scrollPercent = scrollY / scrollMax;
           camera.position.z = 5 - scrollPercent * 4;
           camera.position.y = -scrollPercent * 2;
 
-
-          // Parallax effect
           camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
           camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
           camera.lookAt(scene.position);
           
-          // Update lines
           let lineVertexIndex = 0;
           const particlePositions = particles.geometry.attributes.position.array;
-          const maxDistSq = 1 * 1; // Square of max distance for connection
+          const maxDistSq = 1 * 1; 
           for (let i = 0; i < particlesCount; i++) {
             for (let j = i + 1; j < particlesCount; j++) {
                 const ix = particlePositions[i * 3];
@@ -340,8 +324,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
         animateThree();
       })();
 
-
-      // --- FEATURE 2: CONSTELAÇÃO DE HABILIDADES COM D3.JS ---
       (() => {
         const container = document.getElementById('skills-constellation-container');
         if (!container) return;
@@ -412,7 +394,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
   desaponta. Por isso estudo fluxos, acessibilidade e micro-interações.`,
   "Cybersecurity": `CTFs, labs e muita curiosidade: segurança é meu
   combustível para aprender como as coisas realmente funcionam.`,
-  /* Os nós-“core” podem usar descrições genéricas curtas */
   "Programação":  "O centro de tudo que faço.",
   "Front-End":    "Onde criatividade vira interface.",
   "Back-End":     "A engrenagem por trás da mágica.",
@@ -421,7 +402,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
   "Segurança":    "Camada crítica para qualquer projeto."
 };
 
-
         const skillIcons = {
   "Python":        "assets/images/python.png",
   "JavaScript":    "assets/images/javascript.png",
@@ -429,28 +409,23 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
   "React":         "assets/images/react.png",
   "Next.js":       "assets/images/nextjs.png",
   "Tailwind CSS":  "assets/images/tailwindcss.png",
-  "D3.js":         "assets/images/d3.png",          //  ←   NOVAS!
+  "D3.js":         "assets/images/d3.png",   
   "Three.js":      "assets/images/threejs.png",
   "SQL":           "assets/images/sql.png",
   "Git":           "assets/images/git.png",
   "Figma":         "assets/images/figma.png",
   "UI/UX":         "assets/images/uiux_design.png",
   "Cybersecurity": "assets/images/cybersecurity.png",
-  // os “core” (Programação, etc.) podem ficar sem ícone
 };
-
 
         const width = container.clientWidth;
         const height = container.clientHeight;
-        // ——— ajuste automático para mobile ———
-        const isMobile = window.innerWidth <= 768;   // mesmo corte do seu CSS
-        const SCALE    = isMobile ? 0.65 : 1;       // 65 % do tamanho no mobile
+        const isMobile = window.innerWidth <= 768;
+        const SCALE    = isMobile ? 0.65 : 1;
 
-        // ——— parâmetros de layout ———
-        const linkDist       = isMobile ? 70  : 100;   // ↓ encurta no mobile
-        const chargeStrength = isMobile ? -120 : -200; // ↓ repulsão menor
+        const linkDist       = isMobile ? 70  : 100;
+        const chargeStrength = isMobile ? -120 : -200; 
 
-        /* ───────── Elemento único de cartão ───────── */
         const infoCard = document.createElement("div");
         infoCard.className = "skill-info-card";
         document.body.appendChild(infoCard);
@@ -462,14 +437,13 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
   .force("link",
          d3.forceLink(skillsData.links)
             .id(d => d.id)
-            .distance(linkDist)              // ← usa linkDist
+            .distance(linkDist) 
   )
   .force("charge",
          d3.forceManyBody()
-            .strength(chargeStrength)        // ← usa chargeStrength
+            .strength(chargeStrength)
   )
   .force("center", d3.forceCenter())
-  // evita sobreposição sem jogar para a borda
   .force("collide",
          d3.forceCollide()
             .radius(d => (d.group === "core" ? 26 : 20) * SCALE + 6)
@@ -497,9 +471,8 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
        node.each(function (d) {
   const g = d3.select(this);
 
-  /* ─── NÓS “CORE” → ESTRELA ─── */
   if (d.group === "core") {
-    const starSize = 52 * SCALE;          // ↓ 52 px desktop → 34 px mobile
+    const starSize = 52 * SCALE;  
     g.classed("core-star", true)
      .append("image")
      .attr("href", "assets/images/star.png")
@@ -509,10 +482,9 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
      .attr("y", -starSize / 2);
   }
 
-  /* ─── Demais nós: círculo de vidro + ícone ─── */
   else {
-    const r        = 20 * SCALE;          // ↓ 20 px → 13 px
-    const imgSize  = 32 * SCALE;          // ↓ 32 px → 21 px
+    const r        = 20 * SCALE; 
+    const imgSize  = 32 * SCALE;
 
     g.append("circle")
      .attr("class", "glass")
@@ -528,7 +500,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
     }
   }
 });
-
 
         node.append("text")
        .text(d => d.id)
@@ -556,8 +527,6 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
      //.on("zoom", e => gZoom.attr("transform", e.transform))
 //);
 
-            
-        // Hover/Focus functionality
         const linkedByIndex = {};
         skillsData.links.forEach(d => {
             linkedByIndex[`${d.source.id},${d.target.id}`] = 1;
@@ -573,16 +542,13 @@ carouselTrack.style.transform = `translateX(${translateXValue}px)`;
 
   if (isMobile){
     infoCard.classList.add("mobile");
-    // centralizado – posição ajustada só pela classe
   }else{
     infoCard.classList.remove("mobile");
-    moveCard(evt);                 // posiciona perto do cursor
+    moveCard(evt);  
   }
 
   requestAnimationFrame(()=>infoCard.classList.add("visible"));
 }
-
-
 
 function moveCard(evt){
   // margem mínima para não “vazar” da tela
@@ -619,9 +585,9 @@ node
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
-            const margin = 40 * SCALE;                       // distância mínima da borda
+            const margin = 40 * SCALE; 
             node
-                .each(d => {                           // mantém dentro da viewBox
+                .each(d => {   
                   d.x = Math.max(-width/2  + margin, Math.min(width/2  - margin, d.x));
                   d.y = Math.max(-height/2 + margin, Math.min(height/2 - margin, d.y));
           })
@@ -651,8 +617,9 @@ node
   const h      = container.clientHeight;
   svg.attr("viewBox", [-w/2, -h/2, w, h]);
   simulation.force("center").x(0).y(0);
-  simulation.alpha(0.2).restart();       // reposiciona suavemente
+  simulation.alpha(0.2).restart(); 
         });
 
       })();
     });
+
