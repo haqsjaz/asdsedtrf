@@ -35,6 +35,7 @@
   <meta name="twitter:title" content="Caio Duque • Portfólio Oficial">
   <meta name="twitter:description" content="Conheça meus projetos, habilidades e minha trajetória como desenvolvedor, designer e entusiasta de cibersegurança.">
   <meta name="twitter:image" content="https://caioduque.dev/assets/images/preview.png">
+
   <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Bibliotecas para a nova versão -->
@@ -63,9 +64,9 @@
       opacity: 1;
     }
     
-body.has-fixed-header{
-  padding-top: 4rem;
-}
+body.has-fixed-header{ padding-top: var(--header-offset); }
+#home { margin-top: calc(-1 * var(--header-offset)); }
+
     .dynamic-gradient {
       position: relative;
       display: inline-block;
@@ -382,8 +383,10 @@ body.has-fixed-header{
 /* Banner com fade unidirecional: forte no topo → some embaixo */
 .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
 
+:root { --header-offset: 4rem; } 
 /* Responsividade */
 @media (max-width:768px){
+  :root { --header-offset: 5.5rem; }
 
   /* ----------- header geral ----------- */
   header .container {
@@ -851,4 +854,3 @@ p, li { hyphens: auto; }
 <script defer src="/assets/js/index.js"></script>
 </body>
 </html>
-
