@@ -15,6 +15,8 @@
   form-action 'none';
   frame-ancestors 'none';
   navigate-to 'self' https: data:;
+  worker-src 'self';
+  child-src 'self';
   upgrade-insecure-requests;
   block-all-mixed-content;
 ">
@@ -714,3 +716,4 @@ img { -webkit-user-drag: none; user-drag: none; }
 <script defer src="/assets/js/journey.js"></script>
 </body>
 </html>
+
