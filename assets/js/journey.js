@@ -1,5 +1,5 @@
-document.body.classList.add('has-fixed-header');
- // Fallback seguro p/ ícone do header (sem inline handler)
+
+     // Fallback seguro p/ ícone do header (sem inline handler)
 (()=>{
   const img = document.getElementById('kaliIcon');
   if (img) img.addEventListener('error', ()=>{
@@ -163,96 +163,21 @@ document.body.classList.add('has-fixed-header');
     /* ========= Calculadora de Expressões ========= */
     (()=>{
       const expr = document.getElementById('exprInput'); const out = document.getElementById('exprOut');
-      // === safeEval sem eval/Function (compatível com CSP) ===
-function safeEval(input){
-  const s = String(input || '').trim();
-  let i = 0;
+      function safeEval(code){
+  const src = String(code || '').trim();
+  if (!/^[0-9+\-*/%().,\s^A-Za-z]*$/.test(src)) throw new Error('Expressão inválida.');
 
-  const CONST = { PI: Math.PI, E: Math.E };
-  const FUN = {
-    sin: Math.sin, cos: Math.cos, tan: Math.tan,
-    abs: Math.abs, sqrt: Math.sqrt, log: Math.log, exp: Math.exp,
-    floor: Math.floor, ceil: Math.ceil, round: Math.round,
-    pow: Math.pow, min: Math.min, max: Math.max,
-    random: ()=>Math.random(),
-  };
+  const allow = new Set(['sin','cos','tan','abs','sqrt','log','pow','min','max','floor','ceil','round','exp','random','PI','E']);
 
-  const isDigit = ch => ch >= '0' && ch <= '9';
-  const isAlpha = ch => /[A-Za-z_]/.test(ch);
-  const skip = ()=>{ while (/\s/.test(s[i])) i++; };
-  const eat = c => s[i] === c ? (i++, true) : false;
-
-  function parseNumber(){
-    let start = i, seen = false;
-    while (isDigit(s[i])) { i++; seen = true; }
-    if (s[i] === '.') { i++; while (isDigit(s[i])) { i++; seen = true; } }
-    if (!seen) throw new Error('Número esperado na posição ' + i);
-    return parseFloat(s.slice(start, i));
-  }
-  function parseName(){
-    if (!isAlpha(s[i])) throw new Error('Identificador inválido em ' + i);
-    const start = i;
-    while (/[A-Za-z0-9_]/.test(s[i])) i++;
-    return s.slice(start, i);
+  const idRe = /[A-Za-z_]\w*/g;
+  let m; while ((m = idRe.exec(src))) {
+    if (!allow.has(m[0])) throw new Error('Função/constante não permitida: ' + m[0]);
   }
 
-  function parsePrimary(){
-    skip();
-    if (eat('(')){
-      const v = parseExpr();
-      skip(); if (!eat(')')) throw new Error('")" esperado em ' + i);
-      return v;
-    }
-    if (isDigit(s[i]) || s[i] === '.') return parseNumber();
-    if (isAlpha(s[i])){
-      const name = parseName();
-      if (name in CONST) return CONST[name];
-      if (!(name in FUN)) throw new Error('Função/constante não permitida: ' + name);
-      skip(); if (!eat('(')) throw new Error('"(" esperado após ' + name);
-      const args = [];
-      skip();
-      if (!eat(')')){
-        do { args.push(parseExpr()); skip(); }
-        while (eat(','));
-        if (!eat(')')) throw new Error('")" esperado ao fechar ' + name);
-      }
-      if (name === 'random' && args.length !== 0) throw new Error('random() não recebe argumentos');
-      if (name === 'pow'    && args.length !== 2) throw new Error('pow espera 2 argumentos');
-      if ((name === 'min' || name === 'max') && args.length < 1) throw new Error(name+' requer ≥1 arg');
-      if (!['random','pow','min','max'].includes(name) && args.length !== 1)
-        throw new Error(name+' espera 1 argumento');
-      return FUN[name](...args);
-    }
-    throw new Error('Token inesperado em ' + i);
-  }
-
-  function parseUnary(){ skip(); if (eat('+')) return +parseUnary(); if (eat('-')) return -parseUnary(); return parsePrimary(); }
-  function parsePow(){ let v = parseUnary(); skip(); if (eat('^')) v = Math.pow(v, parsePow()); return v; } // ^ é direita-associativo
-  function parseTerm(){
-    let v = parsePow();
-    for(;;){ skip();
-      if (eat('*')) v *= parsePow();
-      else if (eat('/')) v /= parsePow();
-      else if (eat('%')) v %= parsePow();
-      else break;
-    }
-    return v;
-  }
-  function parseExpr(){
-    let v = parseTerm();
-    for(;;){ skip();
-      if (eat('+')) v += parseTerm();
-      else if (eat('-')) v -= parseTerm();
-      else break;
-    }
-    return v;
-  }
-
-  const res = parseExpr();
-  skip(); if (i !== s.length) throw new Error('Entrada inválida perto de "' + s.slice(i) + '"');
-  return res;
+  let expr = src.replace(/\^/g,'**');
+  for (const k of allow) expr = expr.replace(new RegExp(`\\b${k}\\b`, 'g'), `Math.${k}`);
+  return Function('"use strict"; const Math=globalThis.Math; return (' + expr + ')')();
 }
-
       document.getElementById('evalBtn').addEventListener('click',()=>{ try{ const v=safeEval(expr.value||''); out.textContent=String(v); }catch(e){ out.textContent='Erro: '+e.message; }});
       document.getElementById('clearExprBtn').addEventListener('click',()=>{ expr.value=''; out.textContent='—'; });
     })();
@@ -920,7 +845,7 @@ function sanitizeHTML(html){
   // Links/CTAs
   if (Array.isArray(modal.links) && modal.links.length){
     parts.push(`<div class="section"><h6>Links</h6><div class="links">${
-      modal.links.map(l=>`<a class="btn" target="_blank" rel="noopener" href="${aesc(safeHref(l.href))}">${esc(l.label)}</a>`).join('')
+      modal.links.map(l=>`<a class="btn" target="_blank" rel="noopener noreferrer" href="${aesc(safeHref(l.href))}">${esc(l.label)}</a>`).join('')
     }</div></div>`);
   }
 
@@ -1368,5 +1293,3 @@ async function downloadTimelinePNG(){
   };
   img.src = url;
 }
-document.getElementById('savePngBtn')
-  ?.addEventListener('click', downloadTimelinePNG);
