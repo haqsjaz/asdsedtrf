@@ -23,7 +23,6 @@
   <title>Journey • Caio Duque</title>
   <link rel="icon" href="/assets/images/favicon.png" type="image/png" />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://caioduque.dev/journey/">
   <meta property="og:title" content="Journey • Caio Duque">
@@ -31,21 +30,18 @@
   <meta property="og:image" content="https://caioduque.dev/assets/images/preview.png">
   <meta property="og:site_name" content="Caio Duque Portfólio">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://caioduque.dev/journey/">
   <meta name="twitter:title" content="Journey • Caio Duque">
   <meta name="twitter:description" content="Ferramentas úteis + Timeline neon da minha trajetória técnica.">
   <meta name="twitter:image" content="https://caioduque.dev/assets/images/preview.png">
 
-  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Libs já usadas no site -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script defer src="https://d3js.org/d3.v7.min.js" integrity="sha512-vc58qvvBdrDR4etbxMdlTt4GBQk1qjvyORR2nrsPsFPyrs+/u5c3+1Ct6upOgdZoIl7eq6k3a1UPDSNAQi/32A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
-    /* ====== THEME & SHARED STYLES (herdados/compatíveis com a home) ====== */
     html, body { width: 100%; overflow-x: hidden; box-sizing: border-box; }
     *, *::before, *::after { box-sizing: inherit }
     body { background: #0b0c10; color: #e5e7eb; }
@@ -59,7 +55,6 @@
     }
     .card:hover { transform: translateY(-3px); background-color: rgba(44,47,51,.30); box-shadow: 0 0 20px rgba(114,137,218,.35); z-index: 3; }
 
-    /* BOTÕES “UNIVERSE” — MESMA BASE DA HOME */
 .btn{
   position:relative;overflow:hidden;display:inline-flex;
   align-items:center;justify-content:center;gap:.45rem;
@@ -120,7 +115,7 @@
   transform: translateY(-110%);
   transition: transform .35s ease;
 }
-/* Responsivo do header (mesmo da home) */
+
 @media (max-width:768px){
   header .container{ grid-template-columns: 1fr; gap:.5rem 1rem; }
   header h1{ justify-self:center; }
@@ -138,7 +133,6 @@
   .btn{ padding:.35rem .9rem; font-size:.85rem; }
 }
 
-/* Hint neon (mesmo glow do footer) */
 .neon-tip{
   color:#8ab4ff;
   text-shadow:
@@ -157,31 +151,25 @@
 @keyframes neon-breathe{0%,100%{opacity:.95}50%{opacity:.7}}
 .neon-tip{ animation: neon-breathe 2.8s ease-in-out infinite; }
 
-    
-    /* Scrollbar vidro */
     ::-webkit-scrollbar{ width:12px; }
     ::-webkit-scrollbar-track{ background: rgba(44,47,51,.2); backdrop-filter: blur(8px); border-left:1px solid rgba(255,255,255,.05); }
     ::-webkit-scrollbar-thumb{ background: rgba(200,200,255,.25); backdrop-filter: blur(4px); border-radius: 6px; border:2px solid rgba(255,255,255,.1); }
     ::-webkit-scrollbar-thumb:hover{ background: rgba(114,137,218,.5); }
 
-    /* Inputs */
     .input{ background: rgba(17,24,39,.6); border:1px solid rgba(148,163,184,.25); border-radius:.6rem; padding:.6rem .8rem; color:#e5e7eb; }
     .input:focus{ outline: none; border-color: rgba(138,180,255,.8); box-shadow: 0 0 0 3px rgba(90,75,255,.25); }
     .label{ color:#9CA3AF; font-size:.85rem; }
 
-    /* Neon timeline */
     .neon-panel{ position:relative; border-radius:1rem; padding:1.25rem; background:linear-gradient(180deg, rgba(16,16,24,.6), rgba(16,16,24,.35));
       border:1px solid rgba(138,180,255,.25); box-shadow: 0 0 24px rgba(90,100,244,.25) inset; }
     .neon-line{ stroke:#7B46FF; stroke-width:3; filter:url(#glow); }
     .neon-dot{ filter:url(#glow); }
 
-    /* Toolbox grid */
     .tool-card{ display:flex; flex-direction:column; gap:.6rem; height:100%; }
     .tool-title{ font-weight:700; color:#dbeafe; letter-spacing:.3px; }
     .tool-desc{ color:#bcd0ff; font-size:.9rem; }
     .tool-actions{ display:flex; gap:.5rem; flex-wrap:wrap; }
 
-    /* Command Palette */
     .cmdk-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-start; justify-content:center; padding-top:12vh; z-index:60; }
     .cmdk{ width:min(820px,92vw); border-radius:1rem; overflow:hidden; border:1px solid rgba(138,180,255,.25); background:rgba(28,28,40,.9); backdrop-filter:blur(10px); }
     .cmdk header{ position:relative; transform:none; box-shadow:none; border:none; }
@@ -190,7 +178,6 @@
     .cmdk-item{ padding:.8rem 1.25rem; cursor:pointer; }
     .cmdk-item:hover, .cmdk-item[aria-selected="true"]{ background:rgba(90,100,244,.18); }
 
-/* ===== Timeline Modal (glass) ===== */
 #tlModalBackdrop{
   position:fixed; inset:0; display:none;
   align-items:center; justify-content:center; z-index:70;
@@ -199,17 +186,17 @@
 }
 #tlModal{
   width:min(760px,94vw);
-  max-height:86vh;         /* <<< limita a altura */
+  max-height:86vh; 
   border-radius:16px; overflow:hidden;
   background:rgba(28,28,40,.88);
   border:1px solid rgba(138,180,255,.25);
   box-shadow:0 0 40px rgba(114,137,218,.35);
-  display:flex;            /* <<< permite header fixo + corpo rolável */
+  display:flex;
   flex-direction:column;
   overscroll-behavior:contain;
 }
 #tlModal header{
-  position:sticky; top:0; z-index:1; /* <<< gruda o header ao rolar */
+  position:sticky; top:0; z-index:1; 
   display:flex; align-items:center; gap:.75rem;
   padding:1rem 1.25rem; border-bottom:1px solid rgba(138,180,255,.2);
   background:linear-gradient(180deg, rgba(28,28,40,.95), rgba(28,28,40,.88));
@@ -217,9 +204,9 @@
 }
 #tlModal .content{
   padding:1rem 1.25rem 1.25rem;
-  flex:1 1 auto;          /* <<< ocupa o restante da altura */
-  min-height:0;           /* <<< habilita overflow em flex container */
-  overflow:auto;          /* <<< scroll interno */
+  flex:1 1 auto; 
+  min-height:0;
+  overflow:auto; 
   -webkit-overflow-scrolling: touch;
 }
 #tlModal .close{ margin-left:auto; }
@@ -233,7 +220,7 @@
 #tlModal .meta{ color:#bcd0ff; font-size:.9rem; }
 
 @media (max-width:640px){
-  #tlModalBackdrop{ padding:0; }           /* mobile: ocupa tela toda */
+  #tlModalBackdrop{ padding:0; }
   #tlModal{ width:100vw; height:100vh; max-height:100vh; border-radius:0; }
 }
 
@@ -244,7 +231,6 @@
   color:#c7d2fe; margin-bottom:.4rem;
 }
 
-/* Tags de stack */
 #tlModal .tags{ display:flex; flex-wrap:wrap; gap:.4rem; }
 #tlModal .tag{
   display:inline-flex; align-items:center; gap:.35rem;
@@ -253,7 +239,6 @@
   background:linear-gradient(135deg,#5c64f4,#8e5cff);
 }
 
-/* Métricas em cards */
 #tlModal .metrics{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:.5rem; }
 #tlModal .metric{
   padding:.6rem .7rem; border-radius:.6rem;
@@ -262,10 +247,8 @@
 #tlModal .metric .lbl{ font-size:.75rem; color:#9fb3ff }
 #tlModal .metric .val{ font-weight:700; color:#e6ebff }
 
-/* Links/CTAs */
 #tlModal .links{ display:flex; flex-wrap:wrap; gap:.5rem; }
 
-/* Código + botão copiar (permitir seleção!) */
 #tlModal .codebox{ position:relative; }
 #tlModal .codebox pre{
   background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12);
@@ -295,9 +278,6 @@
 }
 #tlModal .carousel .prev{ left:.5rem } .next{ right:.5rem }
 
-
-
-/* Scrollbar do conteúdo do modal (opcional, combina com seu tema) */
 #tlModal .content::-webkit-scrollbar{ width:10px; }
 #tlModal .content::-webkit-scrollbar-track{ background: rgba(44,47,51,.2); }
 #tlModal .content::-webkit-scrollbar-thumb{
@@ -306,15 +286,13 @@
 }
 #tlModal .content::-webkit-scrollbar-thumb:hover{ background: rgba(114,137,218,.5); }
 
-    /* ==== Global: bloquear seleção de texto (com exceções úteis) ==== */
 :where(html, body, body *):not(input):not(textarea):not(select):not([contenteditable="true"]):not(.selectable) {
-  -webkit-user-select: none !important; /* Safari/Chrome iOS */
-  -moz-user-select: none !important;    /* Firefox */
-  -ms-user-select: none !important;     /* IE/Edge legado */
+  -webkit-user-select: none !important; 
+  -moz-user-select: none !important; 
+  -ms-user-select: none !important; 
   user-select: none !important;
-  -webkit-touch-callout: none;          /* desabilita menu de toque no iOS */
+  -webkit-touch-callout: none; 
 }
-/* Permitir seleção só nos elementos whitelisted */
 .selectable,
 .selectable *{
   -webkit-user-select: text !important;
@@ -326,17 +304,14 @@
 }
 
 
-/* Se não quiser que imagens sejam “arrastáveis” */
 img { -webkit-user-drag: none; user-drag: none; }
 
-    /* BG canvas */
     canvas#bg-canvas{ position:fixed; inset:0; width:100vw; height:100vh; z-index:-1; pointer-events:none; display:block; }
   </style>
 </head>
 <body class="font-sans bg-gray-900 text-gray-100 has-fixed-header">
   <canvas id="bg-canvas"></canvas>
 
-  <!-- ===== HEADER (mesma pegada da home) ===== -->
 <header
   class="
     fixed top-0 left-0 w-full z-50
@@ -370,7 +345,6 @@ img { -webkit-user-drag: none; user-drag: none; }
   </div>
 </header>
 
-  <!-- ===== HERO ===== -->
   <section class="relative pt-28 md:pt-32 pb-10">
     <div class="container mx-auto px-4">
       <div class="card rounded-xl p-8 md:p-10 flex flex-col md:flex-row gap-6 items-center md:items-start">
@@ -390,7 +364,6 @@ img { -webkit-user-drag: none; user-drag: none; }
     </div>
   </section>
 
-  <!-- ===== TOOLBOX ===== -->
   <section id="toolbox" class="container mx-auto px-4 pb-20">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
   <h3 class="text-2xl md:text-3xl font-bold text-indigo-400">Toolbox</h3>
@@ -400,7 +373,6 @@ img { -webkit-user-drag: none; user-drag: none; }
            placeholder="busque por nome, tag ou descrição (ex: regex, jwt, hash, px→rem)..." />
   </div>
 </div>
-
 
     <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6" id="toolsGrid">
       <!-- CALCULADORA EXPRESSÕES -->
@@ -417,7 +389,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="exprOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">—</pre>
       </div>
 
-      <!-- PX ⇄ REM -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="px rem responsivo tailwind tipografia conversão">
         <div>
           <div class="tool-title">Conversor px ⇄ rem</div>
@@ -444,7 +415,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="remOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">—</pre>
       </div>
 
-      <!-- REGEX TESTER -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="regex expressão regular teste match flags g i m s u y">
         <div>
           <div class="tool-title">Regex Tester</div>
@@ -468,7 +438,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <div id="regexResult" class="selectable bg-black/40 rounded-lg p-3 overflow-auto min-h-[48px] whitespace-pre-wrap break-words break-all">—</div>
       </div>
 
-      <!-- HASH (SHA) -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="hash sha256 sha512 criptografia checksum segurança">
         <div>
           <div class="tool-title">Hash (SHA‑256 / SHA‑512)</div>
@@ -482,7 +451,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="hashOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px] break-all">—</pre>
       </div>
 
-      <!-- JWT DECODER -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="jwt token decode debug segurança base64url">
         <div>
           <div class="tool-title">JWT Decoder</div>
@@ -495,7 +463,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="jwtOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[72px]">—</pre>
       </div>
 
-      <!-- BASE64 ⇄ Texto (UTF‑8) -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="base64 encode decode utf8 string binário">
         <div>
           <div class="tool-title">Base64 ⇄ Texto (UTF‑8)</div>
@@ -509,7 +476,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="b64Out" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px] break-words">—</pre>
       </div>
 
-      <!-- JSON FORMATTER -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="json format pretty minify validação parse stringify">
         <div>
           <div class="tool-title">JSON Formatter</div>
@@ -523,7 +489,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="jsonOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">—</pre>
       </div>
 
-      <!-- CORES & CONVERSÕES -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="cores color rgb hex hsl tailwind design">
         <div>
           <div class="tool-title">Conversor de Cores</div>
@@ -537,7 +502,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="colorOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">rgb(92, 100, 244) • hsl(237, 88%, 66%)</pre>
       </div>
 
-      <!-- DATAS & DIFERENÇAS -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="data diferença duração dias horas minutos timestamp">
         <div>
           <div class="tool-title">Diferença entre Datas</div>
@@ -561,7 +525,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="dateOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto min-h-[48px]">—</pre>
       </div>
 
-      <!-- BASES: BIN/DEC/HEX -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="binário hexadecimal decimal base conversor bits números">
         <div>
           <div class="tool-title">Conversor Bin ⇄ Dec ⇄ Hex</div>
@@ -583,7 +546,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         </div>
       </div>
 
-      <!-- TEXTO: SLUG & CASES -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="texto slugify camel snake kebab maiúsculas minúsculas remover acentos">
         <div>
           <div class="tool-title">Utilidades de Texto</div>
@@ -602,7 +564,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="textUtilOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">—</pre>
       </div>
 
-      <!-- UUID v4 -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="uuid identificador aleatório guid v4">
         <div>
           <div class="tool-title">Gerador UUID v4</div>
@@ -615,7 +576,6 @@ img { -webkit-user-drag: none; user-drag: none; }
         <pre id="uuidOut" class="selectable bg-black/40 rounded-lg p-3 overflow-auto whitespace-pre-wrap break-words break-all min-h-[48px]">—</pre>
       </div>
 
-      <!-- URL ENCODE/DECODE + UTM -->
       <div class="card rounded-xl p-5 tool-card" data-keywords="url encode decode utm campanha querystring">
         <div>
           <div class="tool-title">URL Tools + UTM</div>
@@ -639,7 +599,6 @@ img { -webkit-user-drag: none; user-drag: none; }
     </div>
   </section>
 
-  <!-- ===== TIMELINE SECTION (ancora simples) ===== -->
   <section id="timeline" class="container mx-auto px-4 pb-28">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-2xl md:text-3xl font-bold text-indigo-400">Timeline Neon</h3>
@@ -647,14 +606,11 @@ img { -webkit-user-drag: none; user-drag: none; }
     <button class="btn" id="savePngBtn">Salvar PNG</button>
   </div>
   <div class="neon-panel">
-    <!-- ⬇️ era overlayTimeline, volta a ser inlineTimeline -->
     <div id="inlineTimeline" class="w-full h-[40vh] md:h-[340px]"></div>
     <p class="text-sm mt-3 neon-tip">Dica: clique nos pontos para ver o marco. Use os filtros no Overlay para focar por tecnologia.</p>
   </div>
 </section>
 
-
-  <!-- ===== OVERLAY TIMELINE (Command-style) ===== -->
   <div id="timelineOverlay" class="fixed inset-0 hidden z-50 p-6 bg-black/60 backdrop-blur-sm">
     <div class="max-w-6xl mx-auto">
       <div class="card rounded-xl p-6">
@@ -682,7 +638,6 @@ img { -webkit-user-drag: none; user-drag: none; }
     </div>
   </div>
 
-  <!-- ===== Command Palette ===== -->
   <div id="cmdk" class="cmdk-backdrop">
     <div class="cmdk">
       <header>
@@ -692,7 +647,6 @@ img { -webkit-user-drag: none; user-drag: none; }
     </div>
   </div>
 
-  <!-- ===== FOOTER ===== -->
   <footer class="py-6">
     <p class="text-center text-sm" style="color:#8ab4ff;text-shadow:0 0 4px #5c64f4, 0 0 8px #5c64f4, 0 0 12px #5c64f4;">© 2025 Caio Duque. Journey • ferramentas + timeline.</p>
   </footer>
@@ -716,5 +670,3 @@ img { -webkit-user-drag: none; user-drag: none; }
 <script defer src="/assets/js/journey.js"></script>
 </body>
 </html>
-
-
