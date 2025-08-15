@@ -321,35 +321,96 @@
       document.getElementById('remToPx').addEventListener('click', rem2px);
     })();
 
-    /* ========= Regex Tester ========= */
-    (()=>{
-      const pat=document.getElementById('regexPattern'); const flg=document.getElementById('regexFlags'); const txt=document.getElementById('regexText'); const res=document.getElementById('regexResult');
-      const run = () => {
-  try {
-    const r = new RegExp(pat.value, flg.value);
-    const input = txt.value || '';
-    const matches = [...input.matchAll(r)];
-    if (!matches.length) { res.textContent = 'Sem correspondências.'; return; }
+    /* ========= Regex Tester (com Web Worker + timeout) ========= */
+(() => {
+  const pat = document.getElementById('regexPattern');
+  const flg = document.getElementById('regexFlags');
+  const txt = document.getElementById('regexText');
+  const res = document.getElementById('regexResult');
+  const runBtn = document.getElementById('regexRun');
+  const clearBtn = document.getElementById('regexClear');
 
+  const TIMEOUT_MS = 1200;      // ajuste fino aqui
+  const MAX_MATCHES = 5000;     // guarda anti-OOM
+
+  let w = null;
+  let killTimer = null;
+
+  function resetWorker() {
+    if (killTimer) { clearTimeout(killTimer); killTimer = null; }
+    if (w) { try { w.terminate(); } catch {} w = null; }
+    runBtn.disabled = false;
+  }
+
+  function renderMatches(input, matches) {
+    if (!matches.length) { res.textContent = 'Sem correspondências.'; return; }
     const frag = document.createDocumentFragment();
     let last = 0;
     for (const m of matches) {
-      const idx = m.index;
-      frag.appendChild(document.createTextNode(input.slice(last, idx)));
+      const i = m.index, len = m.length;
+      frag.appendChild(document.createTextNode(input.slice(last, i)));
       const mark = document.createElement('mark');
-      mark.textContent = m[0];          // <<< sem HTML
+      mark.textContent = input.substr(i, len);   // <<< sem HTML
       frag.appendChild(mark);
-      last = idx + m[0].length;
+      last = i + len;
     }
     frag.appendChild(document.createTextNode(input.slice(last)));
-    res.replaceChildren(frag);           // <<< sem innerHTML
-  } catch(e) {
-    res.textContent = 'Erro: ' + e.message;
+    res.replaceChildren(frag);
   }
-};
-      document.getElementById('regexRun').addEventListener('click', run);
-      document.getElementById('regexClear').addEventListener('click', ()=>{ pat.value=''; flg.value=''; txt.value=''; res.textContent='—'; });
-    })();
+
+  function run() {
+    resetWorker(); // cancela rodada anterior se existir
+
+    const pattern = pat.value || '';
+    const flags = (flg.value || '').replace(/[^gimsuy]/g, ''); // saneia flags
+    const input = txt.value || '';
+
+    // feedback
+    res.textContent = 'Processando…';
+    runBtn.disabled = true;
+
+    try {
+      w = new Worker('/assets/js/regex-worker.js'); // clássico, compatível com sua CSP
+    } catch (err) {
+      runBtn.disabled = false;
+      res.textContent = 'Erro: este navegador não suporta Web Workers.';
+      return;
+    }
+
+    // timeout/kill: interrompe backtracking catastrófico no worker
+    killTimer = setTimeout(() => {
+      resetWorker();
+      res.textContent = 'Interrompido: regex muito custosa (timeout). ' +
+        'Dica: evite quantificadores ambíguos como (\\w+\\s?)*, use limites mais específicos.';
+    }, TIMEOUT_MS);
+
+    w.onmessage = (ev) => {
+      resetWorker();
+      const data = ev.data || {};
+      if (!data.ok) {
+        res.textContent = 'Erro: ' + (data.error || 'desconhecido');
+        return;
+      }
+      renderMatches(input, data.matches || []);
+    };
+
+    w.onerror = (e) => {
+      resetWorker();
+      res.textContent = 'Erro no worker: ' + (e && e.message ? e.message : 'desconhecido');
+    };
+
+    // envia a tarefa
+    w.postMessage({ pattern, flags, text: input, maxMatches: MAX_MATCHES });
+  }
+
+  runBtn.addEventListener('click', run);
+  clearBtn.addEventListener('click', () => {
+    resetWorker();
+    pat.value = ''; flg.value = ''; txt.value = '';
+    res.textContent = '—';
+  });
+})();
+
 
     /* ========= Hash SHA ========= */
     async function sha(hexAlg, msg){
