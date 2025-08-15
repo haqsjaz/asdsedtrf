@@ -18,10 +18,8 @@
   block-all-mixed-content;
 ">
   <title>Caio Duque – Portfólio</title>
-  <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.png" type="image/png" />
 
-  <!-- Open Graph (Discord, Facebook, etc) -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://caioduque.dev/">
   <meta property="og:title" content="Caio Duque • Portfólio Oficial">
@@ -29,21 +27,17 @@
   <meta property="og:image" content="https://caioduque.dev/assets/images/preview.png">
   <meta property="og:site_name" content="Caio Duque Portfólio">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://caioduque.dev/">
   <meta name="twitter:title" content="Caio Duque • Portfólio Oficial">
   <meta name="twitter:description" content="Conheça meus projetos, habilidades e minha trajetória como desenvolvedor, designer e entusiasta de cibersegurança.">
   <meta name="twitter:image" content="https://caioduque.dev/assets/images/preview.png">
 
-  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Bibliotecas para a nova versão -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script defer src="https://d3js.org/d3.v7.min.js" integrity="sha512-vc58qvvBdrDR4etbxMdlTt4GBQk1qjvyORR2nrsPsFPyrs+/u5c3+1Ct6upOgdZoIl7eq6k3a1UPDSNAQi/32A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
-    /* Estilos Gerais e Antigos (mantidos para consistência) */
     .tooltip span {
       position: absolute;
       bottom: -1.75rem;
@@ -126,7 +120,7 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
       z-index: 3;
     }
 
-    canvas#bg-canvas { /* ID alterado para evitar conflitos */
+    canvas#bg-canvas {
       display: block;
       position: fixed;
       inset: 0;
@@ -142,11 +136,10 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
       scroll-behavior: smooth;
     }
 
-    /* ---- NOVOS ESTILOS para Constelação de Habilidades (D3.js) ---- */
     #skills-constellation-container {
         width: 100%;
         max-width: 900px;
-        height: 600px; /* Altura fixa para a visualização */
+        height: 600px; 
         margin: 0 auto;
         position: relative;
         z-index: 5;
@@ -181,7 +174,6 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
         dominant-baseline: middle;
     }
 
-    /* Estilos para estado focado/hover */
     .skill-node.focused circle, .skill-node:hover circle {
         stroke: #5A4BFF;
         stroke-width: 3px;
@@ -190,32 +182,28 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
         stroke: #8E5CFF;
         stroke-width: 2.5px;
     }
-    /* Estilos para elementos não focados */
     .faded {
         opacity: 0.2;
     }
 
-    /* --- nós com glassmorphism --- */
 .skill-node circle.glass {
-  fill: rgba(44,47,51,.45);             /* vidro escuro */
+  fill: rgba(44,47,51,.45);
   backdrop-filter: blur(6px);
   stroke: rgba(255,255,255,.35);
   stroke-width: 1px;
   transition: filter .3s ease, stroke .3s ease, transform .3s ease;
 }
 .skill-node:hover circle.glass {
-  stroke: rgba(128,160,255,.90);        /* brilho azulado */
+  stroke: rgba(128,160,255,.90); 
   filter: drop-shadow(0 0 8px rgba(114,137,218,.6));
   transform: scale(1.25);
 }
-/* imagem interna mantém-se redonda */
 .skill-node image {
-  pointer-events:none;                  /* não intercepta o mouse */
+  pointer-events:none;  
   clip-path: circle(50%);
 }
-    /* ─────── Cartão-descrição que surge sobre o nó ─────── */
 .skill-info-card{
-  position:fixed;                 /* fora do fluxo; fácil de mover */
+  position:fixed;
   max-width:240px;
   padding:1rem 1.25rem;
   border-radius:1rem;
@@ -224,16 +212,15 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
   border:1px solid rgba(114,137,218,.35);
   box-shadow:0 0 20px rgba(114,137,218,.25);
   color:#F9FAFB;
-  opacity:0;                      /* invisível por padrão */
-  pointer-events:none;            /* não “rouba” o mouse */
+  opacity:0;
+  pointer-events:none;
   transition:opacity .25s ease, transform .25s ease;
   z-index:50;
 }
-.skill-info-card.visible{         /* classe que mostramos via JS */
+.skill-info-card.visible{
   opacity:1;
 }
 
-/* Texto interno */
 .skill-info-card h4{
   font-size:1rem;
   font-weight:700;
@@ -244,35 +231,31 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
   line-height:1.35rem;
 }
 
-/* No mobile ocupamos a largura quase toda e centralizamos */
 @media (max-width:768px){
   .skill-info-card.mobile{
     width:calc(100% - 3rem);
     max-width:none;
-    left:50%!important;           /* forçado pelo JS */
+    left:50%!important;
     top:50%!important;
     transform:translate(-50%,-50%) scale(.95);
   }
 }
 
-
-    /* estrela adota um leve glow ao passar o mouse */
 .skill-node.core-star:hover image {
   filter: drop-shadow(0 0 8px rgba(114,137,218,.7))
           brightness(1.2);
   transform: scale(1.15);
   transition: filter .3s ease, transform .3s ease;
 }
-/* ---------- fundo "nebula.png" + fade radial ---------- */
+
 .skills-bg{
   position:absolute;
   inset:0;
   background:url('assets/images/nebula.png') center / cover no-repeat;
-  opacity:.4;                         /* 90 % no ponto mais forte      */
-  z-index:0;                          /* atrás das nuvens, à frente da página */
+  opacity:.4;
+  z-index:0;
   pointer-events:none;
 
-  /* máscara: invisível nas bordas, 90 % no centro            */
   mask-image: radial-gradient(circle at center,
                 rgba(0,0,0,1) 0%,
                 rgba(0,0,0,.4) 15%,
@@ -283,16 +266,14 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
                 rgba(0,0,0,0) 40%);
 }
 
-/* ---------- nuvens roxo-azul quase imperceptíveis ---------- */
 .skills-clouds{
   position:absolute;
-  inset:-15%;                    /* transborda um pouco para não aparecer borda */
-  z-index:1;                      /* acima da nebulosa, abaixo do SVG            */
+  inset:-15%;
+  z-index:1;
   pointer-events:none;
   filter:blur(60px) saturate(160%);
-  opacity:.25;                   /* MUITO sutil                                  */
+  opacity:.25;
 
-  /* três manchas grandes em degradês radiais */
   background:
     radial-gradient(circle at 30% 40%, rgba(115,0,255,.8) 0%, transparent 60%),
     radial-gradient(circle at 75% 65%, rgba(0,120,255,.7) 0%, transparent 55%),
@@ -300,8 +281,6 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
 }
 
 
-
-    /* -- Mantendo outros estilos -- */
     .icon-svg { width: 24px; height: 24px; fill: currentColor; }
     .carousel-container { position: relative; overflow: hidden; margin: 0 auto; max-width: 960px; padding: 0 2rem; }
     .carousel-track { display: flex; align-items: center; transition: transform 0.5s ease-in-out; }
@@ -312,14 +291,14 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
     .carousel-arrow:hover { background-color: rgba(114, 137, 218, 0.8); opacity: 1; }
     .carousel-arrow.left { left: 0; }
     .carousel-arrow.right { right: 0; }
-/* ---------- BADGES PERSONALIZADAS --------------------------------- */
-.badge{                       /* base comum a todas                 */
+
+.badge{ 
   display:inline-flex;align-items:center;gap:0.25rem;
-  padding:0.25rem 0.75rem;            /* px-3 py-1 equivalente        */
-  font-size:0.875rem;font-weight:500; /* text-sm                      */
-  color:#fff;                           /* texto branco                */
-  border-radius:0.5rem;                 /* ↙ menos arredondado          */
-  backdrop-filter:blur(8px);            /* efeito‑vidro                */
+  padding:0.25rem 0.75rem;
+  font-size:0.875rem;font-weight:500;
+  color:#fff;
+  border-radius:0.5rem;
+  backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,.20);
   box-shadow:0 0 8px rgba(0,0,0,.25);
 }
@@ -329,14 +308,13 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
 .badge-affil{        background-image:linear-gradient(135deg,#83e2bd,#4a7c69);}
 .badge-manager{      background-image:linear-gradient(135deg,#b30735,#a05a5a);}    
 
-/* ---------- BOTÕES “UNIVERSE” ------------------------------------ */
-.btn{                                 /* base padrão                 */
+.btn{   
   position:relative;overflow:hidden;display:inline-flex;
   align-items:center;justify-content:center;gap:.45rem;
-  padding:.25rem 1.25rem;             /* mesma altura das badges     */
+  padding:.25rem 1.25rem;    
   font-size:.875rem;font-weight:600;
   color:#fff;text-shadow:0 0 6px #000;
-  border-radius:.5rem;                /* ↙ mais retangular           */
+  border-radius:.5rem;          
   background-image:linear-gradient(180deg,#000 0%,#101010 100%);
   border:1px solid rgba(255,255,255,.15);
   backdrop-filter:blur(6px);
@@ -344,7 +322,6 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
   transition:background .4s ease,color .4s ease;
 }
 
-/* camada de partículas – fica por baixo do texto */
 .btn::before{
   content:"";pointer-events:none;position:absolute;inset:0;
   background-image:
@@ -352,24 +329,22 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
      radial-gradient(#fff 0 1px,transparent 1px 4px),
      radial-gradient(#fff 0 1px,transparent 1px 4px),
      radial-gradient(#fff 0 1px,transparent 1px 4px);
-  background-size:90px 90px,140px 140px, 60px 60px, 180px 180px;   /* densidades diferentes */
+  background-size:90px 90px,140px 140px, 60px 60px, 180px 180px; 
   background-position:0 0,60px 30px, 30px 15px, 45px 20px;
   opacity:.45; animation:moveStars 25s linear infinite;
 }
 
-/* animação lenta do “céu estrelado” */
 @keyframes moveStars{
   from{background-position:0 0,60px 30px;}
   to  {background-position:-600px 300px,-300px 150px;}
 }
 
-/* HOVER – cores invertidas, partículas somem e recebem 1 impulso   */
 .btn:hover{
   background-image:linear-gradient(135deg,#fff 0%,#e8e1ff 40%,#a68bff 100%);
   color:#000;text-shadow:none;
 }
 .btn:hover::before{
-  opacity:0;animation-duration:6s;        /* impulso rápido           */
+  opacity:0;animation-duration:6s;
 }
 
 
@@ -380,15 +355,12 @@ body.has-fixed-header{ padding-top: var(--header-offset); }
     html, body { width: 100%; overflow-x: hidden; box-sizing: border-box; }
     *, *::before, *::after { box-sizing: inherit }
 
-/* Banner com fade unidirecional: forte no topo → some embaixo */
 .fade-mask { -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
 
 :root { --header-offset: 4rem; } 
-/* Responsividade */
 @media (max-width:768px){
   :root { --header-offset: 5.5rem; }
 
-  /* ----------- header geral ----------- */
   header .container {
     grid-template-columns: 1fr; /* mantém Grid e empilha */
     gap: .5rem 1rem;
@@ -424,7 +396,6 @@ header nav a[aria-current="page"]{
 /*  border-radius:9999px; */
 /* } */
 
-  /* ----------- ajustes já existentes ----------- */
   .server-card{ width:280px; margin:0 0.5rem; }
   .carousel-arrow{ width:30px; height:30px; padding:0.5rem 0.25rem; }
   #skills-constellation-container{ height:450px; }
@@ -435,46 +406,42 @@ header nav a[aria-current="page"]{
   #skills-constellation-container{ height:400px; }
 }
 
-
-    /* navbar desliza para cima suavemente; o "voltar" é instantâneo         */
 header.nav-hidden{
-  transform: translateY(-110%);   /* empurra totalmente para fora       */
-  transition: transform .35s ease;/* só existe quando a classe está ativa*/
+  transform: translateY(-110%);
+  transition: transform .35s ease;
 }
 
-/* Scroll personalizado estilo vidro */
 ::-webkit-scrollbar {
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(44, 47, 51, 0.2);  /* vidro escuro */
+  background: rgba(44, 47, 51, 0.2);
   backdrop-filter: blur(8px);
   border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(200, 200, 255, 0.25);  /* thumb claro translúcido */
+  background: rgba(200, 200, 255, 0.25);
   backdrop-filter: blur(4px);
   border-radius: 6px;
-  border: 2px solid rgba(255, 255, 255, 0.1);  /* leve contorno */
+  border: 2px solid rgba(255, 255, 255, 0.1);
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(114, 137, 218, 0.5);  /* destaque ao passar o mouse */
+  background: rgba(114, 137, 218, 0.5);
 }
-
 
 footer {
   backdrop-filter: blur(10px);
-  background: rgba(28, 28, 40, 0.25); /* vidro escuro translúcido */
+  background: rgba(28, 28, 40, 0.25);
   border-top: 1px solid rgba(114, 137, 218, 0.2);
   box-shadow: 0 0 20px rgba(114, 137, 218, 0.15);
 }
 
 footer p {
-  color: #8ab4ff; /* azul-claro neon */
+  color: #8ab4ff;
   text-shadow:
     0 0 4px #5c64f4,
     0 0 8px #5c64f4,
@@ -482,26 +449,22 @@ footer p {
   transition: color 0.3s ease, text-shadow 0.3s ease;
   font-weight: 500;
 }
-/* ==== Global: bloquear seleção de texto (com exceções úteis) ==== */
+
 :where(html, body, body *):not(input):not(textarea):not(select):not([contenteditable="true"]):not(.selectable) {
-  -webkit-user-select: none !important; /* Safari/Chrome/iOS */
-  -moz-user-select: none !important;    /* Firefox */
-  -ms-user-select: none !important;     /* IE/Edge antigo */
-  user-select: none !important;         /* Padrão */
-  -webkit-touch-callout: none;          /* iOS: sem menu de toque */
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none;
 }
 
-/* Evita arrastar imagens acidentalmente */
 img { -webkit-user-drag: none; user-drag: none; }
 
-
-    /* —— Tipografia global —— */
 html { hanging-punctuation: first allow-end; }
 p, li { hyphens: auto; }
-.text-balance { text-wrap: balance; }   /* fallback caso Tailwind não inclua */
-.text-pretty  { text-wrap: pretty;  }   /* idem */
+.text-balance { text-wrap: balance; }
+.text-pretty  { text-wrap: pretty;  }
 
-/* “prose” minimalista (sem plugin) para blocos textuais */
 .prose-like :where(h1,h2,h3){line-height:1.2;margin:0 0 .6em}
 .prose-like :where(p){line-height:1.75;margin:.85em 0;color:#e5e7eb}
 .prose-like :where(ul){list-style:disc;padding-left:1.25rem;margin:.75em 0}
@@ -514,9 +477,6 @@ p, li { hyphens: auto; }
   background:rgba(148,163,184,.15);padding:.15rem .4rem;border-radius:.35rem}
 .prose-like :where(a){color:#8ab4ff;text-underline-offset:3px}
 .prose-like :where(hr){border:none;height:1px;background:linear-gradient(90deg,transparent,#5c64f4,transparent);margin:1.25rem 0}
-/* --- hotfix: banner encostado no topo --- */
-
-/* 1) mostra o TOPO da imagem e só “desaparece” no RODAPÉ do banner  */
 
   </style>
 </head>
@@ -525,15 +485,13 @@ p, li { hyphens: auto; }
   <!-- O canvas agora será controlado pelo three.js -->
   <canvas id="bg-canvas"></canvas>
 
-  <!-- NAVBAR -->
-  <!-- header fixo + vidro ultra-transparente -->
 <header
   class="
     fixed top-0 left-0 w-full z-50
-    bg-[#2c2f33]/15           /* cinza-escuro 15 % (quase invisível)   */
-    backdrop-blur-md          /* aplica o efeito glassmorphism         */
-    border-b border-white/10  /* linha sutil na base (opcional)        */
-    shadow-md shadow-black/20 /* leve sombra para leitura em claros    */
+    bg-[#2c2f33]/15
+    backdrop-blur-md
+    border-b border-white/10
+    shadow-md shadow-black/20
     transition-colors
     will-change-transform
   ">
@@ -555,7 +513,6 @@ p, li { hyphens: auto; }
     </div>
   </header>
 
-  <!-- HERO / BANNER -->
   <section id="home" class="relative">
     <img src="assets/images/banner.png" loading="lazy" decoding="async" alt="Banner" class="fade-mask w-full h-[300px] object-cover object-center" />
     <div id="profileCard" class="container mx-auto px-4"> 
@@ -598,7 +555,6 @@ p, li { hyphens: auto; }
     </div>
   </section>
 
-  <!-- SOBRE MIM -->
   <section id="about" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Sobre Mim</h3>
     <div class="card rounded-xl p-8 max-w-3xl mx-auto text-center prose-like">
@@ -612,20 +568,15 @@ p, li { hyphens: auto; }
       </div>
     </div>
   </section>
-
-  <!-- HABILIDADES (NOVA VERSÃO COM D3.JS) -->
+  
   <section id="skills" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-12">Constelação de Habilidades</h3>
     <div id="skills-constellation-container">
         <div class="skills-bg" aria-hidden="true"></div>
-
-        <!--  CAMADA 1 → “nuvens” roxo-azul bem sutis      -->
         <div class="skills-clouds" aria-hidden="true"></div>
-        <!-- O SVG para o grafo D3 será inserido aqui pelo JavaScript -->
     </div>
   </section>
 
-  <!-- PROJETOS -->
   <section id="learnconnect" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Projetos em Destaque</h3>
     <div class="grid md:grid-cols-2 gap-8">
@@ -648,7 +599,6 @@ p, li { hyphens: auto; }
     </div>
   </section>
 
-  <!-- SERVIDORES DISCORD (CAROUSEL) -->
   <section class="py-16">
     <div class="container mx-auto px-4 py-12">
       <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Jornada no Discord</h3>
@@ -669,7 +619,7 @@ p, li { hyphens: auto; }
               <a class="btn" href="https://discord.gg/viggle" target="_blank" rel="noopener noreferrer">Entrar</a>
             </div>
           </div>
-          <!-- OLD DUQUE’S -->
+  
           <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
             <div class="flex items-center mb-4">
               <img src="assets/images/old_duques_logo.png" loading="lazy" decoding="async" alt="Old Duque's Logo" class="w-20 h-20 rounded-full object-cover" />
@@ -684,7 +634,7 @@ p, li { hyphens: auto; }
               <a class="btn" href="https://discord.gg/bwHGH75Txb" target="_blank" rel="noopener noreferrer">Entrar</a>
             </div>
           </div>
-          <!-- FORMULA 1 -->
+
           <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
             <div class="flex items-center mb-4">
               <img src="assets/images/f1.png" loading="lazy" alt="Formula 1 Logo" class="w-20 h-20 rounded-full object-cover" />
@@ -699,7 +649,7 @@ p, li { hyphens: auto; }
               <a class="btn" href="https://discord.gg/f1" target="_blank" rel="noopener noreferrer">Entrar</a>
             </div>
           </div>
-          <!-- SERVIDOR DO GOULARTE -->
+  
 <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
   <div class="flex items-center mb-4">
     <img src="assets/images/goularte_logo.png" loading="lazy" decoding="async"
@@ -729,7 +679,6 @@ p, li { hyphens: auto; }
   </div>
 </div>
 
-<!-- SERVIDOR DO SAN -->
 <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
   <div class="flex items-center mb-4">
     <img src="assets/images/san_logo.png" loading="lazy"
@@ -760,7 +709,6 @@ p, li { hyphens: auto; }
   </div>
 </div>
 
-<!-- STEVEZTV -->
 <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
   <div class="flex items-center mb-4">
     <img src="assets/images/steveztv_logo.png" loading="lazy"
@@ -790,7 +738,6 @@ p, li { hyphens: auto; }
   </div>
 </div>
 
-<!-- ITS A TRAP -->
 <div class="server-card card rounded-xl p-6 flex flex-col items-center hover:shadow-indigo-600/30 transition">
   <div class="flex items-center mb-4">
     <img src="assets/images/itsatrap_logo.png" loading="lazy"
@@ -828,7 +775,6 @@ p, li { hyphens: auto; }
     </div>
   </section>
 
-  <!-- CONTATOS -->
   <section id="contatos" class="container mx-auto px-4 py-16">
     <h3 class="text-center text-3xl font-bold text-indigo-400 mb-8">Contatos</h3>
     <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-10">
@@ -847,10 +793,10 @@ p, li { hyphens: auto; }
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer class="py-6">
     <p class="text-center text-sm text-balance">© 2025 Caio Duque. Todos os direitos reservados.</p>
   </footer>
 <script defer src="/assets/js/index.js"></script>
 </body>
 </html>
+
